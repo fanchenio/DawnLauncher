@@ -1,0 +1,60 @@
+{
+  "name": "DawnLauncher",
+  "productName": "Dawn Launcher",
+  "author": "Dawn Launcher",
+  "version": "1.2.3",
+  "private": true,
+  "gypfile": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "@ckpack/vue-color": "^1.4.1",
+    "bindings": "^1.5.0",
+    "cheerio": "^1.0.0-rc.12",
+    "core-js": "^3.8.3",
+    "dompurify": "^3.0.3",
+    "electron-store": "^8.1.0",
+    "jimp": "^0.22.7",
+    "mime": "^3.0.0",
+    "node-addon-api": "^5.0.0",
+    "pinyin-match": "^1.2.4",
+    "request": "^2.88.2",
+    "retry": "^0.13.1",
+    "simplebar": "^5.3.8",
+    "sortablejs": "^1.15.0",
+    "urijs": "^1.19.11",
+    "uuid": "^9.0.0",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.0",
+    "vuex": "^4.1.0",
+    "xml2js": "^0.5.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@tailwindcss/forms": "^0.5.3",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "autoprefixer": "^10.4.8",
+    "electron": "^22.3.17",
+    "electron-builder": "^24.4.0",
+    "electron-devtools-installer": "^3.2.0",
+    "modclean": "^3.0.0-beta.1",
+    "postcss": "^8.4.16",
+    "prettier": "^2.7.1",
+    "tailwindcss": "^3.1.8",
+    "terser-webpack-plugin": "^5.3.8",
+    "vue-cli-plugin-electron-builder": "^3.0.0-alpha.4"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
