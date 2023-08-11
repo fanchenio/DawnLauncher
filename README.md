@@ -6,6 +6,12 @@ Windows快捷启动工具，帮助您整理杂乱无章的桌面，分门别类�
 Electron
 # 支持平台
 Windows
+# 编译步骤
+1. 需要配置 node-gyp 环境，这个可以自行搜索一下。
+2. yarn install 安装依赖。
+3. node-gyp rebuild --arch=x64 或 node-gyp rebuild --arch=ia32 编译64位或32位DLL。
+4. yarn electron:serve 本地运行项目。
+5. yarn electron:build 打包项目，打包64位和32位的时候，需要分两次打包，将 vue.config.js 配置中的 pluginOptions.electronBuilder.builderOptions.win.target.arch 修改为x64或者ia32。
 # 官网
 [dawnlauncher.com](https://dawnlauncher.com/)
 # 捐赠
