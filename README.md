@@ -1,3 +1,5 @@
+# 简体中文 | [English](https://github.com/fanchenio/DawnLauncher/README-ENGLISH.md)
+
 # 更新
 
 消失了三个多月，我将`Dawn Launcher`代码进行重构，因为一开始没有开发`NodeJS`和`Electron`的经验，`Vue`也写的不好，代码写的有些潦草，所以进行了代码重构，新版使用了`Electron26 + Vite + Vue3 + TS`，UI 框架使用了`Naive`，关于原生 API 方面，我从`C++`切换到了 `Rust`，数据库从`electron-store`切换到了`SQLite3`，语言也新增了`英语`。
@@ -28,9 +30,12 @@
 
 [dawnlauncher.com](https://dawnlauncher.com/)
 
-# 捐赠
+# 捐赠（微信）
 
 ![微信](/images/wechat.png)
+
+# 捐赠（支付宝）
+
 ![支付宝](/images/alipay.png)
 
 # 界面
