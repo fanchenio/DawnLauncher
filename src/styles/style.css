@@ -1,0 +1,123 @@
+body {
+  font-family: system-ui;
+  margin: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+  overflow: hidden;
+}
+
+h1 {
+  font-weight: 400;
+  margin: 0;
+}
+
+ul,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+:focus {
+  outline: none;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+input {
+  font-family: system-ui;
+  padding: 0;
+  border: none;
+}
+
+input:focus,
+div:focus,
+select {
+  outline: none !important;
+}
+
+input:focus-visible,
+div:focus-visible,
+select:focus-visible {
+  outline: none !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.app-region-drag {
+  -webkit-app-region: drag;
+}
+
+.app-region-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.simplebar-track.simplebar-vertical,
+.simplebar-track.simplebar-horizontal {
+  width: 8px !important;
+  top: -2px !important;
+}
+
+.item-name-tile-2 {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.item-name-tile-2-no-ellipsis {
+  max-height: 40px;
+  word-break: break-all;
+  overflow: hidden;
+}
+
+.item-name-tile-1 {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.item-name-tile-1-no-ellipsis {
+  max-height: 20px;
+  word-break: break-all;
+  overflow: hidden;
+}
+
+.item-name-list {
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.item-name-list-no-ellipsis {
+  max-height: 20px;
+  word-break: break-all;
+  overflow: hidden;
+}

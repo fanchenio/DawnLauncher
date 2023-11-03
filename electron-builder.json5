@@ -1,0 +1,35 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  appId: "com.dawnlauncher.application",
+  asar: true,
+  compression: "maximum",
+  productName: "Dawn Launcher",
+  directories: {
+    output: "release/${version}",
+  },
+  asarUnpack: ["**/*.node"],
+  npmRebuild: false,
+  files: ["dist", "dist-electron", "native", "!node_modules/**/*"],
+  win: {
+    appId: "com.dawnlauncher.application",
+    target: [
+      {
+        target: "nsis",
+        arch: ["x64"],
+      },
+    ],
+    artifactName: "${productName}-Windows-${version}-Setup.${ext}",
+    icon: "public/logo.ico",
+  },
+  nsis: {
+    artifactName: "${productName}-${version}.${ext}",
+    oneClick: false,
+    allowElevation: true,
+    allowToChangeInstallationDirectory: true,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+  },
+}
