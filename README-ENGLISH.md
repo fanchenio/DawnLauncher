@@ -1,4 +1,4 @@
-# [简体中文](https://github.com/fanchenio/DawnLauncher/) | English
+# [简体中文](https://github.com/fanchenio/DawnLauncher) | English
 
 # Update
 
