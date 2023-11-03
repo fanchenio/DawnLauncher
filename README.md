@@ -1,4 +1,4 @@
-# 简体中文 | [English](https://github.com/fanchenio/DawnLauncher/README-ENGLISH.md)
+# 简体中文 | [English](https://github.com/fanchenio/DawnLauncher/blob/main/README-ENGLISH.md)
 
 # 更新
 
