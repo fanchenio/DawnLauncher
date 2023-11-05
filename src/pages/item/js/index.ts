@@ -379,6 +379,19 @@ function getItemSearchMap(
       abbrList.push(item);
       searchMap.set(abbr, abbrList);
     }
+    // 网址
+    if ((item as Item).type && (item as Item).type === 2) {
+      let target = (item as Item).data.target;
+      if (target) {
+        let url = target.toLowerCase();
+        let urlList = searchMap.get(url);
+        if (!urlList) {
+          urlList = [];
+        }
+        urlList.push(item);
+        searchMap.set(url, urlList);
+      }
+    }
     // 备注
     if (remark) {
       let r = (item as Item).data.remark;
