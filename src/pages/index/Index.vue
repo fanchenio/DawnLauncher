@@ -550,7 +550,7 @@ onMounted(() => {
         setTimeout(() => {
           // 显示窗口
           window.main.showWindow(data.blurHide);
-        }, 100);
+        }, 10);
       });
     })
   );

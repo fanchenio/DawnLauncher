@@ -595,7 +595,7 @@ onMounted(() => {
         setTimeout(() => {
           // 显示窗口
           window.quickSearch.showWindow();
-        }, 100);
+        }, 10);
       });
     })
   );
