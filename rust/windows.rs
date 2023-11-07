@@ -18,9 +18,12 @@ use windows::{
     w,
     Win32::{
         Foundation::{HWND, LPARAM, LRESULT, MAX_PATH, POINT, RECT, SIZE, WPARAM},
-        Graphics::Gdi::{
-            GetMonitorInfoW, GetObjectW, MonitorFromWindow, BITMAP, MONITORINFO,
-            MONITOR_DEFAULTTONEAREST,
+        Graphics::{
+            Dwm::{DwmSetWindowAttribute, DWMWA_TRANSITIONS_FORCEDISABLED},
+            Gdi::{
+                GetMonitorInfoW, GetObjectW, MonitorFromWindow, BITMAP, MONITORINFO,
+                MONITOR_DEFAULTTONEAREST,
+            },
         },
         Storage::FileSystem::SearchPathW,
         System::{
@@ -669,5 +672,22 @@ pub fn empty_recycle_bin(window: i32) {
     // 清空回收站
     unsafe {
         let _ = SHEmptyRecycleBinW(hwnd, None, SHERB_NOSOUND);
+    };
+}
+
+/**
+ * 去掉窗口动画
+ */
+pub fn remove_window_animation(window: i32) {
+    // HWND
+    let hwnd = HWND(window as isize);
+    let pvattribute = &mut true as *mut _ as *const _;
+    unsafe {
+        let _ = DwmSetWindowAttribute(
+            hwnd,
+            DWMWA_TRANSITIONS_FORCEDISABLED,
+            pvattribute,
+            std::mem::size_of_val(&pvattribute) as u32,
+        );
     };
 }

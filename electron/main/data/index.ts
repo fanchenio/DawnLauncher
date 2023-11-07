@@ -19,7 +19,6 @@ function createBackupRestoreDataWindow() {
     parent: global.mainWindow,
     height: 108,
     width: 400,
-    type: "toolbar",
     maximizable: false,
     minimizable: false,
     resizable: false,

@@ -30,6 +30,7 @@ features = [
     "Win32_System_Environment",
     "Win32_UI_Input_Ime",
     "Win32_Globalization",
+    "Win32_Graphics_Dwm",
 ]
 
 [build-dependencies]

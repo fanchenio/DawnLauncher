@@ -165,3 +165,12 @@ pub fn get_clipboard_bitmap_base64() -> Option<String> {
 pub fn empty_recycle_bin(window: i32) {
     windows::empty_recycle_bin(window)
 }
+
+/**
+ * 去掉窗口动画
+ */
+#[allow(dead_code)]
+#[napi]
+pub fn remove_window_animation(window: i32) {
+    windows::remove_window_animation(window);
+}

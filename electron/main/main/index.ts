@@ -30,7 +30,6 @@ function createMainWindow() {
     title: "Dawn Launcher",
     width: 800,
     height: 600,
-    type: "toolbar",
     frame: false,
     show: false,
     maximizable: false,
@@ -56,6 +55,10 @@ function createMainWindow() {
   }
   // 加载完毕
   mainWindow.webContents.on("did-finish-load", () => {
+    // 设置窗口无动画
+    global.addon.removeWindowAnimation(
+      mainWindow.getNativeWindowHandle().readInt32LE(0)
+    );
     // 恢复上一次的位置
     let bounds = cacheData.cacheStore.get("mainWindowBounds");
     if (bounds) {

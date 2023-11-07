@@ -18,7 +18,6 @@ function createWindow() {
     parent: global.mainWindow,
     height: 212,
     width: 600,
-    type: "toolbar",
     maximizable: false,
     minimizable: false,
     resizable: false,
