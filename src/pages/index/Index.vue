@@ -418,6 +418,10 @@ function createBackgroundImageStyle() {
       "opacity: " +
       store.setting.appearance.backgroundImageTransparency +
       ";" +
+      (store.setting.appearance.transparency < 1 &&
+      store.setting.appearance.windowRounded
+        ? "border-radius: 2%;"
+        : "") +
       "}";
     // 将伪类样式规则添加到 head 元素中
     document.head.appendChild(backgroundImageStyle);
