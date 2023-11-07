@@ -5,7 +5,7 @@ import {
   newItem,
 } from "../../commons/utils/common";
 import { CommonItem, Item } from "../../types/item";
-import { parse, join } from "node:path";
+import { parse, join, extname } from "node:path";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 import xml2js from "xml2js";
@@ -655,14 +655,26 @@ async function getDropItemInfo(
           }
         }
       }
-      // 文件类型
-      let stats = statSync(item.data.target);
-      // 路径
-      item.type = stats.isFile() ? 0 : 1;
       // 获取图标
       item.data.icon = getFileIcon(item.data.target);
+      // 获取后缀，判断是否是url
+      let ext = extname(item.data.target);
+      if (ext && ext.toLowerCase() === ".url") {
+        // url
+        let url = parseUrlFileContent(readFileSync(item.data.target, "utf-8"));
+        if (url && url.trim() !== "") {
+          item.data.target = url;
+          item.type = 2;
+        } else {
+          continue;
+        }
+      } else {
+        // 文件类型
+        let stats = statSync(item.data.target);
+        item.type = stats.isFile() ? 0 : 1;
+      }
       // 去掉后缀
-      if (item.type === 0) {
+      if (item.type === 0 || item.type === 2) {
         item.name = deleteExtname(item.name);
       }
       // push
@@ -670,6 +682,24 @@ async function getDropItemInfo(
     } catch (e) {}
   }
   return itemList;
+}
+
+/**
+ * 解析.url文件内容以获取URL
+ * @param content
+ * @returns
+ */
+function parseUrlFileContent(content: string) {
+  if (content) {
+    const lines = content.split("\n");
+    for (const line of lines) {
+      if (line.startsWith("URL=")) {
+        const url = line.substring(4).trim();
+        return url;
+      }
+    }
+  }
+  return null;
 }
 
 /**

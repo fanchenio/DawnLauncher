@@ -628,10 +628,8 @@ let getURLInfoLoading = ref<boolean>(false);
 function getURLInfo() {
   if (form.data.target) {
     getURLInfoLoading.value = true;
-    if (
-      form.data.target.indexOf("http://") < 0 &&
-      form.data.target.indexOf("https://") < 0
-    ) {
+    const regex = /^.+:\/\/.*/;
+    if (!regex.test(form.data.target)) {
       form.data.target = "http://" + form.data.target;
     }
     // 获取网址信息
