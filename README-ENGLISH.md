@@ -20,11 +20,12 @@ Supports associated folders (real-time synchronization of folder contents), quic
 
 # Compilation Steps
 
-1. First you need to install `node-gyp`, which is needed to compile local modules.
-2. Then run `yarn install` to install the project dependencies (if you modify the `Rust` code, you need to re-run `yarn install`).
-3. `yarn run dev` runs the project locally.
-4. `yarn run build` packages the project.
-5. The portable version and the installation version need to be packaged twice. By modifying `VITE_INSTALL` in `.env.production`, `true` means the installation version and `false` means the portable version.
+1. Install `node-gyp`, required to compile SQLite3.
+2. Install the `Rust` environment + `Cargo`, which is needed to compile Rust.
+3. Then run `yarn install` to install the project dependencies (if you modify the `Rust` code, you need to re-run `yarn install`).
+4. `yarn run dev` runs the project locally.
+5. `yarn run build` packages the project.
+6. The portable version and the installation version need to be packaged twice. By modifying `VITE_INSTALL` in `.env.production`, `true` means the installation version and `false` means the portable version.
 
 # Official Website
 

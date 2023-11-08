@@ -20,11 +20,12 @@
 
 # 编译步骤
 
-1. 首先需要安装`node-gyp`，编译本地模块需要用到。
-2. 然后运行`yarn install`安装项目依赖（如果修改了`Rust`代码也需要重新运行`yarn install`）。
-3. `yarn run dev`本地运行项目。
-4. `yarn run build`打包项目。
-5. 便携版和安装版需要分两次打包，通过修改`.env.production`中的`VITE_INSTALL`，`true`为安装版，`false`为便携版。
+1. 安装`node-gyp`，编译 SQLite3 需要。
+2. 安装`Rust`环境 + `Cargo`，编译 Rust 需要。
+3. 然后运行`yarn install`安装项目依赖（如果修改了`Rust`代码也需要重新运行`yarn install`）。
+4. `yarn run dev`本地运行项目。
+5. `yarn run build`打包项目。
+6. 便携版和安装版需要分两次打包，通过修改`.env.production`中的`VITE_INSTALL`，`true`为安装版，`false`为便携版。
 
 # 官网
 
