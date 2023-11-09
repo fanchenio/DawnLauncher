@@ -17,7 +17,7 @@
       borderRadius:
         store.setting.appearance.transparency < 1 &&
         store.setting.appearance.windowRounded
-          ? '2%'
+          ? '8px'
           : undefined,
       backgroundImage:
         store.setting.appearance.backgroundImage &&
@@ -420,7 +420,7 @@ function createBackgroundImageStyle() {
       ";" +
       (store.setting.appearance.transparency < 1 &&
       store.setting.appearance.windowRounded
-        ? "border-radius: 2%;"
+        ? "border-radius: 8px;"
         : "") +
       "}";
     // 将伪类样式规则添加到 head 元素中
