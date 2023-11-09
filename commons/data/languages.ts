@@ -248,6 +248,7 @@ let simplifiedChinese = {
   shortcutKeyPrompt5: '与"设置-常规"中的"搜索"快捷键产生冲突，请重新设置。',
   shortcutKeyPrompt6:
     '与"设置-快速搜索"中的"显示/隐藏"快捷键产生冲突，请重新设置。',
+  shortcutKeyPrompt7: "非法字符。",
   show: "显示",
   showFollowMousePosition: "显示时跟随鼠标位置",
   showHide: "显示/隐藏",
@@ -547,6 +548,7 @@ let traditionalChinese = {
   shortcutKeyPrompt5: '與"設置-常規"中的"搜索"快捷鍵產生沖突，請重新設置。',
   shortcutKeyPrompt6:
     '與"設置-快速搜索"中的"顯示/隱藏"快捷鍵產生沖突，請重新設置。',
+  shortcutKeyPrompt7: "非法字符。",
   show: "顯示",
   showFollowMousePosition: "顯示時跟隨鼠標位置",
   showHide: "顯示/隱藏",
@@ -864,6 +866,7 @@ let english = {
     'It conflicts with the "Search" shortcut key in "Settings-General", please reset it.',
   shortcutKeyPrompt6:
     'It conflicts with the "Show/Hide" shortcut key in "Settings-Quick Search", please reset it.',
+  shortcutKeyPrompt7: "Invaild symbol.",
   show: "Show",
   showFollowMousePosition: "Follows Mouse Position on Display",
   showHide: "Show/Hide",

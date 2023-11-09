@@ -26,6 +26,19 @@ async function checkShortcutKey(
     | "GeneralSearch"
     | "QuickSearch"
 ): Promise<boolean> {
+  if (shortcutKey) {
+    // 校验是否有特殊字符
+    for (let i = 0; i < shortcutKey.length; i++) {
+      let charCode = shortcutKey.charCodeAt(i);
+      if (charCode < 0 || charCode > 127) {
+        window.api.showErrorMessageBox(
+          windowName,
+          store.language.shortcutKeyPrompt7
+        );
+        return false;
+      }
+    }
+  }
   // 校验完整性
   if (!checkShortcutKeyComplete(shortcutKey)) {
     window.api.showErrorMessageBox(
