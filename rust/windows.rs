@@ -13,6 +13,7 @@ use std::{
     process::Command,
     sync::atomic::{AtomicBool, Ordering},
 };
+use windows::Management::Deployment::PackageManager;
 use windows::{
     core::{ComInterface, HSTRING, PCSTR, PCWSTR},
     w,
@@ -690,4 +691,61 @@ pub fn remove_window_animation(window: i32) {
             std::mem::size_of_val(&pvattribute) as u32,
         );
     };
+}
+
+/**
+ * 获取APPX列表
+ */
+pub fn get_appx_list() -> Vec<HashMap<String, String>> {
+    let mut result_list = vec![];
+    let package_manager: Result<PackageManager, windows::core::Error> = PackageManager::new();
+    if package_manager.is_err() {
+        return result_list;
+    }
+    let packages = package_manager
+        .unwrap()
+        .FindPackagesByUserSecurityId(&HSTRING::default());
+    if packages.is_err() {
+        return result_list;
+    }
+    for package in packages.unwrap() {
+        let mut map = HashMap::new();
+        if let Ok(diaplay_name) = package.DisplayName() {
+            map.insert(String::from("displayName"), diaplay_name.to_string());
+        }
+        if let Ok(path) = package.InstalledPath() {
+            map.insert(String::from("path"), path.to_string());
+        }
+        if let Ok(id) = package.Id() {
+            if let Ok(family_name) = id.FamilyName() {
+                map.insert(String::from("familyName"), family_name.to_string());
+            }
+        }
+        if let Ok(logo) = package.Logo() {
+            if let Ok(path) = logo.Path() {
+                map.insert(String::from("logo"), path.to_string());
+            }
+        }
+        if let Ok(app_list) = package.GetAppListEntriesAsync() {
+            if let Ok(app_list) = app_list.get() {
+                for (index, app) in app_list.into_iter().enumerate() {
+                    if app.DisplayInfo().is_err()
+                        || app.DisplayInfo().unwrap().DisplayName().is_err()
+                    {
+                        continue;
+                    }
+                    map.insert(
+                        format!("appName{}", index),
+                        app.DisplayInfo()
+                            .unwrap()
+                            .DisplayName()
+                            .unwrap()
+                            .to_string(),
+                    );
+                }
+            }
+        }
+        result_list.push(map);
+    }
+    result_list
 }

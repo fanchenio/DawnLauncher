@@ -31,6 +31,10 @@ features = [
     "Win32_UI_Input_Ime",
     "Win32_Globalization",
     "Win32_Graphics_Dwm",
+    "Management_Deployment",
+    "ApplicationModel",
+    "Foundation_Collections",
+    "ApplicationModel_Core",
 ]
 
 [build-dependencies]

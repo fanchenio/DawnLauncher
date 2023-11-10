@@ -126,7 +126,7 @@ fn disable_mouse_hook() {
  */
 #[allow(dead_code)]
 #[napi]
-pub fn get_cursor_pos_window_class_name() -> String {
+fn get_cursor_pos_window_class_name() -> String {
     windows::get_cursor_pos_window_class_name()
 }
 
@@ -135,7 +135,7 @@ pub fn get_cursor_pos_window_class_name() -> String {
  */
 #[allow(dead_code)]
 #[napi]
-pub fn get_clipboard_file_list() -> Vec<String> {
+fn get_clipboard_file_list() -> Vec<String> {
     windows::get_clipboard_file_list()
 }
 
@@ -144,7 +144,7 @@ pub fn get_clipboard_file_list() -> Vec<String> {
  */
 #[allow(dead_code)]
 #[napi]
-pub fn clipboard_has_bitmap() -> bool {
+fn clipboard_has_bitmap() -> bool {
     windows::clipboard_has_bitmap()
 }
 
@@ -153,7 +153,7 @@ pub fn clipboard_has_bitmap() -> bool {
  */
 #[allow(dead_code)]
 #[napi]
-pub fn get_clipboard_bitmap_base64() -> Option<String> {
+fn get_clipboard_bitmap_base64() -> Option<String> {
     windows::get_clipboard_bitmap_base64()
 }
 
@@ -162,7 +162,7 @@ pub fn get_clipboard_bitmap_base64() -> Option<String> {
  */
 #[allow(dead_code)]
 #[napi]
-pub fn empty_recycle_bin(window: i32) {
+fn empty_recycle_bin(window: i32) {
     windows::empty_recycle_bin(window)
 }
 
@@ -171,6 +171,15 @@ pub fn empty_recycle_bin(window: i32) {
  */
 #[allow(dead_code)]
 #[napi]
-pub fn remove_window_animation(window: i32) {
+fn remove_window_animation(window: i32) {
     windows::remove_window_animation(window);
+}
+
+/**
+ * 获取APPX列表
+ */
+#[allow(dead_code)]
+#[napi]
+fn get_appx_list() -> Vec<HashMap<String, String>> {
+    windows::get_appx_list()
 }
