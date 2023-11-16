@@ -15,9 +15,7 @@ import { getAbsolutePath, getFileIcon } from "../commons/utils";
 
 // AppxInfo
 export interface AppxInfo {
-  packageFamilyName: string;
-  installLocation: string;
-  appId: string | null;
+  id: string | null;
   icon: string | null;
   name: string | null;
 }
@@ -191,76 +189,15 @@ async function getAppxItemList() {
     // ID
     let id = 1;
     // 获取APPX信息
-    let stdout = execSync(
-      'powershell -Command "Get-AppxPackage | Select-Object PackageFamilyName, InstallLocation | Format-list"'
-    );
-    let strAppxInfo = stdout.toString("utf-8");
-    // 按换行符分割
-    let lines = strAppxInfo
-      .trim()
-      .split("\r\n")
-      .filter((str) => str.trim() !== "");
+    let appxList = global.addon.getAppxList();
     // 临时列表
-    let tempList: Array<AppxInfo> = [];
-    // APPX包名
-    let packageFamilyName: string | null = null;
-    // APPX路径
-    let installLocation: string | null = null;
-    // 循环的前一个信息
-    let prev = null;
-    // 解析每一行
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i].trim();
-      let arr = line.split(" : ");
-      if (arr.length > 1) {
-        if (arr[0].trim() === "PackageFamilyName") {
-          if (packageFamilyName && installLocation) {
-            tempList.push({
-              packageFamilyName: packageFamilyName,
-              installLocation: installLocation,
-              appId: null,
-              icon: null,
-              name: null,
-            });
-            packageFamilyName = arr[1].trim();
-            installLocation = null;
-            prev = "PackageFamilyName";
-          } else {
-            packageFamilyName = arr[1].trim();
-            prev = "PackageFamilyName";
-          }
-        } else if (arr[0].trim() === "InstallLocation") {
-          installLocation = arr[1].trim();
-          prev = "InstallLocation";
-        }
-      } else {
-        if (prev === "PackageFamilyName") {
-          packageFamilyName += line;
-        } else if (prev === "InstallLocation") {
-          installLocation += line;
-        }
-      }
-    }
-    if (packageFamilyName && installLocation) {
-      tempList.push({
-        packageFamilyName: packageFamilyName,
-        installLocation: installLocation,
-        appId: null,
-        icon: null,
-        name: null,
-      });
-    }
+    let tempList = [];
     // 读取XML获取图标路径和名称
-    for (let temp of tempList) {
-      let appxInfo = await getAppxInfo(temp.installLocation);
-      temp.appId = appxInfo.appId;
-      temp.icon = appxInfo.icon;
-      temp.name = appxInfo.name;
+    for (let appx of appxList) {
+      tempList.push(...(await getAppxInfo(appx)));
     }
-    // 过滤
-    let filterList = tempList.filter((e) => e.icon && e.appId && e.name);
     // 图标转BASE64
-    for (let appxInfo of filterList) {
+    for (let appxInfo of tempList) {
       try {
         let buffer = readFileSync(appxInfo.icon);
         let icon =
@@ -274,20 +211,16 @@ async function getAppxItemList() {
       }
     }
     // 筛选出有图标的数据
-    filterList = filterList.filter((e) => e.icon);
+    tempList = tempList.filter((e) => e.icon);
     // 返回列表
-    for (const appxInfo of filterList) {
+    for (const appxInfo of tempList) {
       resultList.push(
         newCommonItem({
           id: id++,
           name: appxInfo.name,
           data: newCommonItemData({
             icon: appxInfo.icon,
-            target:
-              "Shell:AppsFolder\\" +
-              appxInfo.packageFamilyName +
-              "!" +
-              appxInfo.appId,
+            target: "Shell:AppsFolder\\" + appxInfo.id,
           }),
         })
       );
@@ -301,264 +234,272 @@ async function getAppxItemList() {
 /**
  * 获取Appx信息
  */
-async function getAppxInfo(installLocation: string) {
-  // appx信息
-  let appxInfo: AppxInfo = {
-    packageFamilyName: null,
-    installLocation: null,
-    appId: null,
-    icon: null,
-    name: null,
-  };
+async function getAppxInfo(appx: any) {
+  // 结果列表
+  let resultList = [];
   // buffer, 解析结果
   let buffer: Buffer, result: any;
   try {
     // 解析
-    buffer = readFileSync(installLocation + "\\AppxManifest.xml");
+    buffer = readFileSync(join(appx.path, "AppxManifest.xml"));
     result = await xml2jsSync(buffer);
-    // 备用名称
-    let executable = null;
-    // targetsize图标
-    let targetSizeIcon: string | null = null;
-    let targetSizeIconMax: number | null = null;
-    // scale图标
-    let scaleIcon = null;
-    let scaleIconMax = null;
-    // 图标 APPID
-    if (result.Package.Applications && result.Package.Applications[0]) {
-      if (result.Package.Applications[0].Application[0]) {
-        // APPID
-        appxInfo.appId = result.Package.Applications[0].Application[0].$.Id;
-        // Executable
-        executable = result.Package.Applications[0].Application[0].$.Executable;
-        // 获取图标
-        if (
-          result.Package.Applications[0].Application[0]["uap:VisualElements"] !=
-          null
-        ) {
-          // logo地址
-          let logo =
-            result.Package.Applications[0].Application[0][
-              "uap:VisualElements"
-            ][0].$.Square44x44Logo;
-          // 解析路径
-          let parsedPath = parse(logo);
-          // 获取文件夹下所有文件
-          let fileNameList = readdirSync(
-            installLocation + "\\" + parsedPath.dir
-          );
-          // 筛选出和包含logo名称的文件名
-          let filterList = fileNameList.filter(
-            (f) => f.indexOf(parsedPath.name) >= 0
-          );
-          if (filterList.length > 1) {
-            // 获取targetsize图片
-            let targetSizeList = filterList.filter(
-              (f) => f.indexOf(parsedPath.name + ".targetsize") >= 0
+    // 循环Application
+    if (
+      result.Package.Applications &&
+      result.Package.Applications[0] &&
+      result.Package.Applications[0].Application &&
+      result.Package.Applications[0].Application.length > 0
+    ) {
+      for (
+        let i = 0;
+        i < result.Package.Applications[0].Application.length;
+        i++
+      ) {
+        // appx信息
+        let appxInfo: AppxInfo = {
+          id: null,
+          icon: null,
+          name: null,
+        };
+        // Application
+        const application = result.Package.Applications[0].Application[i];
+        // 名称
+        if (appx["appName" + i] && appx["appName" + i].trim() !== "") {
+          appxInfo.name = appx["appName" + i];
+        } else {
+          appxInfo.name = appx.displayName;
+        }
+        // 获取ID
+        let id = application.$.Id;
+        if (!id || id.trim() === "") {
+          continue;
+        }
+        appxInfo.id = appx.familyName + "!" + id;
+        // 图标
+        try {
+          // targetsize图标
+          let targetSizeIcon: string | null = null;
+          let targetSizeIconMax: number | null = null;
+          // scale图标
+          let scaleIcon = null;
+          let scaleIconMax = null;
+          // 图标
+          if (application["uap:VisualElements"]) {
+            // logo地址
+            let logo = application["uap:VisualElements"][0].$.Square44x44Logo;
+            // 解析路径
+            let parsedPath = parse(logo);
+            // 获取文件夹下所有文件
+            let fileNameList = readdirSync(join(appx.path, parsedPath.dir));
+            // 筛选出和包含logo名称的文件名
+            let filterList = fileNameList.filter(
+              (f) => f.indexOf(parsedPath.name) >= 0
             );
-            if (targetSizeList.length > 0) {
-              // 获取最大图标尺寸
-              let max = getMaxIconSize(
-                targetSizeList,
-                parsedPath.name,
-                "targetsize"
+            if (filterList.length > 1) {
+              // 获取targetsize图片
+              let targetSizeList = filterList.filter(
+                (f) => f.indexOf(parsedPath.name + ".targetsize") >= 0
               );
-              if (max) {
-                // 记录max
-                targetSizeIconMax = max;
-                // 先获取最终图标
-                let defaultList = targetSizeList.filter(
-                  (f) =>
-                    f ===
-                    parsedPath.name +
-                      ".targetsize-" +
-                      max +
-                      "_altform-unplated_devicefamily-colorfulunplated.png"
+              if (targetSizeList.length > 0) {
+                // 获取最大图标尺寸
+                let max = getMaxIconSize(
+                  targetSizeList,
+                  parsedPath.name,
+                  "targetsize"
                 );
-                targetSizeIcon =
-                  defaultList.length > 0
-                    ? installLocation +
-                      "\\" +
-                      parsedPath.dir +
-                      "\\" +
-                      parsedPath.name +
-                      ".targetsize-" +
-                      max +
-                      "_altform-unplated_devicefamily-colorfulunplated.png"
-                    : null;
-                if (!targetSizeIcon) {
-                  // 获取 名称.targetsize-{max}_altform-unplated.png
-                  let defaultUnplatedList = targetSizeList.filter(
+                if (max) {
+                  // 记录max
+                  targetSizeIconMax = max;
+                  // 先获取最终图标
+                  let defaultList = targetSizeList.filter(
                     (f) =>
                       f ===
                       parsedPath.name +
                         ".targetsize-" +
                         max +
-                        "_altform-unplated.png"
+                        "_altform-unplated_devicefamily-colorfulunplated.png"
                   );
-                  if (defaultUnplatedList.length > 0) {
-                    targetSizeIcon =
-                      installLocation +
-                      "\\" +
-                      parsedPath.dir +
-                      "\\" +
-                      parsedPath.name +
-                      ".targetsize-" +
-                      max +
-                      "_altform-unplated.png";
-                  } else {
-                    // 获取 名称.targetsize-{max}_altform.png
-                    let defaultAltFormList = targetSizeList.filter(
-                      (f) =>
-                        f ===
-                        parsedPath.name + ".targetsize-" + max + "_altform.png"
-                    );
-                    if (defaultAltFormList.length > 0) {
-                      targetSizeIcon =
-                        installLocation +
+                  targetSizeIcon =
+                    defaultList.length > 0
+                      ? appx.path +
                         "\\" +
                         parsedPath.dir +
                         "\\" +
                         parsedPath.name +
                         ".targetsize-" +
                         max +
-                        "_altform.png";
+                        "_altform-unplated_devicefamily-colorfulunplated.png"
+                      : null;
+                  if (!targetSizeIcon) {
+                    // 获取 名称.targetsize-{max}_altform-unplated.png
+                    let defaultUnplatedList = targetSizeList.filter(
+                      (f) =>
+                        f ===
+                        parsedPath.name +
+                          ".targetsize-" +
+                          max +
+                          "_altform-unplated.png"
+                    );
+                    if (defaultUnplatedList.length > 0) {
+                      targetSizeIcon =
+                        appx.path +
+                        "\\" +
+                        parsedPath.dir +
+                        "\\" +
+                        parsedPath.name +
+                        ".targetsize-" +
+                        max +
+                        "_altform-unplated.png";
                     } else {
-                      // 获取 名称.targetsize-{max}.png
-                      let defaultTargetSizeList = targetSizeList.filter(
+                      // 获取 名称.targetsize-{max}_altform.png
+                      let defaultAltFormList = targetSizeList.filter(
                         (f) =>
-                          f === parsedPath.name + ".targetsize-" + max + ".png"
+                          f ===
+                          parsedPath.name +
+                            ".targetsize-" +
+                            max +
+                            "_altform.png"
                       );
-                      if (defaultTargetSizeList.length > 0) {
+                      if (defaultAltFormList.length > 0) {
                         targetSizeIcon =
-                          installLocation +
+                          appx.path +
                           "\\" +
                           parsedPath.dir +
                           "\\" +
-                          defaultTargetSizeList[0];
+                          parsedPath.name +
+                          ".targetsize-" +
+                          max +
+                          "_altform.png";
+                      } else {
+                        // 获取 名称.targetsize-{max}.png
+                        let defaultTargetSizeList = targetSizeList.filter(
+                          (f) =>
+                            f ===
+                            parsedPath.name + ".targetsize-" + max + ".png"
+                        );
+                        if (defaultTargetSizeList.length > 0) {
+                          targetSizeIcon =
+                            appx.path +
+                            "\\" +
+                            parsedPath.dir +
+                            "\\" +
+                            defaultTargetSizeList[0];
+                        }
                       }
                     }
                   }
                 }
               }
-            }
-            // 获取scale图片
-            let scaleList = filterList.filter(
-              (f) => f.indexOf(parsedPath.name + ".scale") >= 0
-            );
-            if (scaleList.length > 0) {
-              // 获取最大图标尺寸
-              let max = getMaxIconSize(scaleList, parsedPath.name, "scale");
-              if (max) {
-                // 记录max
-                scaleIconMax = max;
-                // 获取 名称.scale-{max}.png
-                let defaultList = scaleList.filter(
-                  (f) => f === parsedPath.name + ".scale-" + max + ".png"
-                );
-                if (defaultList.length > 0) {
-                  scaleIcon =
-                    installLocation +
-                    "\\" +
-                    parsedPath.dir +
-                    "\\" +
-                    defaultList[0];
-                }
-              }
-            } else {
-              scaleList = filterList.filter(
-                (f) => f.indexOf(parsedPath.name + ".Theme-Dark_Scale") >= 0
+              // 获取scale图片
+              let scaleList = filterList.filter(
+                (f) => f.indexOf(parsedPath.name + ".scale") >= 0
               );
               if (scaleList.length > 0) {
-                let max = getMaxIconSize(
-                  scaleList,
-                  parsedPath.name,
-                  "Theme-Dark_Scale"
-                );
+                // 获取最大图标尺寸
+                let max = getMaxIconSize(scaleList, parsedPath.name, "scale");
                 if (max) {
                   // 记录max
                   scaleIconMax = max;
-                  // 获取 名称.Theme-Dark_Scale{max}.png
+                  // 获取 名称.scale-{max}.png
                   let defaultList = scaleList.filter(
-                    (f) =>
-                      f ===
-                      parsedPath.name + ".Theme-Dark_Scale-" + max + ".png"
+                    (f) => f === parsedPath.name + ".scale-" + max + ".png"
                   );
                   if (defaultList.length > 0) {
                     scaleIcon =
-                      installLocation +
-                      "\\" +
-                      parsedPath.dir +
-                      "\\" +
-                      defaultList[0];
+                      appx.path + "\\" + parsedPath.dir + "\\" + defaultList[0];
+                  }
+                }
+              } else {
+                scaleList = filterList.filter(
+                  (f) => f.indexOf(parsedPath.name + ".Theme-Dark_Scale") >= 0
+                );
+                if (scaleList.length > 0) {
+                  let max = getMaxIconSize(
+                    scaleList,
+                    parsedPath.name,
+                    "Theme-Dark_Scale"
+                  );
+                  if (max) {
+                    // 记录max
+                    scaleIconMax = max;
+                    // 获取 名称.Theme-Dark_Scale{max}.png
+                    let defaultList = scaleList.filter(
+                      (f) =>
+                        f ===
+                        parsedPath.name + ".Theme-Dark_Scale-" + max + ".png"
+                    );
+                    if (defaultList.length > 0) {
+                      scaleIcon =
+                        appx.path +
+                        "\\" +
+                        parsedPath.dir +
+                        "\\" +
+                        defaultList[0];
+                    }
                   }
                 }
               }
+            } else {
+              if (filterList.length === 1) {
+                // 只有一张图片
+                appxInfo.icon =
+                  appx.path + "\\" + parsedPath.dir + "\\" + filterList[0];
+              }
             }
-          } else {
-            if (filterList.length === 1) {
-              // 只有一张图片
-              appxInfo.icon =
-                installLocation + "\\" + parsedPath.dir + "\\" + filterList[0];
+          }
+          if (!appxInfo.icon) {
+            // 判断图标大小
+            if (targetSizeIcon && !scaleIcon) {
+              appxInfo.icon = targetSizeIcon;
+            } else if (!targetSizeIcon && scaleIcon) {
+              appxInfo.icon = scaleIcon;
+            } else if (targetSizeIcon && scaleIcon) {
+              if (
+                targetSizeIconMax === 256 ||
+                targetSizeIconMax > scaleIconMax
+              ) {
+                appxInfo.icon = targetSizeIcon;
+              } else if (targetSizeIconMax < scaleIconMax) {
+                appxInfo.icon = scaleIcon;
+              } else {
+                appxInfo.icon = targetSizeIcon;
+              }
+            } else if (!targetSizeIcon && !scaleIcon) {
+              let propertiesIcon = getPropertiesIcon(appx.path, result);
+              if (propertiesIcon) {
+                appxInfo.icon = propertiesIcon;
+              }
+            }
+          }
+        } catch (e) {
+          if (result) {
+            let propertiesIcon = getPropertiesIcon(appx.path, result);
+            if (propertiesIcon) {
+              appxInfo.icon = propertiesIcon;
             }
           }
         }
-      }
-    }
-    if (!appxInfo.icon) {
-      // 判断图标大小
-      if (targetSizeIcon && !scaleIcon) {
-        appxInfo.icon = targetSizeIcon;
-      } else if (!targetSizeIcon && scaleIcon) {
-        appxInfo.icon = scaleIcon;
-      } else if (targetSizeIcon && scaleIcon) {
-        if (targetSizeIconMax === 256 || targetSizeIconMax > scaleIconMax) {
-          appxInfo.icon = targetSizeIcon;
-        } else if (targetSizeIconMax < scaleIconMax) {
-          appxInfo.icon = scaleIcon;
-        } else {
-          appxInfo.icon = targetSizeIcon;
+        if (
+          (!appxInfo.icon || appxInfo.icon.trim() === "") &&
+          appx.logo &&
+          appx.logo.trim() !== ""
+        ) {
+          appxInfo.icon = appx.logo;
         }
-      } else if (!targetSizeIcon && !scaleIcon) {
-        let propertiesIcon = getPropertiesIcon(installLocation, result);
-        if (propertiesIcon) {
-          appxInfo.icon = propertiesIcon;
+        if (
+          appxInfo.name &&
+          appxInfo.name.trim() !== "" &&
+          appxInfo.id &&
+          appxInfo.id.trim() !== "" &&
+          appxInfo.icon &&
+          appxInfo.icon.trim() !== ""
+        ) {
+          resultList.push(appxInfo);
         }
       }
     }
-    // 名称
-    if (result.Package.Properties) {
-      if (result.Package.Properties[0].DisplayName) {
-        appxInfo.name = result.Package.Properties[0].DisplayName[0];
-      }
-    }
-    if (
-      !appxInfo.name ||
-      (appxInfo.name && appxInfo.name.indexOf("ms-resource:") >= 0)
-    ) {
-      if (executable && executable.indexOf("ms-resource:") < 0) {
-        appxInfo.name = parse(executable).name;
-      } else {
-        appxInfo.name = null;
-      }
-    }
-    if (!appxInfo.name) {
-      if (result.Package.Identity && result.Package.Identity[0]) {
-        let name = result.Package.Identity[0].$.Name;
-        if (name && name.indexOf("ms-resource:") < 0) {
-          appxInfo.name = name;
-        }
-      }
-    }
-  } catch (ex) {
-    if (result) {
-      let propertiesIcon = getPropertiesIcon(installLocation, result);
-      if (propertiesIcon) {
-        appxInfo.icon = propertiesIcon;
-      }
-    }
-  }
-  return appxInfo;
+  } catch (ex) {}
+  return resultList;
 }
 
 /**

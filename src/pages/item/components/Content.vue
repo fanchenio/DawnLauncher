@@ -41,6 +41,7 @@
               lineHeight:
                 store.setting.subClassification.itemAreaNameFontLineHeight +
                 'rem',
+              textAlign: store.setting.subClassification.itemAreaNameAlign,
             }"
           >
             {{ classification.name }}

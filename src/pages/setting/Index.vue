@@ -771,6 +771,13 @@
           <div class="mx-2" v-if="selectedMenuId === 3">
             <NForm label-placement="left" :show-feedback="false" size="small">
               <span class="block font-semibold">{{ store.language.name }}</span>
+              <NFormItem :label="store.language.align" class="mt-1">
+                <NSelect
+                  v-model:value="setting.subClassification.itemAreaNameAlign"
+                  :options="itemAreaSubclassificationNameAlignOptions"
+                  size="small"
+                ></NSelect>
+              </NFormItem>
               <NFormItem :label="store.language.fontSize" class="mt-1">
                 <NInputNumber
                   v-model:value="setting.subClassification.itemAreaNameFontSize"
@@ -1765,6 +1772,21 @@ let backgroundImagePositionOptions = ref([
   {
     label: store.language.left,
     value: "left",
+  },
+  {
+    label: store.language.right,
+    value: "right",
+  },
+]);
+// 子分类项目区域名称对齐
+let itemAreaSubclassificationNameAlignOptions = ref([
+  {
+    label: store.language.left,
+    value: "left",
+  },
+  {
+    label: store.language.center,
+    value: "center",
   },
   {
     label: store.language.right,

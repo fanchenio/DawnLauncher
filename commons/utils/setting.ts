@@ -185,15 +185,18 @@ function getSubClassification({
   itemAreaNameFontSize = 14,
   itemAreaNameFontWeight = 700,
   itemAreaNameFontLineHeight = 1.25,
+  itemAreaNameAlign = "left",
 }: {
   itemAreaNameFontSize?: number | null;
   itemAreaNameFontWeight?: number | null;
   itemAreaNameFontLineHeight?: number | null;
+  itemAreaNameAlign?: "left" | "center" | "right" | null;
 }): SubClassification {
   return {
     itemAreaNameFontSize: itemAreaNameFontSize ?? 14,
     itemAreaNameFontWeight: itemAreaNameFontWeight ?? 700,
     itemAreaNameFontLineHeight: itemAreaNameFontLineHeight ?? 1.25,
+    itemAreaNameAlign: itemAreaNameAlign ?? "left",
   };
 }
 

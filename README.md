@@ -31,6 +31,10 @@
 
 [dawnlauncher.com](https://dawnlauncher.com/)
 
+# QQ 群
+
+369652112
+
 # 捐赠（微信）
 
 ![微信](/images/wechat.png)

@@ -118,6 +118,8 @@ export interface SubClassification {
   itemAreaNameFontWeight: number;
   // 名称字体行高(项目区域)
   itemAreaNameFontLineHeight: number;
+  // 名称对齐(项目区域)
+  itemAreaNameAlign: "left" | "center" | "right";
 }
 
 // 项目
