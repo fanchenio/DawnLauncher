@@ -872,7 +872,7 @@ let english = {
   showHide: "Show/Hide",
   showOnlyFiles: "Show Only Files",
   showOnlyFolders: "Show Only Folders",
-  shutdown: "Shutdown关机",
+  shutdown: "Shutdown",
   simplifiedChinese: "Simplified Chinese",
   size: "Size",
   sleep: "Sleep",
