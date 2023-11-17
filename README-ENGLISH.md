@@ -73,4 +73,4 @@ Supports associated folders (real-time synchronization of folder contents), quic
 
 # License
 
-Apache License Version 2.0
+MIT License
