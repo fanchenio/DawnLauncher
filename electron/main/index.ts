@@ -141,13 +141,13 @@ app.on("window-all-closed", () => {
 });
 
 app.on("second-instance", () => {
-  if (mainWindow) {
-    if (!mainWindow.isVisible()) {
-      mainWindow.show();
-      mainWindow.focus();
+  if (global.mainWindow) {
+    if (!global.mainWindow.isVisible()) {
+      global.mainWindow.show();
+      global.mainWindow.focus();
       global.blurHide = true;
     } else {
-      mainWindow.focus();
+      global.mainWindow.focus();
     }
   }
 });
