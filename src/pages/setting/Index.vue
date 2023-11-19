@@ -63,7 +63,7 @@
               size="small"
             >
               <span class="block font-semibold">{{
-                store.language.startup
+                store.language.system
               }}</span>
               <NFormItem class="mt-1">
                 <NCheckbox
@@ -86,6 +86,14 @@
                   :focusable="false"
                   @update:checked="setTray"
                   >{{ store.language.hideTray }}</NCheckbox
+                ></NFormItem
+              >
+              <NFormItem
+                ><NCheckbox
+                  v-model:checked="setting.general.hideTaskbar"
+                  :focusable="false"
+                  @update:checked="setTaskbar"
+                  >{{ store.language.hideTaskbar }}</NCheckbox
                 ></NFormItem
               >
             </NForm>
@@ -1833,6 +1841,10 @@ function setStartup(value: boolean) {
 // 隐藏托盘图标
 function setTray(value: boolean) {
   window.setting.setTray(!value);
+}
+// 隐藏任务栏
+function setTaskbar(value: boolean) {
+  window.setting.setTaskbar(value);
 }
 // 校验快捷键
 async function checkGeneralShowHideShortcutKey() {

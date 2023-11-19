@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import { createTray, hideMainWindow, showMainWindow } from "./index";
 import { initAssociateFolder } from "../classification";
 import { checkInvalid } from "../item";
+import { getWindow } from "../commons";
 
 export default function () {
   // 显示窗口
@@ -15,6 +16,13 @@ export default function () {
   // 托盘
   ipcMain.on("setTray", (event, args) => {
     createTray(args);
+  });
+  // 任务栏
+  ipcMain.on("setTaskbar", (event, args) => {
+    let window = getWindow("mainWindow");
+    if (window) {
+      window.setSkipTaskbar(args);
+    }
   });
   // 初始化数据
   ipcMain.on("mainWindowInitData", () => {

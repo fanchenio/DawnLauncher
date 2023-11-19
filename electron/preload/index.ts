@@ -717,6 +717,10 @@ contextBridge.exposeInMainWorld("setting", {
   setTray: (show: boolean) => {
     ipcRenderer.send("setTray", show);
   },
+  // 隐藏任务栏
+  setTaskbar: (show: boolean) => {
+    ipcRenderer.send("setTaskbar", show);
+  },
   // 设置快捷键
   setShortcutKey: (setting: Setting) => {
     ipcRenderer.send("setShortcutKey", setting);

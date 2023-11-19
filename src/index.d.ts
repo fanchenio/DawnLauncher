@@ -149,6 +149,7 @@ declare global {
       onUpdate: (callback: Callback) => Function;
       setStartup: (value: boolean) => void;
       setTray: (show: boolean) => void;
+      setTaskbar: (show: boolean) => void;
       setShortcutKey: (setting: Setting) => void;
       setAlwaysTop: (value: boolean) => void;
       setLockSize: (value: boolean) => void;

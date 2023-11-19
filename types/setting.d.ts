@@ -20,6 +20,8 @@ export interface General {
   hideLoseFocus: boolean;
   // 隐藏托盘图标
   hideTray: boolean;
+  // 隐藏任务栏
+  hideTaskbar: boolean;
   // 固定位置
   fixedPosition: boolean;
   // 永远居中

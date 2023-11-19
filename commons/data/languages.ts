@@ -135,6 +135,7 @@ let simplifiedChinese = {
   hideLoseFocus: "失去焦点后隐藏",
   hideName: "隐藏名称",
   hideTray: "隐藏托盘图标",
+  hideTaskbar: "隐藏任务栏",
   hideWindowCollapseSubClassification: "隐藏窗口时收起子分类",
   history: "历史记录",
   hover: "悬停",
@@ -435,6 +436,7 @@ let traditionalChinese = {
   hideLoseFocus: "失去焦點後隱藏",
   hideName: "隱藏名稱",
   hideTray: "隱藏托盤圖標",
+  hideTaskbar: "隱藏任務欄",
   hideWindowCollapseSubClassification: "隱藏窗口時收起子分類",
   history: "歷史記錄",
   hover: "懸停",
@@ -741,6 +743,7 @@ let english = {
   hideLoseFocus: "Hide After Lose Focus",
   hideName: "Hide Name",
   hideTray: "Hide Tray",
+  hideTaskbar: "Hide Taskbar",
   hideWindowCollapseSubClassification:
     "Collapse Subclassification when Hide Window",
   history: "History",

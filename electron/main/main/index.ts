@@ -36,11 +36,12 @@ function createMainWindow() {
     minimizable: false,
     fullscreenable: false,
     transparent: global.setting.appearance.transparency < 1,
-    skipTaskbar: true,
+    skipTaskbar: global.setting.general.hideTaskbar,
     backgroundColor:
       global.setting.appearance.transparency === 1
         ? getMainBackgorunColor()
         : null,
+    icon: join(process.env.VITE_PUBLIC, "logo.ico"),
     webPreferences: {
       spellcheck: false,
       backgroundThrottling: false,

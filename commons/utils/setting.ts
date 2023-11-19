@@ -31,6 +31,7 @@ function getGeneral({
   lockSize = false,
   hideLoseFocus = false,
   hideTray = false,
+  hideTaskbar = true,
   fixedPosition = false,
   alwaysCenter = false,
   showHideMouseWheelClick = false,
@@ -53,6 +54,7 @@ function getGeneral({
   lockSize?: boolean | null;
   hideLoseFocus?: boolean | null;
   hideTray?: boolean | null;
+  hideTaskbar?: boolean | null;
   fixedPosition?: boolean | null;
   alwaysCenter?: boolean | null;
   showHideMouseWheelClick?: boolean | null;
@@ -76,6 +78,7 @@ function getGeneral({
     lockSize: lockSize ?? false,
     hideLoseFocus: hideLoseFocus ?? false,
     hideTray: hideTray ?? false,
+    hideTaskbar: hideTaskbar ?? true,
     fixedPosition: fixedPosition ?? false,
     alwaysCenter: alwaysCenter ?? false,
     showHideMouseWheelClick: showHideMouseWheelClick ?? false,

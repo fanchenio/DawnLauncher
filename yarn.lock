@@ -3449,10 +3449,10 @@ verror@^1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vite-plugin-electron@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.npmmirror.com/vite-plugin-electron/-/vite-plugin-electron-0.14.1.tgz#faad1e26d853ea7960b812272c19521c7f180482"
-  integrity sha512-QGQ2nJ4wjMf1FaDSkdoC/UskQGiYGcAToATJqJXvqrL4Jmt0CFaZqoDjh1xLicUWEo/X7urHYjhKTqwEeP7F7g==
+vite-plugin-electron@^0.15.4:
+  version "0.15.4"
+  resolved "https://registry.npmmirror.com/vite-plugin-electron/-/vite-plugin-electron-0.15.4.tgz#29552461940ed7ec398f59ee8b5ee63aa559a6c9"
+  integrity sha512-aXGDjTXebJxNX+cf+KSZEsa9BcMrTbNhjZJaUhU5999/ATYZq4PlZpebfyeslyuYpjk6OdyA/pNC+fTeDYK5Kw==
 
 vite@^4.4.11:
   version "4.5.0"
