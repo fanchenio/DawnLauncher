@@ -27,7 +27,6 @@ function createQuickSearchWindow() {
     backgroundColor: getMainBackgorunColor(),
     webPreferences: {
       spellcheck: false,
-      backgroundThrottling: false,
       preload: join(__dirname, "../preload/index.js"),
       devTools: process.env.NODE_ENV === "development",
     },

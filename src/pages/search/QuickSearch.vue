@@ -592,10 +592,8 @@ onMounted(() => {
       searchInput.value.focus();
       // 刷新DOM完毕执行
       nextTick(() => {
-        setTimeout(() => {
-          // 显示窗口
-          window.quickSearch.showWindow();
-        }, 10);
+        // 显示窗口
+        window.quickSearch.showWindow();
       });
     })
   );
