@@ -711,6 +711,8 @@ onMounted(() => {
         // 删除无效项目
         removeInvalidItem(id);
       }
+      // 清空批量操作
+      clearBatchOperation();
       // 刷新DOM完毕执行
       nextTick(() => {
         // 创建项目拖拽对象
