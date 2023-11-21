@@ -1,7 +1,4 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "compounds": [
     {
@@ -45,9 +42,27 @@
         "<node_internals>/**",
         "${workspaceRoot}/node_modules/**",
         "${workspaceRoot}/dist-electron/**",
-        // Skip files in host(VITE_DEV_SERVER_URL)
         "http://127.0.0.1:3344/**"
       ]
     },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "d:/GITHUB-DAWN-LAUNCHER/DawnLauncher",
+      "program": "d:/GITHUB-DAWN-LAUNCHER/DawnLauncher/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
   ]
 }

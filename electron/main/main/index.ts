@@ -44,6 +44,7 @@ function createMainWindow() {
     icon: join(process.env.VITE_PUBLIC, "logo.ico"),
     webPreferences: {
       spellcheck: false,
+      backgroundThrottling: false,
       preload: join(__dirname, "../preload/index.js"),
       devTools: process.env.NODE_ENV === "development",
     },

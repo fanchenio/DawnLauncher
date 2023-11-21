@@ -551,8 +551,10 @@ onMounted(() => {
       }
       // 刷新DOM完毕执行
       nextTick(() => {
-        // 显示窗口
-        window.main.showWindow(data.blurHide);
+        setTimeout(() => {
+          // 显示窗口
+          window.main.showWindow(data.blurHide);
+        }, 10);
       });
     })
   );
