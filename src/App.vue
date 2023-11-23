@@ -173,6 +173,26 @@ watch(
 );
 function createStyle() {
   // 找到要删除的 style 标签
+  let styleElement = document.getElementById("placeholder-style");
+  // 如果找到了 style 标签，则从其父节点中移除
+  if (styleElement && styleElement.parentNode) {
+    styleElement.parentNode.removeChild(styleElement);
+  }
+  // 创建一个新的伪类样式规则
+  let style = document.createElement("style");
+  style.setAttribute("id", "placeholder-style");
+  style.type = "text/css";
+  // 设置伪类样式规则的内容
+  style.innerHTML =
+    "input::placeholder, textarea::placeholder {" +
+    "color: " +
+    hexToRGBA(store.setting.appearance.theme.mainFontColor, 0.5) +
+    ";" +
+    "}";
+  // 将伪类样式规则添加到 head 元素中
+  document.head.appendChild(style);
+
+  // 找到要删除的 style 标签
   let oldRangeStyleElement = document.getElementById("range-style");
   // 如果找到了 style 标签，则从其父节点中移除
   if (oldRangeStyleElement && oldRangeStyleElement.parentNode) {
