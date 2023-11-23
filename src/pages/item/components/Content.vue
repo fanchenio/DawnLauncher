@@ -42,6 +42,10 @@
                 store.setting.subClassification.itemAreaNameFontLineHeight +
                 'rem',
               textAlign: store.setting.subClassification.itemAreaNameAlign,
+              marginRight:
+                store.setting.subClassification.itemAreaNameAlign === 'right'
+                  ? '4px'
+                  : undefined,
             }"
           >
             {{ classification.name }}
