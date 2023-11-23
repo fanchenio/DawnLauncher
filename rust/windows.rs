@@ -514,6 +514,7 @@ struct MouseEvent {
     y: i32,
     button: i32,
     mouse_data: u32,
+    class_name: String,
 }
 
 /**
@@ -526,6 +527,8 @@ unsafe extern "system" fn mouse_proc(code: i32, wparam: WPARAM, lparam: LPARAM) 
         let x = (*msll_struct).pt.x;
         let y = (*msll_struct).pt.y;
         let mouse_data = (*msll_struct).mouseData;
+        // 类名
+        let mut class_name = String::new();
         // 参数
         let param = wparam.0 as u32;
         // 事件
@@ -540,11 +543,14 @@ unsafe extern "system" fn mouse_proc(code: i32, wparam: WPARAM, lparam: LPARAM) 
             // 鼠标操作
             if param == WM_LBUTTONUP || param == WM_RBUTTONUP || param == WM_MBUTTONUP {
                 event.push_str("mouseup");
+                class_name.push_str(&get_foreground_window_class_name());
             } else if param == WM_LBUTTONDOWN || param == WM_RBUTTONDOWN || param == WM_MBUTTONDOWN
             {
                 event.push_str("mousedown");
+                class_name.push_str(&get_foreground_window_class_name());
             } else if param == WM_MOUSEWHEEL || param == WM_MOUSEHWHEEL {
                 event.push_str("mousewheel");
+                class_name.push_str(&get_foreground_window_class_name());
             }
             // 按键类型
             if param == WM_LBUTTONUP || param == WM_LBUTTONDOWN {
@@ -567,6 +573,7 @@ unsafe extern "system" fn mouse_proc(code: i32, wparam: WPARAM, lparam: LPARAM) 
                     y,
                     mouse_data,
                     button,
+                    class_name,
                 };
                 func.call(
                     Ok(serde_json::to_string(&mouse_event).unwrap()),
@@ -748,4 +755,18 @@ pub fn get_appx_list() -> Vec<HashMap<String, String>> {
         result_list.push(map);
     }
     result_list
+}
+
+/**
+ * 获取当前活跃窗口的类名
+ */
+fn get_foreground_window_class_name() -> String {
+    let hwnd = unsafe { GetForegroundWindow() };
+    // 获取窗口的ClassName
+    let mut buffer = [0u16; MAX_PATH as usize];
+    unsafe {
+        GetClassNameW(hwnd, &mut buffer);
+    };
+    // 返回
+    u16_to_string(&buffer)
 }

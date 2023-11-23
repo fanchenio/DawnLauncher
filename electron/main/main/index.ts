@@ -11,6 +11,7 @@ import { createSettingWindow } from "../setting";
 import { join } from "node:path";
 import cacheData from "../commons/cacheData";
 import { getMainBackgorunColor, sendToWebContent } from "../commons";
+import { release } from "node:os";
 
 // 窗口
 let mainWindow: BrowserWindow | null = null;
@@ -160,6 +161,10 @@ function createMainWindow() {
     let event: string = res.event;
     let x: number = res.x;
     let y: number = res.y;
+    let className: string =
+      !res.class_name || res.class_name.trim() === ""
+        ? null
+        : res.class_name.trim();
     // 1左键 2右键 3滚轮
     let button: number = res.button;
     if (event === "mousemove") {
@@ -178,7 +183,7 @@ function createMainWindow() {
         showHideMouseWheelClick();
       }
       // 双击任务栏
-      doubleClickTaskbar(button);
+      doubleClickTaskbar(button, className);
     }
   });
   // 禁用标题栏右键
@@ -574,117 +579,56 @@ function autoHide(x: number, y: number, size: number, timer: boolean) {
 /**
  * 双击任务栏显示/隐藏
  */
-function doubleClickTaskbar(button: number) {
+function doubleClickTaskbar(button: number, className: string | null) {
   // 必须开启设置
   if (!global.setting.general.showHideDoubleClickTaskbar) {
     return;
   }
-  // 不是左键的话
-  if (button !== 1) {
-    // 清除timeout
-    clearTimeout(global.doubleClickTaskbarTimer);
-    // 清空计数
-    global.doubleClickTaskbarCounter = 0;
-    return;
-  }
   // 获取屏幕
   let displays = getWindowInScreen();
-  if (displays.length > 1 || displays.length === 0) {
+  if (
+    button !== 1 ||
+    displays.length > 1 ||
+    displays.length === 0 ||
+    className !== "Shell_TrayWnd"
+  ) {
     // 清除timeout
     clearTimeout(global.doubleClickTaskbarTimer);
     // 清空计数
     global.doubleClickTaskbarCounter = 0;
     return;
   }
-  // 获取鼠标位置
-  let point = screen.getCursorScreenPoint();
-  // 判断鼠标是否在当前屏幕内
+  // 监听双击
+  if (!global.doubleClickTaskbarCounter) {
+    global.doubleClickTaskbarCounter = 0;
+  }
+  // +1
+  global.doubleClickTaskbarCounter++;
+  // 等于2就是双击
   if (
-    point.x >= displays[0].bounds.x &&
-    point.x <= displays[0].bounds.x + displays[0].bounds.width &&
-    point.y >= displays[0].bounds.y &&
-    point.y <= displays[0].bounds.y + displays[0].bounds.height
+    global.doubleClickTaskbarCounter &&
+    global.doubleClickTaskbarCounter === 2
   ) {
-    // 判断是否双击在任务栏上
-    let flag = false;
-    // 判断任务栏在哪一侧
-    if (displays[0].bounds.height > displays[0].workArea.height) {
-      if (displays[0].bounds.y === displays[0].workArea.y) {
-        // 底部
-        let top = displays[0].workArea.y + displays[0].workArea.height;
-        let bottom = displays[0].bounds.y + displays[0].bounds.height;
-        if (point.y >= top && point.y <= bottom) {
-          flag = true;
-        }
-      } else {
-        // 顶部
-        if (
-          point.y >= displays[0].bounds.y &&
-          point.y <= displays[0].workArea.y
-        ) {
-          flag = true;
-        }
-      }
-    } else if (displays[0].bounds.width > displays[0].workArea.width) {
-      if (displays[0].bounds.x === displays[0].workArea.x) {
-        // 右侧
-        let left = displays[0].workArea.x + displays[0].workArea.width;
-        let right = displays[0].bounds.x + displays[0].bounds.width;
-        if (point.x >= left && point.x <= right) {
-          flag = true;
-        }
-      } else {
-        // 左侧
-        if (
-          point.x >= displays[0].bounds.x &&
-          point.x <= displays[0].workArea.x
-        ) {
-          flag = true;
-        }
-      }
-    }
-    if (flag) {
-      // 监听双击
-      if (!global.doubleClickTaskbarCounter) {
-        global.doubleClickTaskbarCounter = 0;
-      }
-      // +1
-      global.doubleClickTaskbarCounter++;
-      // 等于2就是双击
-      if (
-        global.doubleClickTaskbarCounter &&
-        global.doubleClickTaskbarCounter === 2
-      ) {
-        // 清除timeout
-        clearTimeout(global.doubleClickTaskbarTimer);
-        // 清空计数
-        global.doubleClickTaskbarCounter = 0;
-        // 判断点击的窗口ClassName
-        let className = global.addon.getCursorPosWindowClassName();
-        if (className.indexOf("MSTask") >= 0 || className === "Shell_TrayWnd") {
-          if (mainWindow.isVisible()) {
-            hideMainWindow();
-          } else {
-            showMainWindowBefore(false);
-          }
-        }
-      } else {
-        // 间隔为500毫秒，如果超过500毫秒就代表不是双击
-        global.doubleClickTaskbarTimer = setTimeout(function () {
-          global.doubleClickTaskbarCounter = 0;
-        }, 500);
-      }
-    } else {
-      // 清除timeout
-      clearTimeout(global.doubleClickTaskbarTimer);
-      // 清空计数
-      global.doubleClickTaskbarCounter = 0;
-    }
-  } else {
     // 清除timeout
     clearTimeout(global.doubleClickTaskbarTimer);
     // 清空计数
     global.doubleClickTaskbarCounter = 0;
+    if (
+      (release().startsWith("10.0.1") &&
+        global.addon.getCursorPosWindowClassName().indexOf("MSTask") >= 0) ||
+      release().startsWith("10.0.2")
+    ) {
+      if (mainWindow.isVisible()) {
+        hideMainWindow();
+      } else {
+        showMainWindowBefore(false);
+      }
+    }
+  } else {
+    // 间隔为500毫秒，如果超过500毫秒就代表不是双击
+    global.doubleClickTaskbarTimer = setTimeout(function () {
+      global.doubleClickTaskbarCounter = 0;
+    }, 500);
   }
 }
 
