@@ -1,6 +1,7 @@
 import {
   Appearance,
   Classification,
+  CommandLine,
   General,
   Item,
   Network,
@@ -318,6 +319,20 @@ function getWebSearch({
 }
 
 /**
+ * 命令行
+ * @returns
+ */
+function getCommandLine({
+  defaultUse = "cmd",
+}: {
+  defaultUse?: string | null;
+}): CommandLine {
+  return {
+    defaultUse: defaultUse ?? "cmd",
+  };
+}
+
+/**
  * 网络
  * @returns
  */
@@ -376,6 +391,9 @@ function getSetting(setting: Setting | null): Setting {
     ),
     webSearch: getWebSearch(
       setting && setting.webSearch ? setting.webSearch : {}
+    ),
+    commandLine: getCommandLine(
+      setting && setting.commandLine ? setting.commandLine : {}
     ),
     network: getNetwork(setting && setting.network ? setting.network : {}),
   };

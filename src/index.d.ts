@@ -31,6 +31,12 @@ declare global {
       openURL: (url: string) => void;
       getVersion: () => string;
       exit: () => void;
+      run: (
+        operation: string,
+        target: string,
+        params: string | null,
+        startLocation: string | null
+      ) => void;
     };
     main: {
       showWindow: (blurHide: boolean) => void;

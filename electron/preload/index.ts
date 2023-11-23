@@ -105,6 +105,15 @@ contextBridge.exposeInMainWorld("api", {
   exit: () => {
     ipcRenderer.send("exit");
   },
+  // 运行
+  run: (
+    operation: string,
+    target: string,
+    params: string | null,
+    startLocation: string | null
+  ) => {
+    ipcRenderer.send("run", { operation, target, params, startLocation });
+  },
 });
 
 contextBridge.exposeInMainWorld("main", {

@@ -163,4 +163,13 @@ export default function () {
   ipcMain.on("exit", () => {
     app.quit();
   });
+  // 运行
+  ipcMain.on("run", (event, args) => {
+    global.addon.shellExecute(
+      args.operation,
+      args.target,
+      args.params ?? "",
+      app.getPath("home")
+    );
+  });
 }

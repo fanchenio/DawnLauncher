@@ -190,6 +190,12 @@ export interface WebSearch {
   searchSourceList: Array<WebSearchSource>;
 }
 
+// 命令行
+export interface CommandLine {
+  // 默认使用
+  defaultUse: string;
+}
+
 // 网络搜索源
 export interface WebSearchSource {
   // ID
@@ -238,6 +244,8 @@ export interface Setting {
   quickSearch: QuickSearch;
   // 网络搜索
   webSearch: WebSearch;
+  // 命令行
+  commandLine: CommandLine;
   // 网络
   network: Network;
 }

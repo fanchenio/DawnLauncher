@@ -24,7 +24,7 @@ function createQuickSearchWindow() {
     fullscreenable: false,
     resizable: false,
     alwaysOnTop: true,
-    backgroundColor: getMainBackgorunColor(),
+    backgroundColor: global.setting.appearance.theme.mainBackgroundColor,
     webPreferences: {
       spellcheck: false,
       backgroundThrottling: false,

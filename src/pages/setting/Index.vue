@@ -1403,6 +1403,24 @@
           <div class="mx-2" v-if="selectedMenuId === 7">
             <NForm label-placement="left" :show-feedback="false" size="small">
               <span class="block font-semibold">{{
+                store.language.default
+              }}</span>
+              <NFormItem class="mt-2">
+                <NSelect
+                  v-model:value="setting.commandLine.defaultUse"
+                  :options="commandLineDefultUseOptions"
+                  size="small"
+                ></NSelect>
+              </NFormItem>
+              <Desc
+                class="mt-2"
+                :content="store.language.commandLinePrompt1"
+              ></Desc>
+            </NForm>
+          </div>
+          <div class="mx-2" v-if="selectedMenuId === 8">
+            <NForm label-placement="left" :show-feedback="false" size="small">
+              <span class="block font-semibold">{{
                 store.language.proxy
               }}</span>
               <NFormItem class="mt-1">
@@ -1550,6 +1568,10 @@ let menuList = [
   },
   {
     id: 7,
+    label: store.language.commandLine,
+  },
+  {
+    id: 8,
     label: store.language.network,
   },
 ];
@@ -2213,6 +2235,17 @@ function closeSaveSearchSource() {
   searchSourceURL.value = null;
   searchSourceDescription.value = null;
 }
+// 命令行默认使用
+let commandLineDefultUseOptions = ref([
+  {
+    label: store.language.commandPrompt,
+    value: "cmd",
+  },
+  {
+    label: store.language.powerShell,
+    value: "powershell",
+  },
+]);
 // 页面高度
 let height = ref(0);
 // 初始化页面尺寸

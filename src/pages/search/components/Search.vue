@@ -18,20 +18,17 @@
       }"
     >
       <div class="mx-2 whitespace-nowrap flex items-center">
-        <svg
-          class="w-[18px] h-[18px]"
-          :style="{ color: store.setting.appearance.theme.mainFontColor }"
-          viewBox="0 0 24 24"
-          v-if="!webSearch"
+        <Icon size="18" v-if="mode === 'search'">
+          <SearchOutline></SearchOutline>
+        </Icon>
+        <Icon size="18" v-if="mode === 'commandLine'">
+          <TerminalOutline></TerminalOutline>
+        </Icon>
+        <span
+          class="text-sm block"
+          v-if="mode === 'webSearch' && webSearchSource"
+          >{{ webSearchSource.name }}</span
         >
-          <path
-            fill="currentColor"
-            d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
-          />
-        </svg>
-        <span class="text-sm block" v-else-if="webSearch && webSearchSource">{{
-          webSearchSource.name
-        }}</span>
       </div>
       <input
         ref="searchInput"
@@ -42,14 +39,7 @@
           backgroundColor: store.setting.appearance.theme.mainBackgroundColor,
           color: store.setting.appearance.theme.mainFontColor,
         }"
-        :placeholder="
-          webSearch &&
-          webSearchSource &&
-          webSearchSource.description &&
-          webSearchSource.description.trim() !== ''
-            ? webSearchSource.description
-            : store.language.search
-        "
+        :placeholder="getPlaceholder()"
       />
       <Icon
         size="18"
@@ -89,12 +79,13 @@
         :item-id="item.id"
         :title="getItemTitle(item as Item)"
         :index="index"
+        :target="item.data.target"
       >
         <CustomItemIcon :item="(item as Item)" :icon-size="32"></CustomItemIcon>
         <span
           class="text-sm ml-2 overflow-hidden text-ellipsis whitespace-nowrap h-[20px]"
           >{{ getName(item.name)
-          }}<span class="text-xs ml-2">{{
+          }}<span v-if="mode === 'search'" class="text-xs ml-2">{{
             getSearchItemClassificationName((item as Item).classificationId)
           }}</span></span
         >
@@ -130,14 +121,20 @@ import { WebSearchSource } from "../../../../types/setting";
 import { convert } from "../../../../commons/utils/common";
 import "simplebar";
 import "simplebar/dist/simplebar.css";
-import { itemAllRemoveStyle, searchResultDivMoveScroll } from "../js/index";
+import {
+  getCommandLineItemList,
+  itemAllRemoveStyle,
+  searchResultDivMoveScroll,
+  commandLineRun,
+} from "../js/index";
+import { SearchOutline, TerminalOutline } from "@vicons/ionicons5";
 import { useMainStore } from "../../../store";
 // pinia
 const store = useMainStore();
 // 搜索框
 let searchInput = ref<any>(null);
 // 搜索模式
-let webSearch = ref(false);
+let mode = ref<"search" | "webSearch" | "commandLine">("search");
 // 搜索模式对应的实体
 let webSearchSource = ref<WebSearchSource | null>(null);
 // 搜索内容
@@ -162,7 +159,7 @@ watch(
 );
 // 搜索
 function search() {
-  if (!webSearch.value) {
+  if (mode.value === "search") {
     if (value.value) {
       resultList.value = searchItem(value.value, searchMap, 50);
       if (resultList.value && resultList.value.length > 0) {
@@ -190,15 +187,36 @@ function runItem(e: any) {
   // 找到item
   let itemElement = getClassElement(e, "search-result-item");
   if (itemElement) {
-    // 项目ID
-    let itemId = parseInt(itemElement.getAttribute("item-id"));
-    // 查询项目
-    let item = getItemById(itemId);
-    if (item && item.data) {
-      run("search", "open", item);
+    if (mode.value === "search") {
+      // 项目ID
+      let itemId = parseInt(itemElement.getAttribute("item-id"));
+      // 查询项目
+      let item = getItemById(itemId);
+      if (item && item.data) {
+        run("search", "open", item);
+        close();
+      }
+    } else if (mode.value === "commandLine") {
+      // 目标
+      commandLineRun(itemElement.getAttribute("target"), value.value);
       close();
     }
   }
+}
+// 获取placeholder
+function getPlaceholder() {
+  let text = store.language.search;
+  if (
+    mode.value === "webSearch" &&
+    webSearchSource.value &&
+    webSearchSource.value.description &&
+    webSearchSource.value.description.trim() !== ""
+  ) {
+    text = webSearchSource.value.description.trim();
+  } else if (mode.value === "commandLine") {
+    text = "Command Line";
+  }
+  return text;
 }
 // 关闭
 function close() {
@@ -217,27 +235,29 @@ watch(
 function contextmenu(e: any) {
   e.preventDefault();
   e.stopPropagation();
-  // 当前项目
-  let item: Item | null = null;
-  // 判断是在哪个区域右键
-  if (getClassElement(e, "search-result-item")) {
-    // 项目右键
-    // 获取项目ID
-    let element = getClassElement(e, "search-result-item");
-    // 项目ID
-    let id = parseInt(element.getAttribute("item-id"));
-    // 获取项目
-    item = convert(getItemById(id));
-  }
-  if (item) {
-    // 弹出菜单
-    store.searchItemRightMenuItemId = item.id;
-    window.item.showRightMenu({
-      item,
-      x: e.screenX,
-      y: e.screenY,
-      type: "search",
-    });
+  if (mode.value === "search") {
+    // 当前项目
+    let item: Item | null = null;
+    // 判断是在哪个区域右键
+    if (getClassElement(e, "search-result-item")) {
+      // 项目右键
+      // 获取项目ID
+      let element = getClassElement(e, "search-result-item");
+      // 项目ID
+      let id = parseInt(element.getAttribute("item-id"));
+      // 获取项目
+      item = convert(getItemById(id));
+    }
+    if (item) {
+      // 弹出菜单
+      store.searchItemRightMenuItemId = item.id;
+      window.item.showRightMenu({
+        item,
+        x: e.screenX,
+        y: e.screenY,
+        type: "search",
+      });
+    }
   }
 }
 function keydown(e: any) {
@@ -275,7 +295,7 @@ function keydown(e: any) {
   }
   // 空格
   if (e.keyCode === 32) {
-    if (!webSearch.value) {
+    if (mode.value === "search") {
       // 判断是否是搜索引擎
       if (value.value && value.value.trim() !== "") {
         let flag = false;
@@ -293,7 +313,7 @@ function keydown(e: any) {
               : value.value;
           for (let searchSource of store.setting.webSearch.searchSourceList) {
             if (keyword === searchSource.keyword) {
-              webSearch.value = true;
+              mode.value = "webSearch";
               webSearchSource.value = searchSource;
               value.value = null;
               resultList.value = [];
@@ -304,28 +324,54 @@ function keydown(e: any) {
         }
       }
     }
+    if (mode.value !== "webSearch" && mode.value !== "commandLine") {
+      // 判断是否是命令行
+      if (value.value && value.value.trim() !== "") {
+        if (value.value === ">") {
+          mode.value = "commandLine";
+          value.value = null;
+          resultList.value = getCommandLineItemList();
+          selected.value = 0;
+          e.preventDefault();
+        }
+      }
+    }
   }
   // enter
   if (e.keyCode === 13) {
-    if (webSearch.value && webSearchSource.value) {
+    if (mode.value === "webSearch" && webSearchSource.value) {
       let url = webSearchSource.value.url.replace("{w}", value.value ?? "");
       window.api.openURL(url);
       close();
     } else if (
-      !webSearch.value &&
+      mode.value === "search" &&
       resultList.value.length - 1 >= selected.value
     ) {
       run("search", "open", resultList.value[selected.value] as Item);
+      close();
+    } else if (
+      mode.value === "commandLine" &&
+      resultList.value.length - 1 >= selected.value
+    ) {
+      commandLineRun(
+        resultList.value[selected.value].data.target!,
+        value.value
+      );
       close();
     }
     e.preventDefault();
   }
   // 退格键
   if (e.keyCode === 8) {
-    if (webSearch.value) {
+    if (mode.value === "webSearch") {
       if (!value.value || value.value.trim() === "") {
-        webSearch.value = false;
+        mode.value = "search";
         webSearchSource.value = null;
+      }
+    } else if (mode.value === "commandLine") {
+      if (!value.value || value.value.trim() === "") {
+        mode.value = "search";
+        resultList.value = [];
       }
     }
   }
