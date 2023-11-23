@@ -226,11 +226,6 @@ function showMainWindow(blurHide: boolean) {
   showFollowMousePosition();
   if (flag) {
     global.mainWindow.show();
-    // 如果没有设置置顶时，显示窗口先置顶一下，再取消
-    if (!global.mainWindow.isAlwaysOnTop) {
-      mainWindow.setAlwaysOnTop(true, "screen-saver");
-      mainWindow.setAlwaysOnTop(false);
-    }
     global.mainWindow.focus();
     global.blurHide = blurHide;
     if (blurHide) {
