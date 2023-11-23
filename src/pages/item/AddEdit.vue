@@ -247,7 +247,9 @@
                 (selectedMenuId === 4 && id)
               "
             >
-              <span class="block">{{ store.language.target }}</span>
+              <span class="block">{{
+                selectedMenuId === 2 ? store.language.url : store.language.path
+              }}</span>
               <NInput
                 class="mt-1.5"
                 type="textarea"

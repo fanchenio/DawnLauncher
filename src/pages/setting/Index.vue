@@ -994,6 +994,23 @@
               class="mt-3"
             >
               <span class="block font-semibold">{{
+                store.language.prompt
+              }}</span>
+              <NFormItem class="mt-1">
+                <NCheckbox
+                  v-model:checked="setting.item.promptShowPath"
+                  :focusable="false"
+                  >{{ store.language.showPath }}</NCheckbox
+                >
+              </NFormItem>
+            </NForm>
+            <NForm
+              label-placement="left"
+              :show-feedback="false"
+              size="small"
+              class="mt-3"
+            >
+              <span class="block font-semibold">{{
                 store.language.functions
               }}</span>
               <NFormItem class="mt-1">

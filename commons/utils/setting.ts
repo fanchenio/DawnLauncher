@@ -224,6 +224,7 @@ function getItem({
   fontSize = 14,
   fontWeight = 400,
   fontLineHeight = 1.25,
+  promptShowPath = false,
 }: {
   layout?: string | null;
   iconSize?: number | null;
@@ -240,6 +241,7 @@ function getItem({
   fontSize?: number | null;
   fontWeight?: number | null;
   fontLineHeight?: number | null;
+  promptShowPath?: boolean | null;
 }): Item {
   return {
     layout: layout ?? "tile",
@@ -257,6 +259,7 @@ function getItem({
     fontSize: fontSize ?? 14,
     fontWeight: fontWeight ?? 400,
     fontLineHeight: fontLineHeight ?? 1.25,
+    promptShowPath: promptShowPath ?? false,
   };
 }
 

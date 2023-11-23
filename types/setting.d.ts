@@ -156,6 +156,8 @@ export interface Item {
   fontWeight: number;
   // 字体行高
   fontLineHeight: number;
+  // 提示：显示路径
+  promptShowPath: boolean;
 }
 
 // 快速搜索

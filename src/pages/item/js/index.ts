@@ -762,6 +762,15 @@ function getItemTitle(item: Item) {
       store.language.colon +
       (item.data.openNumber ?? 0);
   }
+  if (store.setting.item.promptShowPath) {
+    name += "\n";
+    if (item.type === 2) {
+      name += store.language.url;
+    } else {
+      name += store.language.path;
+    }
+    name += store.language.colon + item.data.target;
+  }
   if (item.data.remark) {
     name +=
       "\n" + store.language.remark + store.language.colon + item.data.remark;
