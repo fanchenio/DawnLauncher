@@ -394,6 +394,8 @@ function showFollowMousePosition() {
     let y = Math.round(bounds.height / 2);
     // 设置窗口位置
     global.mainWindow.setPosition(point.x - x, point.y - y);
+    // 调整窗口位置并显示时会出现闪屏的情况
+    // https://github.com/electron/electron/issues/10862
     for (let i = 0; i < 10; i++) {
       global.mainWindow.setSize(bounds.width, bounds.height);
     }
