@@ -75,6 +75,10 @@
 
 ![关联文件夹](/images/soft8.webp)
 
-# License
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/fanchenio/DawnLauncher.svg)](https://starchart.cc/fanchenio/DawnLauncher)
+
+## License
 
 MIT License
