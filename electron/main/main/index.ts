@@ -231,13 +231,13 @@ function showMainWindow(blurHide: boolean) {
   showFollowMousePosition();
   if (flag) {
     global.mainWindow.show();
-    global.mainWindow.focus();
-    global.blurHide = blurHide;
-    if (blurHide) {
-      global.blurHide = true;
-    } else {
-      global.blurHide = false;
+    global.mainWindow.setAlwaysOnTop(true, "screen-saver");
+    // 如果设置中未开启 永远置顶，那么取消当前设置的置顶
+    if (!global.setting.general.alwaysTop) {
+      global.mainWindow.setAlwaysOnTop(false);
     }
+    global.mainWindow.focus();
+    global.blurHide = Boolean(blurHide);
   }
 }
 
