@@ -3,7 +3,6 @@ import { resolve, join } from 'node:path'
 import { type Plugin, defineConfig, normalizePath } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
-import commonjs from 'vite-plugin-commonjs'
 import { notBundle } from 'vite-plugin-electron/plugin'
 import pkg from './package.json'
 
@@ -35,8 +34,8 @@ export default defineConfig(({ command }) => {
 								ignoreDynamicRequires: true,
 							},
 							rollupOptions: {
-								plugins: [commonjs()],
-								external: ['@dawn-launcher/addon'],
+								plugins: [],
+								external: [/\.node$/],
 							},
 						},
 						plugins: [isServe && notBundle()],
@@ -73,7 +72,7 @@ export default defineConfig(({ command }) => {
 								ignoreDynamicRequires: true,
 							},
 							rollupOptions: {
-								external: [],
+								external: [/\.node$/],
 							},
 						},
 						plugins: [isServe && notBundle()],

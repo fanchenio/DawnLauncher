@@ -1,18 +1,19 @@
 {
-  "name": "@dawn-launcher/monorepos",
-  "productName": "Dawn Launcher",
-  "version": "1.3.5",
-  "private": true,
-  "author": "FanChenIO",
-  "license": "MIT",
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "dev": "yarn workspace @dawn-launcher/electron dev",
-    "build:addon": "yarn workspace @dawn-launcher/addon build",
-    "build:sqlite": "npx electron rebuild.js",
-    "postinstall": "yarn build:addon && yarn build:sqlite"
-  },
-  "packageManager": "yarn@4.0.2"
+	"name": "@dawn-launcher/monorepos",
+	"productName": "Dawn Launcher",
+	"version": "1.3.5",
+	"private": true,
+	"author": "FanChenIO",
+	"license": "MIT",
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"dev": "yarn workspace @dawn-launcher/electron dev",
+		"build": "yarn workspace @dawn-launcher/electron build",
+		"build:addon": "yarn workspace @dawn-launcher/addon build",
+		"build:sqlite": "yarn workspace @dawn-launcher/electron build:sqlite",
+		"postinstall": "yarn build:addon && yarn build:sqlite"
+	},
+	"packageManager": "yarn@4.0.2"
 }

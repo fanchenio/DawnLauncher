@@ -7,7 +7,8 @@ import {
 import { CommonItem, Item } from "../../types/item";
 import { parse, join, extname } from "node:path";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { execSync } from "node:child_process";
+
+import Addon from "@dawn-launcher/addon";
 import xml2js from "xml2js";
 import { newCommonItem, newCommonItemData } from "../../commons/utils/common";
 import { ShortcutInfo } from "../../types/common";
@@ -21,7 +22,7 @@ export interface AppxInfo {
 }
 
 // addon
-global.addon = require("@dawn-launcher/addon");
+global.addon = Addon;
 
 // 接收消息
 process.parentPort.once("message", async (event) => {

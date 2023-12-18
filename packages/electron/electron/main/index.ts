@@ -1,6 +1,7 @@
 import { app, BrowserWindow, dialog } from "electron";
 import { release } from "node:os";
 import { join, dirname } from "node:path";
+import Addon from "@dawn-launcher/addon";
 import indexIpcEvent from "./main/ipcEvent";
 import classificationIpcEvent from "./classification/ipcEvent";
 import { init as classificationDataInit } from "./classification/data";
@@ -55,7 +56,7 @@ if (!app.requestSingleInstanceLock()) {
 app.whenReady().then(() => {
   try {
     // addon
-    global.addon = require("@dawn-launcher/addon");
+    global.addon = Addon;
     // 初始化数据
     settingDataInit();
     // 获取语言
