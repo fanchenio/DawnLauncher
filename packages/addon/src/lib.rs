@@ -10,7 +10,7 @@ mod windows;
 #[allow(dead_code)]
 #[napi]
 fn get_file_icon(path: String) -> Option<String> {
-    windows::get_file_icon(&path)
+  windows::get_file_icon(&path)
 }
 
 /**
@@ -19,7 +19,7 @@ fn get_file_icon(path: String) -> Option<String> {
 #[allow(dead_code)]
 #[napi]
 fn search_path(path: String) -> Option<String> {
-    windows::search_path(&path)
+  windows::search_path(&path)
 }
 
 /**
@@ -28,7 +28,7 @@ fn search_path(path: String) -> Option<String> {
 #[allow(dead_code)]
 #[napi]
 fn get_shortcut_file_info(path: String) -> Option<HashMap<String, String>> {
-    windows::get_shortcut_file_info(&path)
+  windows::get_shortcut_file_info(&path)
 }
 
 /**
@@ -37,7 +37,7 @@ fn get_shortcut_file_info(path: String) -> Option<HashMap<String, String>> {
 #[allow(dead_code)]
 #[napi]
 fn shell_execute(operation: String, file: String, params: String, start_location: Option<String>) {
-    windows::shell_execute(operation, file, params, start_location)
+  windows::shell_execute(operation, file, params, start_location)
 }
 
 /**
@@ -46,7 +46,7 @@ fn shell_execute(operation: String, file: String, params: String, start_location
 #[allow(dead_code)]
 #[napi]
 fn system_item_execute(target: String, params: Option<String>) {
-    windows::system_item_execute(&target, params.as_deref())
+  windows::system_item_execute(&target, params.as_deref())
 }
 
 /**
@@ -55,7 +55,7 @@ fn system_item_execute(target: String, params: Option<String>) {
 #[allow(dead_code)]
 #[napi]
 fn open_file_location(path: String) {
-    windows::open_file_location(&path)
+  windows::open_file_location(&path)
 }
 
 /**
@@ -64,7 +64,7 @@ fn open_file_location(path: String) {
 #[allow(dead_code)]
 #[napi]
 fn explorer_context_menu(window: i32, path: String, x: i32, y: i32) {
-    windows::explorer_context_menu(window, &path, x, y)
+  windows::explorer_context_menu(window, &path, x, y)
 }
 
 /**
@@ -73,7 +73,7 @@ fn explorer_context_menu(window: i32, path: String, x: i32, y: i32) {
 #[allow(dead_code)]
 #[napi]
 fn get_env_by_name(name: String) -> Option<String> {
-    windows::get_env_by_name(&name)
+  windows::get_env_by_name(&name)
 }
 
 /**
@@ -82,7 +82,7 @@ fn get_env_by_name(name: String) -> Option<String> {
 #[allow(dead_code)]
 #[napi]
 fn is_fullscreen() -> bool {
-    windows::is_fullscreen()
+  windows::is_fullscreen()
 }
 
 /**
@@ -91,7 +91,7 @@ fn is_fullscreen() -> bool {
 #[allow(dead_code)]
 #[napi]
 fn switch_english(window: i32) {
-    windows::switch_english(window)
+  windows::switch_english(window)
 }
 
 /**
@@ -100,7 +100,7 @@ fn switch_english(window: i32) {
 #[allow(dead_code)]
 #[napi]
 fn create_mouse_hook(callback: JsFunction) {
-    windows::create_mouse_hook(callback)
+  windows::create_mouse_hook(callback)
 }
 
 /**
@@ -109,7 +109,7 @@ fn create_mouse_hook(callback: JsFunction) {
 #[allow(dead_code)]
 #[napi]
 fn enable_mouse_hook() {
-    windows::enable_mouse_hook()
+  windows::enable_mouse_hook()
 }
 
 /**
@@ -118,7 +118,7 @@ fn enable_mouse_hook() {
 #[allow(dead_code)]
 #[napi]
 fn disable_mouse_hook() {
-    windows::disable_mouse_hook()
+  windows::disable_mouse_hook()
 }
 
 /**
@@ -127,7 +127,7 @@ fn disable_mouse_hook() {
 #[allow(dead_code)]
 #[napi]
 fn get_cursor_pos_window_class_name() -> String {
-    windows::get_cursor_pos_window_class_name()
+  windows::get_cursor_pos_window_class_name()
 }
 
 /**
@@ -136,7 +136,7 @@ fn get_cursor_pos_window_class_name() -> String {
 #[allow(dead_code)]
 #[napi]
 fn get_clipboard_file_list() -> Vec<String> {
-    windows::get_clipboard_file_list()
+  windows::get_clipboard_file_list()
 }
 
 /**
@@ -145,7 +145,7 @@ fn get_clipboard_file_list() -> Vec<String> {
 #[allow(dead_code)]
 #[napi]
 fn clipboard_has_bitmap() -> bool {
-    windows::clipboard_has_bitmap()
+  windows::clipboard_has_bitmap()
 }
 
 /**
@@ -154,7 +154,7 @@ fn clipboard_has_bitmap() -> bool {
 #[allow(dead_code)]
 #[napi]
 fn get_clipboard_bitmap_base64() -> Option<String> {
-    windows::get_clipboard_bitmap_base64()
+  windows::get_clipboard_bitmap_base64()
 }
 
 /**
@@ -163,7 +163,7 @@ fn get_clipboard_bitmap_base64() -> Option<String> {
 #[allow(dead_code)]
 #[napi]
 fn empty_recycle_bin(window: i32) {
-    windows::empty_recycle_bin(window)
+  windows::empty_recycle_bin(window)
 }
 
 /**
@@ -172,7 +172,7 @@ fn empty_recycle_bin(window: i32) {
 #[allow(dead_code)]
 #[napi]
 fn remove_window_animation(window: i32) {
-    windows::remove_window_animation(window);
+  windows::remove_window_animation(window);
 }
 
 /**
@@ -181,5 +181,5 @@ fn remove_window_animation(window: i32) {
 #[allow(dead_code)]
 #[napi]
 fn get_appx_list() -> Vec<HashMap<String, String>> {
-    windows::get_appx_list()
+  windows::get_appx_list()
 }

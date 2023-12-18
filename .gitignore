@@ -8,11 +8,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
-dist-electron
-native
-release
+.yarn
+**/dist
+**/dist-ssr
+**/dist-electron
+**/native
+**/release
 *.local
 .env
 

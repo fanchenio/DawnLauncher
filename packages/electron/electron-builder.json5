@@ -13,6 +13,13 @@
   asarUnpack: ["**/*.node"],
   npmRebuild: false,
   files: ["dist", "dist-electron", "native", "!node_modules/**/*"],
+  "extraFiles": [
+    {
+      "from": "../addon/",
+      "to": "./resources/addon/",
+      "filter": ["*.node"]
+    }
+  ],
   win: {
     appId: "com.dawnlauncher.application",
     target: [

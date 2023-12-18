@@ -1,25 +1,23 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "strict": true,
-    "jsx": "preserve",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true,
-    "noEmit": true
-  },
-  "include": [
-    "src",
-    "commons",
-    "types/classification.d.ts",
-    "types/common.d.ts",
-    "types/item.d.ts",
-    "types/setting.ts"
-  ],
-  "references": [{ "path": "./tsconfig.node.json" }]
+	"compilerOptions": {
+		"target": "ESNext",
+		"useDefineForClassFields": true,
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"strict": true,
+		"jsx": "preserve",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"lib": ["ESNext", "DOM"],
+		"skipLibCheck": true,
+		"noEmit": true,
+		"paths": {
+			"@dawn-launcher/addon": ["./packages/addon/index.d.ts"]
+		}
+	},
+	"include": [],
+	"references": [{ "path": "./packages/addon/" }, { "path": "./packages/electron" }],
+	"files": [],
+	"exclude": ["node_modules", "target", "lib", "test-results"]
 }
