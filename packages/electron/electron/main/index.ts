@@ -55,7 +55,7 @@ if (!app.requestSingleInstanceLock()) {
 app.whenReady().then(() => {
   try {
     // addon
-    global.addon = require("../../native/addon.node");
+    global.addon = require("@dawn-launcher/addon");
     // 初始化数据
     settingDataInit();
     // 获取语言

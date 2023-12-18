@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = ["./packages/addon"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+strip = "symbols"
