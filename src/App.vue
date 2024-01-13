@@ -271,7 +271,10 @@ function keydown(e: any) {
         e.preventDefault();
       }
       // 禁止关闭页面
-      if (shortcutKey.toLowerCase() === "ctrl + w") {
+      if (
+        shortcutKey.toLowerCase() === "ctrl + w" ||
+        shortcutKey.toLowerCase() === "alt + f4"
+      ) {
         e.preventDefault();
       }
     }

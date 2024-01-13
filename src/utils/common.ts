@@ -105,6 +105,7 @@ function checkKeyCode(e: any) {
   // e.keyCode == 16 Shift
   // e.keyCode == 17 Control
   // e.keyCode == 18 Alt
+  // e.keyCode == 91 Mate(Win)
   // e.keyCode == 20 Cape Lock 大小写
   // e.keyCode == 27 Esc
   // (e.keyCode >= 32 && e.keyCode <= 40) 控制键盘区
@@ -125,6 +126,7 @@ function checkKeyCode(e: any) {
     e.keyCode === 16 ||
     e.keyCode === 17 ||
     e.keyCode === 18 ||
+    e.keyCode === 91 ||
     e.keyCode === 20 ||
     e.keyCode === 27 ||
     (e.keyCode >= 32 && e.keyCode <= 40) ||
