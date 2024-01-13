@@ -1220,7 +1220,7 @@
                     :style="{
                       backgroundColor: hexToRGBA(
                         setting.appearance.theme.secondBackgroundColor,
-                        0.8
+                        0.7
                       ),
                       color: setting.appearance.theme.secondFontColor,
                     }"
@@ -1263,7 +1263,7 @@
                           searchSourceId === item.id
                             ? hexToRGBA(
                                 setting.appearance.theme.secondBackgroundColor,
-                                0.8
+                                0.7
                               )
                             : undefined,
                         color:
@@ -1280,7 +1280,7 @@
                               'background-color',
                               hexToRGBA(
                                 setting.appearance.theme.secondBackgroundColor,
-                                0.8
+                                0.7
                               ),
                             ],
                             ['color', setting.appearance.theme.secondFontColor],

@@ -15,7 +15,7 @@ const themeList: Array<Theme> = [
     secondFontColor: "#BBBBBBFF",
     mainBackgroundColor: "#2B2B2BFF",
     secondBackgroundColor: "#3C3F41FF",
-    borderColor: "#3C3F41FF",
+    borderColor: "#373737FF",
   },
   {
     name: "#508CC8",
@@ -23,7 +23,7 @@ const themeList: Array<Theme> = [
     secondFontColor: "#FFFFFFFF",
     mainBackgroundColor: "#508CC8FF",
     secondBackgroundColor: "#6FA0D2FF",
-    borderColor: "#6FA0D2FF",
+    borderColor: "#5A94CDFF",
   },
   {
     name: "#024351",
@@ -31,7 +31,7 @@ const themeList: Array<Theme> = [
     secondFontColor: "#FFFFFFFF",
     mainBackgroundColor: "#024351FF",
     secondBackgroundColor: "#025A6CFF",
-    borderColor: "#025A6CFF",
+    borderColor: "#064D5CFF",
   },
   {
     name: "#516FA3",
@@ -39,7 +39,7 @@ const themeList: Array<Theme> = [
     secondFontColor: "#FFFFFFFF",
     mainBackgroundColor: "#516FA3FF",
     secondBackgroundColor: "#91A8D0FF",
-    borderColor: "#91A8D0FF",
+    borderColor: "#5D78A7FF",
   },
   {
     name: "#45326E",
@@ -47,7 +47,7 @@ const themeList: Array<Theme> = [
     secondFontColor: "#FFFFFFFF",
     mainBackgroundColor: "#45326EFF",
     secondBackgroundColor: "#5F4B8BFF",
-    borderColor: "#5F4B8BFF",
+    borderColor: "#4C3A73FF",
   },
   {
     name: "#693030",
@@ -55,7 +55,7 @@ const themeList: Array<Theme> = [
     secondFontColor: "#FFFFFFFF",
     mainBackgroundColor: "#693030FF",
     secondBackgroundColor: "#955151FF",
-    borderColor: "#803A3AFF",
+    borderColor: "#733535FF",
   },
   {
     name: "#9F2F4A",
