@@ -156,6 +156,7 @@ function createMainWindow() {
     }
   });
   // 创建鼠标hook
+  let mousedownClassName = null;
   addon.createMouseHook((...args: any[]) => {
     let res = JSON.parse(args[1]);
     let event: string = res.event;
@@ -175,15 +176,19 @@ function createMainWindow() {
       }
     } else if (event === "mousedown") {
       // 鼠标按下
+      if (button === 1) {
+        mousedownClassName = className;
+      }
     } else if (event === "mouseup") {
       // 鼠标抬起
-      if (button === 3) {
+      if (button === 1) {
+        // 双击任务栏
+        doubleClickTaskbar(mousedownClassName, className);
+      } else if (button === 3) {
         // 中间单击
         // 显示隐藏窗口
         showHideMouseWheelClick();
       }
-      // 双击任务栏
-      doubleClickTaskbar(button, className);
     }
   });
   // 禁用标题栏右键
@@ -579,7 +584,10 @@ function autoHide(x: number, y: number, size: number, timer: boolean) {
 /**
  * 双击任务栏显示/隐藏
  */
-function doubleClickTaskbar(button: number, className: string | null) {
+function doubleClickTaskbar(
+  mousedownClassName: string | null,
+  className: string | null
+) {
   // 必须开启设置
   if (!global.setting.general.showHideDoubleClickTaskbar) {
     return;
@@ -587,7 +595,6 @@ function doubleClickTaskbar(button: number, className: string | null) {
   // 获取屏幕
   let displays = getWindowInScreen();
   if (
-    button !== 1 ||
     displays.length > 1 ||
     displays.length === 0 ||
     className !== "Shell_TrayWnd"
@@ -598,37 +605,45 @@ function doubleClickTaskbar(button: number, className: string | null) {
     global.doubleClickTaskbarCounter = 0;
     return;
   }
-  // 监听双击
-  if (!global.doubleClickTaskbarCounter) {
-    global.doubleClickTaskbarCounter = 0;
-  }
-  // +1
-  global.doubleClickTaskbarCounter++;
-  // 等于2就是双击
+  // 必须是指定Class
   if (
-    global.doubleClickTaskbarCounter &&
-    global.doubleClickTaskbarCounter === 2
+    (release().startsWith("10.0.1") &&
+      global.addon.getCursorPosWindowClassName().indexOf("MSTask") >= 0) ||
+    (release().startsWith("10.0.2") &&
+      global.addon.getCursorPosWindowClassName() !== "TrayNotifyWnd")
   ) {
-    // 清除timeout
-    clearTimeout(global.doubleClickTaskbarTimer);
-    // 清空计数
-    global.doubleClickTaskbarCounter = 0;
+    // 监听双击
+    if (!global.doubleClickTaskbarCounter) {
+      global.doubleClickTaskbarCounter = 0;
+    }
+    // +1
+    global.doubleClickTaskbarCounter++;
     if (
-      (release().startsWith("10.0.1") &&
-        global.addon.getCursorPosWindowClassName().indexOf("MSTask") >= 0) ||
-      release().startsWith("10.0.2")
+      global.doubleClickTaskbarCounter &&
+      global.doubleClickTaskbarCounter === 2 &&
+      mousedownClassName === "Shell_TrayWnd"
     ) {
+      // 清除timeout
+      clearTimeout(global.doubleClickTaskbarTimer);
+      // 清空计数
+      global.doubleClickTaskbarCounter = 0;
+      // 显示或隐藏
       if (mainWindow.isVisible()) {
         hideMainWindow();
       } else {
         showMainWindowBefore(false);
       }
+    } else {
+      // 间隔为500毫秒，如果超过500毫秒就代表不是双击
+      global.doubleClickTaskbarTimer = setTimeout(function () {
+        global.doubleClickTaskbarCounter = 0;
+      }, 500);
     }
   } else {
-    // 间隔为500毫秒，如果超过500毫秒就代表不是双击
-    global.doubleClickTaskbarTimer = setTimeout(function () {
-      global.doubleClickTaskbarCounter = 0;
-    }, 500);
+    // 清除timeout
+    clearTimeout(global.doubleClickTaskbarTimer);
+    // 清空计数
+    global.doubleClickTaskbarCounter = 0;
   }
 }
 
