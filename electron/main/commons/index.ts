@@ -6,7 +6,15 @@ import retry from "retry";
 import request from "request";
 import * as cheerio from "cheerio";
 import { isAbsolutePath } from "../../../commons/utils/common";
-import { BrowserWindow, app, dialog, nativeImage, nativeTheme } from "electron";
+import {
+  BrowserWindow,
+  Display,
+  app,
+  dialog,
+  nativeImage,
+  nativeTheme,
+  screen,
+} from "electron";
 import { getRandomUserAgent, iconExts } from "../../commons/utils";
 import URI from "urijs";
 import { hideMainWindow } from "../main";
@@ -463,6 +471,29 @@ function getMainBackgorunColor() {
   }
 }
 
+/**
+ * 获取窗口所在的屏幕
+ */
+function getWindowInScreen(window: BrowserWindow) {
+  let inDisplays: Array<Display> = [];
+  let displays = screen.getAllDisplays();
+  let bounds = window.getBounds();
+  for (let display of displays) {
+    let workArea = display.workArea;
+    if (
+      ((workArea.x <= bounds.x && workArea.x + workArea.width >= bounds.x) ||
+        (workArea.x <= bounds.x + bounds.width &&
+          workArea.x + workArea.width >= bounds.x + bounds.width)) &&
+      ((workArea.y <= bounds.y && workArea.y + workArea.height >= bounds.y) ||
+        (workArea.y <= bounds.y + bounds.height &&
+          workArea.y + workArea.height >= bounds.y + bounds.height))
+    ) {
+      inDisplays.push(display);
+    }
+  }
+  return inDisplays;
+}
+
 export {
   downloadImage,
   getURLInfo,
@@ -478,4 +509,5 @@ export {
   relaunch,
   getUserDataPath,
   getMainBackgorunColor,
+  getWindowInScreen,
 };

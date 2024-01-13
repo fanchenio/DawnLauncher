@@ -10,7 +10,11 @@ import {
 import { createSettingWindow } from "../setting";
 import { join } from "node:path";
 import cacheData from "../commons/cacheData";
-import { getMainBackgorunColor, sendToWebContent } from "../commons";
+import {
+  getMainBackgorunColor,
+  getWindowInScreen,
+  sendToWebContent,
+} from "../commons";
 import { release } from "node:os";
 
 // 窗口
@@ -85,7 +89,7 @@ function createMainWindow() {
     // 永远居中
     alwaysCenter();
     // 判断窗口位置
-    let displays = getWindowInScreen();
+    let displays = getWindowInScreen(mainWindow);
     if (displays.length === 0) {
       // 代表窗口的位置不再任一屏幕内，将窗口位置移动到主窗口
       mainWindow.center();
@@ -305,29 +309,6 @@ function createTray(show: boolean) {
 }
 
 /**
- * 获取窗口所在的屏幕
- */
-function getWindowInScreen() {
-  let inDisplays: Array<Display> = [];
-  let displays = screen.getAllDisplays();
-  let bounds = global.mainWindow.getBounds();
-  for (let display of displays) {
-    let workArea = display.workArea;
-    if (
-      ((workArea.x <= bounds.x && workArea.x + workArea.width >= bounds.x) ||
-        (workArea.x <= bounds.x + bounds.width &&
-          workArea.x + workArea.width >= bounds.x + bounds.width)) &&
-      ((workArea.y <= bounds.y && workArea.y + workArea.height >= bounds.y) ||
-        (workArea.y <= bounds.y + bounds.height &&
-          workArea.y + workArea.height >= bounds.y + bounds.height))
-    ) {
-      inDisplays.push(display);
-    }
-  }
-  return inDisplays;
-}
-
-/**
  * 边缘吸附
  * @param display
  * @returns
@@ -344,7 +325,7 @@ function edgeAdsorb(display: Display | null) {
     // 清空方向
     global.mainWindowDirection = null;
     // 屏幕
-    let displays = display ? [display] : getWindowInScreen();
+    let displays = display ? [display] : getWindowInScreen(mainWindow);
     if (displays.length > 1 || displays.length === 0) {
       return;
     }
@@ -456,7 +437,7 @@ function autoHide(x: number, y: number, size: number, timer: boolean) {
   }
   try {
     // 屏幕
-    let displays = getWindowInScreen();
+    let displays = getWindowInScreen(mainWindow);
     if (displays.length > 1 || displays.length === 0) {
       return;
     }
@@ -593,7 +574,7 @@ function doubleClickTaskbar(
     return;
   }
   // 获取屏幕
-  let displays = getWindowInScreen();
+  let displays = getWindowInScreen(mainWindow);
   if (
     displays.length > 1 ||
     displays.length === 0 ||
