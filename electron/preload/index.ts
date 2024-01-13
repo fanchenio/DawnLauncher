@@ -822,6 +822,10 @@ contextBridge.exposeInMainWorld("quickSearch", {
   setWindowHeight: (height: number) => {
     ipcRenderer.send("setQuickSearchWindowHeight", height);
   },
+  // 设置窗口宽度
+  setWindowWidth: (width: number) => {
+    ipcRenderer.send("setQuickSearchWindowWidth", width);
+  },
 });
 
 contextBridge.exposeInMainWorld("about", {

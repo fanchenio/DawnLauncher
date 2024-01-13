@@ -14,7 +14,7 @@ function createQuickSearchWindow() {
   global.quickSearchWindowInit = false;
   quickSearchWindow = global.quickSearchWindow = new BrowserWindow({
     title: "Dawn Launcher",
-    width: 600,
+    width: global.setting.quickSearch.width,
     height: 44,
     type: "toolbar",
     frame: false,

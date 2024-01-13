@@ -278,6 +278,7 @@ function getQuickSearch({
   useItemOpen = false,
   openAfterHideQuickSearchWindow = true,
   matchConditionsRemark = false,
+  width = 600,
 }: {
   enable?: boolean | null;
   showHideShortcutKey?: string | null;
@@ -289,6 +290,7 @@ function getQuickSearch({
   useItemOpen?: boolean | null;
   openAfterHideQuickSearchWindow?: boolean | null;
   matchConditionsRemark?: boolean | null;
+  width?: number | null;
 }): QuickSearch {
   return {
     enable: enable ?? true,
@@ -301,6 +303,7 @@ function getQuickSearch({
     useItemOpen: useItemOpen ?? false,
     openAfterHideQuickSearchWindow: openAfterHideQuickSearchWindow ?? true,
     matchConditionsRemark: matchConditionsRemark ?? false,
+    width: width ?? 600,
   };
 }
 

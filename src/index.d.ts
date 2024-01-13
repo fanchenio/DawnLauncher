@@ -175,6 +175,7 @@ declare global {
       onShowWindowBefore: (callback: Callback) => Function;
       onClearData: (callback: Callback) => Function;
       setWindowHeight: (height: number) => void;
+      setWindowWidth: (width: number) => void;
     };
     about: {
       createWindow: () => void;

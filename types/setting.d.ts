@@ -182,6 +182,8 @@ export interface QuickSearch {
   openAfterHideQuickSearchWindow: boolean;
   // 匹配条件：备注
   matchConditionsRemark: boolean;
+  // 宽度
+  width: number;
 }
 
 // 网络搜索

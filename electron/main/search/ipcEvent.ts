@@ -18,4 +18,8 @@ export default function () {
   ipcMain.on("setQuickSearchWindowHeight", (event, args) => {
     global.quickSearchWindow.setBounds({ height: args });
   });
+  // 设置快速搜索窗口宽度
+  ipcMain.on("setQuickSearchWindowWidth", (event, args) => {
+    global.quickSearchWindow.setBounds({ width: args });
+  });
 }
