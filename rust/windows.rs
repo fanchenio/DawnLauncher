@@ -6,6 +6,7 @@ use napi::{
     JsFunction,
 };
 use serde::{Deserialize, Serialize};
+use std::thread;
 use std::{
     collections::HashMap,
     io::Cursor,
@@ -185,32 +186,34 @@ pub fn shell_execute(
     params: String,
     start_location: Option<String>,
 ) {
-    // dir
-    let dir = start_location.unwrap_or_else(|| {
-        // 判断是否是文件夹
-        let path = Path::new(&file);
-        if path.is_dir() {
-            // 文件夹
-            file.clone()
-        } else {
-            // 文件 获取上一级目录
-            path.parent().unwrap().display().to_string()
+    thread::spawn(move || {
+        // dir
+        let dir = start_location.unwrap_or_else(|| {
+            // 判断是否是文件夹
+            let path = Path::new(&file);
+            if path.is_dir() {
+                // 文件夹
+                file.clone()
+            } else {
+                // 文件 获取上一级目录
+                path.parent().unwrap().display().to_string()
+            }
+        });
+        // HSTRING
+        let operation = HSTRING::from(operation.as_str());
+        let file = HSTRING::from(file.as_str());
+        let params = HSTRING::from(params.as_str());
+        let dir = HSTRING::from(dir.as_str());
+        // PCWSTR
+        let operation = PCWSTR(operation.as_ptr());
+        let file = PCWSTR(file.as_ptr());
+        let params = PCWSTR(params.as_ptr());
+        let dir = PCWSTR(dir.as_ptr());
+        unsafe {
+            // execute
+            ShellExecuteW(None, operation, file, params, dir, SW_SHOWDEFAULT);
         }
     });
-    // HSTRING
-    let operation = HSTRING::from(operation.as_str());
-    let file = HSTRING::from(file.as_str());
-    let params = HSTRING::from(params.as_str());
-    let dir = HSTRING::from(dir.as_str());
-    // PCWSTR
-    let operation = PCWSTR(operation.as_ptr());
-    let file = PCWSTR(file.as_ptr());
-    let params = PCWSTR(params.as_ptr());
-    let dir = PCWSTR(dir.as_ptr());
-    unsafe {
-        // execute
-        ShellExecuteW(None, operation, file, params, dir, SW_SHOWDEFAULT);
-    }
 }
 
 /**
