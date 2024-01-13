@@ -76,13 +76,16 @@ function setShortcutKey(setting: Setting = global.setting) {
     setting.general.showHideShortcutKey.trim() !== ""
   ) {
     try {
-      globalShortcut.register(setting.general.showHideShortcutKey, () => {
-        if (global.mainWindow.isVisible()) {
-          hideMainWindow();
-        } else {
-          showMainWindowBefore(true);
+      globalShortcut.register(
+        setting.general.showHideShortcutKey.replace("Win", "Super"),
+        () => {
+          if (global.mainWindow.isVisible()) {
+            hideMainWindow();
+          } else {
+            showMainWindowBefore(true);
+          }
         }
-      });
+      );
     } catch (e) {
       if (process.env.NODE_ENV === "development") {
         console.log(e);
@@ -94,10 +97,13 @@ function setShortcutKey(setting: Setting = global.setting) {
   for (const classification of classificationList) {
     if (classification.globalShortcutKey && classification.shortcutKey) {
       try {
-        globalShortcut.register(classification.shortcutKey, () => {
-          // 分类
-          showMainWindowBefore(true, classification.id);
-        });
+        globalShortcut.register(
+          classification.shortcutKey.replace("Win", "Super"),
+          () => {
+            // 分类
+            showMainWindowBefore(true, classification.id);
+          }
+        );
       } catch (e) {
         if (process.env.NODE_ENV === "development") {
           console.log(e);
@@ -110,10 +116,13 @@ function setShortcutKey(setting: Setting = global.setting) {
   for (const item of itemList) {
     if (item.globalShortcutKey && item.shortcutKey) {
       try {
-        globalShortcut.register(item.shortcutKey, () => {
-          // 项目
-          run("main", "open", item);
-        });
+        globalShortcut.register(
+          item.shortcutKey.replace("Win", "Super"),
+          () => {
+            // 项目
+            run("main", "open", item);
+          }
+        );
       } catch (e) {
         if (process.env.NODE_ENV === "development") {
           console.log(e);
@@ -127,29 +136,32 @@ function setShortcutKey(setting: Setting = global.setting) {
     setting.quickSearch.showHideShortcutKey.trim() !== ""
   ) {
     try {
-      globalShortcut.register(setting.quickSearch.showHideShortcutKey, () => {
-        if (global.setting.quickSearch.enable) {
-          // 如果窗口不存在或者被销毁的话，就创建窗口
-          if (
-            !global.quickSearchWindow ||
-            global.quickSearchWindow.isDestroyed()
-          ) {
-            createQuickSearchWindow();
-          }
-          // 如果初始化完毕并且窗口状态是正常的话，可以进行显示/隐藏
-          if (
-            global.quickSearchWindowInit &&
-            global.quickSearchWindow &&
-            !global.quickSearchWindow.isDestroyed()
-          ) {
-            if (global.quickSearchWindow.isVisible()) {
-              hideQuickSearchWindow();
-            } else {
-              showQuickSearchWindowBefore();
+      globalShortcut.register(
+        setting.quickSearch.showHideShortcutKey.replace("Win", "Super"),
+        () => {
+          if (global.setting.quickSearch.enable) {
+            // 如果窗口不存在或者被销毁的话，就创建窗口
+            if (
+              !global.quickSearchWindow ||
+              global.quickSearchWindow.isDestroyed()
+            ) {
+              createQuickSearchWindow();
+            }
+            // 如果初始化完毕并且窗口状态是正常的话，可以进行显示/隐藏
+            if (
+              global.quickSearchWindowInit &&
+              global.quickSearchWindow &&
+              !global.quickSearchWindow.isDestroyed()
+            ) {
+              if (global.quickSearchWindow.isVisible()) {
+                hideQuickSearchWindow();
+              } else {
+                showQuickSearchWindowBefore();
+              }
             }
           }
         }
-      });
+      );
     } catch (e) {
       if (process.env.NODE_ENV === "development") {
         console.log(e);
