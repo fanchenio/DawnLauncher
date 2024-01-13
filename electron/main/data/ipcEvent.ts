@@ -2,6 +2,7 @@ import { dialog, ipcMain } from "electron";
 import { backupData, createBackupRestoreDataWindow } from ".";
 import { closeWindow, relaunch, showErrorMessageBox } from "../commons";
 import { restore } from "./data";
+import { rmSync } from "node:fs";
 
 export default function () {
   // 创建备份/恢复数据窗口
@@ -26,6 +27,13 @@ export default function () {
         filters: [{ name: "DB", extensions: ["db"] }],
       });
       if (filePath && filePath.trim() !== "") {
+        try {
+          rmSync(filePath);
+        } catch (e) {
+          if (process.env.NODE_ENV === "development") {
+            console.log(e);
+          }
+        }
         backupData(filePath).finally(() => {
           // 关闭备份/恢复窗口
           closeWindow(global.backupRestoreDataWindow);
