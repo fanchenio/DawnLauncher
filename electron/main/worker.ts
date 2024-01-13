@@ -728,7 +728,8 @@ async function getDirectoryItemList(
           }
           if (!item) {
             item = newItem({ classificationId, type });
-            item.name = deleteExtname(getFileName(path));
+            item.name =
+              type === 0 ? deleteExtname(getFileName(path)) : getFileName(path);
             item.data.target = path;
             item.data.icon = getFileIcon(path);
           }
