@@ -597,7 +597,7 @@ function doubleClickTaskbar(
   if (
     displays.length > 1 ||
     displays.length === 0 ||
-    className !== "Shell_TrayWnd"
+    (className !== "Shell_TrayWnd" && className !== "Shell_SecondaryTrayWnd")
   ) {
     // 清除timeout
     clearTimeout(global.doubleClickTaskbarTimer);
@@ -621,7 +621,8 @@ function doubleClickTaskbar(
     if (
       global.doubleClickTaskbarCounter &&
       global.doubleClickTaskbarCounter === 2 &&
-      mousedownClassName === "Shell_TrayWnd"
+      (mousedownClassName === "Shell_TrayWnd" ||
+        mousedownClassName === "Shell_SecondaryTrayWnd")
     ) {
       // 清除timeout
       clearTimeout(global.doubleClickTaskbarTimer);
