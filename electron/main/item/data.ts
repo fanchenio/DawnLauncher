@@ -133,6 +133,7 @@ function batchAdd(
       if (id) {
         item.id = id;
         item.order = newOrder;
+        item.classificationId = classificationId;
         resultList.push(item);
       }
       newOrder++;
