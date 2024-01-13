@@ -1,6 +1,6 @@
 import { BrowserWindow, shell } from "electron";
 import { join } from "node:path";
-import { getMainBackgorunColor, sendToWebContent } from "../commons";
+import { sendToWebContent } from "../commons";
 import cacheData from "../commons/cacheData";
 
 // 窗口

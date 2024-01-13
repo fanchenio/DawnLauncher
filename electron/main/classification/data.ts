@@ -14,7 +14,7 @@ import { getDataSqlite3 } from "../../commons/betterSqlite3";
 let db = getDataSqlite3();
 
 // 分类表名
-let classificationTableName = "classification";
+let tableName = "classification";
 
 // 查询字段
 let selectColumn =
@@ -41,7 +41,7 @@ function getClassification(row: any): Classification {
  */
 function init() {
   // sql
-  let sql = `CREATE TABLE IF NOT EXISTS ${classificationTableName} (
+  let sql = `CREATE TABLE IF NOT EXISTS ${tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             parent_id INTEGER,
             name TEXT NOT NULL,
@@ -53,7 +53,7 @@ function init() {
   // 运行
   db.exec(sql);
   // 查询有多少条数据
-  sql = `SELECT COUNT(id) count FROM ${classificationTableName}`;
+  sql = `SELECT COUNT(id) count FROM ${tableName}`;
   let row: any = db.prepare(sql).get();
   let count = row.count as number;
   if (count === 0) {
@@ -70,7 +70,7 @@ function list(parentId: number | null = null) {
   // 参数
   let params = [];
   // sql
-  let sql = `SELECT ${selectColumn} FROM ${classificationTableName}`;
+  let sql = `SELECT ${selectColumn} FROM ${tableName}`;
   if (parentId) {
     sql += " WHERE parent_id = ?";
     params.push(parentId);
@@ -103,7 +103,7 @@ function add(
   // 获取序号
   let newOrder = getMaxOrder(parentId) + 1;
   // SQL
-  let sql = `INSERT INTO ${classificationTableName} (parent_id, name, type, data, shortcut_key, global_shortcut_key, \`order\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  let sql = `INSERT INTO ${tableName} (parent_id, name, type, data, shortcut_key, global_shortcut_key, \`order\`) VALUES (?, ?, ?, ?, ?, ?, ?)`;
   // 运行
   let id = db
     .prepare(sql)
@@ -146,7 +146,7 @@ function add(
  */
 function update(classification: Classification) {
   // SQL
-  let sql = `UPDATE ${classificationTableName} SET name = ?, type = ?, data = ?, shortcut_key = ?, global_shortcut_key = ? WHERE id = ?`;
+  let sql = `UPDATE ${tableName} SET name = ?, type = ?, data = ?, shortcut_key = ?, global_shortcut_key = ? WHERE id = ?`;
   // 运行
   return (
     db
@@ -169,7 +169,7 @@ function update(classification: Classification) {
  */
 function updateData(id: number, data: ClassificationData) {
   // SQL
-  let sql = `UPDATE ${classificationTableName} SET data = ? WHERE id = ?`;
+  let sql = `UPDATE ${tableName} SET data = ? WHERE id = ?`;
   return db.prepare(sql).run(JSON.stringify(data), id).changes > 0;
 }
 
@@ -179,7 +179,7 @@ function updateData(id: number, data: ClassificationData) {
  */
 function selectById(id: number): Classification | null {
   // SQL
-  let sql = `SELECT ${selectColumn} FROM ${classificationTableName} WHERE id = ?`;
+  let sql = `SELECT ${selectColumn} FROM ${tableName} WHERE id = ?`;
   // 运行
   let row = db.prepare(sql).get(id);
   // 返回
@@ -201,7 +201,7 @@ function del(id: number) {
     // 查询有无子分类
     let childList = list(classifictaion.id);
     // SQL
-    let sql = `DELETE FROM ${classificationTableName} WHERE id = ? or parent_id = ?`;
+    let sql = `DELETE FROM ${tableName} WHERE id = ? or parent_id = ?`;
     // 运行
     let res = db.prepare(sql).run(id, id).changes > 0;
     if (res) {
@@ -256,14 +256,14 @@ function updateOrder(
       newOrder = getMaxOrder(parentId) + 1;
     }
     // SQL
-    let sql = `UPDATE ${classificationTableName} SET \`order\` = ? WHERE id = ?`;
+    let sql = `UPDATE ${tableName} SET \`order\` = ? WHERE id = ?`;
     // 更新排序
     db.prepare(sql).run(newOrder, fromClassification.id);
     // 判断新序号和老序号之间的数据是+1还是-1
     if (newOrder > fromClassification.order) {
       // 新序号和老序号之间数据，序号-1
       let params = [fromClassification.order, newOrder, fromClassification.id];
-      sql = `UPDATE ${classificationTableName} SET \`order\` = \`order\` - 1 WHERE \`order\` > ? AND \`order\` <= ? AND id != ?`;
+      sql = `UPDATE ${tableName} SET \`order\` = \`order\` - 1 WHERE \`order\` > ? AND \`order\` <= ? AND id != ?`;
       if (parentId) {
         sql += " AND parent_id = ?";
         params.push(parentId);
@@ -274,7 +274,7 @@ function updateOrder(
     } else {
       // 新序号和老序号之间数据，序号+1
       let params = [newOrder, fromClassification.order, fromClassification.id];
-      sql = `UPDATE ${classificationTableName} SET \`order\` = \`order\` + 1 WHERE \`order\` >= ? AND \`order\` < ? AND id != ?`;
+      sql = `UPDATE ${tableName} SET \`order\` = \`order\` + 1 WHERE \`order\` >= ? AND \`order\` < ? AND id != ?`;
       if (parentId) {
         sql += " AND parent_id = ?";
         params.push(parentId);
@@ -298,7 +298,7 @@ function reorder(parentId: number | null) {
   // 开启事务
   db.transaction(() => {
     // SQL
-    let sql = `UPDATE ${classificationTableName} SET \`order\` = ? WHERE id = ?`;
+    let sql = `UPDATE ${tableName} SET \`order\` = ? WHERE id = ?`;
     // 更新序号
     for (let i = 0; i < classificationList.length; i++) {
       db.prepare(sql).run(i + 1, classificationList[i].id);
@@ -312,7 +312,7 @@ function reorder(parentId: number | null) {
  */
 function getMaxOrder(parentId: number | null) {
   // SQL
-  let sql = `SELECT MAX(\`order\`) \`order\` FROM ${classificationTableName}`;
+  let sql = `SELECT MAX(\`order\`) \`order\` FROM ${tableName}`;
   if (parentId) {
     sql += " WHERE parent_id = ?";
   } else {
@@ -337,7 +337,7 @@ function updateIcon(id: number, icon: string | null) {
   let classification = selectById(id);
   if (classification) {
     // SQL
-    let sql = `UPDATE ${classificationTableName} SET data = ? WHERE id = ?`;
+    let sql = `UPDATE ${tableName} SET data = ? WHERE id = ?`;
     // 更新图标
     classification.data.icon = icon;
     return (

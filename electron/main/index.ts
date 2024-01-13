@@ -26,6 +26,7 @@ if (
 ) {
   app.setPath("appData", join(dirname(process.execPath), "data"));
   app.setPath("userData", join(dirname(process.execPath), "data"));
+  app.setPath("sessionData", join(dirname(process.execPath), "data"));
 }
 
 process.env.DIST_ELECTRON = join(__dirname, "..");

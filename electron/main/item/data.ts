@@ -7,7 +7,7 @@ import { getDataSqlite3 } from "../../commons/betterSqlite3";
 let db = getDataSqlite3();
 
 // 项目表名
-let itemTableName = "item";
+let tableName = "item";
 
 // 查询字段
 let selectColumn =
@@ -36,7 +36,7 @@ function getItem(row: any): Item {
  */
 function init() {
   // sql
-  let sql = `CREATE TABLE IF NOT EXISTS ${itemTableName} (
+  let sql = `CREATE TABLE IF NOT EXISTS ${tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             classification_id INTEGER NOT NULL,
             name TEXT NOT NULL,
@@ -58,7 +58,7 @@ function add(item: Item, reuseId: boolean = false) {
   // 获取序号
   let newOrder = getMaxOrder(item.classificationId) + 1;
   // SQL
-  let sql = `INSERT INTO ${itemTableName} 
+  let sql = `INSERT INTO ${tableName} 
             (classification_id, name, type, data, shortcut_key, global_shortcut_key, \`order\`) 
             VALUES (?, ?, ?, ?, ?, ?, ?)`;
   // 参数
@@ -73,7 +73,7 @@ function add(item: Item, reuseId: boolean = false) {
   ];
   // 重复使用ID
   if (reuseId && item.id) {
-    sql = `INSERT INTO ${itemTableName} 
+    sql = `INSERT INTO ${tableName} 
             (id, classification_id, name, type, data, shortcut_key, global_shortcut_key, \`order\`) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     params.unshift(item.id);
@@ -108,7 +108,7 @@ function batchAdd(
     // 循环添加
     for (let item of itemList) {
       // SQL
-      let sql = `INSERT INTO ${itemTableName} 
+      let sql = `INSERT INTO ${tableName} 
             (classification_id, name, type, data, shortcut_key, global_shortcut_key, \`order\`) 
             VALUES (?, ?, ?, ?, ?, ?, ?)`;
       // 参数
@@ -123,7 +123,7 @@ function batchAdd(
       ];
       // 重复使用ID
       if (reuseId && item.id) {
-        sql = `INSERT INTO ${itemTableName} 
+        sql = `INSERT INTO ${tableName} 
             (id, classification_id, name, type, data, shortcut_key, global_shortcut_key, \`order\`) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         params.unshift(item.id);
@@ -147,7 +147,7 @@ function batchAdd(
  */
 function update(item: Item) {
   // SQL
-  let sql = `UPDATE ${itemTableName} 
+  let sql = `UPDATE ${tableName} 
             SET name = ?, 
             data = ?,
             shortcut_key = ?,
@@ -177,7 +177,7 @@ function updateClassificationId(
   newClassificationId: number
 ) {
   // SQL
-  let sql = `UPDATE ${itemTableName} 
+  let sql = `UPDATE ${tableName} 
             SET classification_id = ?
             WHERE classification_id = ?`;
   // 运行
@@ -193,7 +193,7 @@ function updateClassificationId(
  */
 function updateData(id: number, itemData: ItemData) {
   // SQL
-  let sql = `UPDATE ${itemTableName} 
+  let sql = `UPDATE ${tableName} 
             SET data = ?
             WHERE id = ?`;
   // 运行
@@ -206,7 +206,7 @@ function updateData(id: number, itemData: ItemData) {
  */
 function getMaxOrder(classificationId: number) {
   // SQL
-  let sql = `SELECT MAX(\`order\`) \`order\` FROM ${itemTableName} WHERE classification_id = ?`;
+  let sql = `SELECT MAX(\`order\`) \`order\` FROM ${tableName} WHERE classification_id = ?`;
   // 运行
   let row: any = db.prepare(sql).get(classificationId);
   if (row && row.order) {
@@ -222,7 +222,7 @@ function getMaxOrder(classificationId: number) {
  */
 function selectById(id: number): Item | null {
   // SQL
-  let sql = `SELECT ${selectColumn} FROM ${itemTableName} WHERE id = ?`;
+  let sql = `SELECT ${selectColumn} FROM ${tableName} WHERE id = ?`;
   // 运行
   let row = db.prepare(sql).get(id);
   // 返回
@@ -244,7 +244,7 @@ function list(simple: boolean = false, classificationId: number | null = null) {
   // sql
   let sql = `SELECT ${
     simple ? simpleSelectColumn : selectColumn
-  } FROM ${itemTableName}`;
+  } FROM ${tableName}`;
   if (classificationId) {
     sql += " WHERE classification_id = ?";
     params.push(classificationId);
@@ -269,7 +269,7 @@ function selectByIdList(simple: boolean, idList: Array<number>) {
   // sql
   let sql = `SELECT ${
     simple ? simpleSelectColumn : selectColumn
-  } FROM ${itemTableName} WHERE id IN (`;
+  } FROM ${tableName} WHERE id IN (`;
   for (let i = 0; i < idList.length; i++) {
     sql += "?";
     if (i !== idList.length - 1) {
@@ -307,7 +307,7 @@ function del(id: number) {
   let item = selectById(id);
   if (item) {
     // SQL
-    let sql = `DELETE FROM ${itemTableName} WHERE id = ?`;
+    let sql = `DELETE FROM ${tableName} WHERE id = ?`;
     // 运行
     let res = db.prepare(sql).run(id).changes > 0;
     if (res) {
@@ -328,7 +328,7 @@ function del(id: number) {
  */
 function deleteByClassificationId(classificationId: number) {
   // SQL
-  let sql = `DELETE FROM ${itemTableName} WHERE classification_id = ?`;
+  let sql = `DELETE FROM ${tableName} WHERE classification_id = ?`;
   // 运行
   return db.prepare(sql).run(classificationId).changes > 0;
 }
@@ -343,7 +343,7 @@ function reorder(classification_id: number) {
   // 开启事务
   db.transaction(() => {
     // SQL
-    let sql = `UPDATE ${itemTableName} SET \`order\` = ? WHERE id = ?`;
+    let sql = `UPDATE ${tableName} SET \`order\` = ? WHERE id = ?`;
     // 更新序号
     for (let i = 0; i < itemList.length; i++) {
       db.prepare(sql).run(i + 1, itemList[i].id);
@@ -396,7 +396,7 @@ function updateOrder(
     // 开启事务
     db.transaction(() => {
       // SQL
-      let sql = `UPDATE ${itemTableName} SET \`order\` = ?, classification_id = ? WHERE id = ?`;
+      let sql = `UPDATE ${tableName} SET \`order\` = ?, classification_id = ? WHERE id = ?`;
       // 更新序号
       for (let i = 0; i < toItemList.length; i++) {
         db.prepare(sql).run(i + 1, toClassificationId, toItemList[i].id);
