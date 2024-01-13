@@ -55,6 +55,12 @@ if (!app.requestSingleInstanceLock()) {
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 app.whenReady().then(() => {
   try {
+    // 禁止多开
+    const instanceLock = app.requestSingleInstanceLock();
+    if (!instanceLock) {
+      app.quit();
+      return;
+    }
     // addon
     global.addon = require("../../native/addon.node");
     // 初始化数据
@@ -77,12 +83,6 @@ app.whenReady().then(() => {
         app.quit();
         return;
       }
-    }
-    // 禁止多开
-    const instanceLock = app.requestSingleInstanceLock();
-    if (!instanceLock) {
-      app.quit();
-      return;
     }
     // 初始化数据
     classificationDataInit();
