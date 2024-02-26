@@ -773,3 +773,14 @@ fn get_foreground_window_class_name() -> String {
     // 返回
     u16_to_string(&buffer)
 }
+
+/**
+ * 获取当前鼠标位置
+ */
+pub fn get_cursor_point() -> [i32; 2] {
+    let mut point = POINT::default();
+    unsafe {
+        GetCursorPos(&mut point);
+    };
+    [point.x, point.y]
+}

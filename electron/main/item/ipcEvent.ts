@@ -5,6 +5,7 @@ import {
   ipcMain,
   clipboard,
   MenuItemConstructorOptions,
+  screen,
 } from "electron";
 import { getAbsolutePath } from "../../commons/utils";
 import {
@@ -22,6 +23,7 @@ import {
   getClipboardImageFile,
   pasteIcon,
   updateOpenInfo,
+  deleteQuickSearchHistory,
 } from ".";
 import {
   getAppxItemList,
@@ -171,6 +173,8 @@ export default function () {
     if (!classification) {
       return;
     }
+    // 鼠标位置
+    let point = global.addon.getCursorPoint();
     // 菜单
     let menuList: Array<MenuItem> = [];
     // 组装菜单
@@ -184,7 +188,10 @@ export default function () {
         }
         // "打开"菜单
         let openMenu = false;
-        if (item.type === 0 && ext && (ext === "exe" || ext === "bat")) {
+        if (
+          (item.type === 0 && ext && (ext === "exe" || ext === "bat")) ||
+          item.type === 4
+        ) {
           menuList.push(
             new MenuItem({
               label: global.language.runAsAdministrator,
@@ -233,10 +240,12 @@ export default function () {
               label: global.language.explorerMenu,
               click: () => {
                 // 获取当前窗口所在屏幕
-                let screen = getWindowInScreen();
+                let display = getWindowInScreen(
+                  type === "main" ? global.mainWindow : global.quickSearchWindow
+                );
                 let scaleFactor = 1;
-                if (screen && screen.length > 0) {
-                  scaleFactor = screen[0].scaleFactor;
+                if (display && display.length > 0) {
+                  scaleFactor = display[0].scaleFactor;
                 }
                 // 弹出资源管理器菜单
                 sendToWebContent(
@@ -251,12 +260,17 @@ export default function () {
                 global.addon.disableMouseHook();
                 // 弹出资源管理器菜单
                 global.addon.explorerContextMenu(
-                  global.mainWindow.getNativeWindowHandle().readInt32LE(0),
+                  (type === "main"
+                    ? global.mainWindow
+                    : global.quickSearchWindow
+                  )
+                    .getNativeWindowHandle()
+                    .readInt32LE(0),
                   item.type === 0 || item.type === 1
                     ? getAbsolutePath(item.data.target)
                     : item.data.target,
-                  args.x * scaleFactor,
-                  args.y * scaleFactor
+                  point[0],
+                  point[1]
                 );
                 // 开启鼠标HOOK
                 global.addon.enableMouseHook();
@@ -310,7 +324,7 @@ export default function () {
           );
           pathMenu = true;
         }
-        if (item.type === 0 || item.type === 1 || item.type === 2) {
+        if (item.type === 0 || item.type === 1) {
           menuList.push(
             new MenuItem({
               label: global.language.createShortcut,
@@ -676,5 +690,9 @@ export default function () {
   // 更新打开信息
   ipcMain.on("updateItemOpenInfo", (event, args) => {
     updateOpenInfo(args.type, args.id);
+  });
+  // 删除历史记录
+  ipcMain.on("deleteQuickSearchHistory", (event, args) => {
+    deleteQuickSearchHistory(args);
   });
 }

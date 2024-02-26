@@ -183,3 +183,12 @@ fn remove_window_animation(window: i32) {
 fn get_appx_list() -> Vec<HashMap<String, String>> {
     windows::get_appx_list()
 }
+
+/**
+ * 获取当前鼠标位置
+ */
+#[allow(dead_code)]
+#[napi]
+fn get_cursor_point() -> [i32; 2] {
+    windows::get_cursor_point()
+}

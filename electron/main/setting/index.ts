@@ -101,7 +101,7 @@ function setShortcutKey(setting: Setting = global.setting) {
           classification.shortcutKey.replace("Win", "Super"),
           () => {
             // 分类
-            showMainWindowBefore(true, classification.id);
+            showMainWindowBefore(true, false, classification.id);
           }
         );
       } catch (e) {

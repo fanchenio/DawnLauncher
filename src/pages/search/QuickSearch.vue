@@ -80,6 +80,7 @@
             getSearchItemClassificationName((item as Item).classificationId)
           }}</span></span
         >
+        <!-- 快捷键 -->
         <template
           v-if="
             store.setting.quickSearch.openShortcutKey !== 'none' && index <= 9
@@ -121,6 +122,20 @@
             ></keyText>
           </template>
         </template>
+        <!-- 删除历史记录 -->
+        <Icon
+          v-if="showHistory"
+          class="delete-history-icon text-[10px] p-[2px] ml-[10px] cursor-pointer"
+          style="border-radius: 12px"
+          :style="{
+            color: store.setting.appearance.theme.mainFontColor,
+            backgroundColor:
+              store.setting.appearance.theme.secondBackgroundColor,
+          }"
+          :title="store.language.deleteHistory"
+        >
+          <CloseRound></CloseRound>
+        </Icon>
       </li>
     </ul>
   </div>
@@ -159,6 +174,7 @@ import {
 import keyText from "../../components/KeyText.vue";
 import { Icon } from "@vicons/utils";
 import { SearchOutline, TerminalOutline } from "@vicons/ionicons5";
+import { CloseRound } from "@vicons/material";
 import { useMainStore } from "../../store";
 // pinia
 const store = useMainStore();
@@ -304,20 +320,31 @@ function getHistory() {
 }
 // 父级运行项目
 function parentRunItem(e: any) {
-  // 找到item
-  let itemElement = getClassElement(e, "item");
-  if (itemElement) {
-    if (mode.value === "search") {
-      // 项目ID
-      let itemId = parseInt(itemElement.getAttribute("item-id"));
-      // 查询项目
-      let item = getItemById(itemId);
-      if (item && item.data) {
-        runItem(item);
+  // 找到delete-history-icon
+  let deleteHistoryElement = getClassElement(e, "delete-history-icon");
+  if (deleteHistoryElement) {
+    // 找到item
+    let itemElement = getClassElement(e, "item");
+    // 项目ID
+    let itemId = parseInt(itemElement.getAttribute("item-id"));
+    // 删除历史记录
+    window.item.deleteQuickSearchHistory(itemId);
+  } else {
+    // 找到item
+    let itemElement = getClassElement(e, "item");
+    if (itemElement) {
+      if (mode.value === "search") {
+        // 项目ID
+        let itemId = parseInt(itemElement.getAttribute("item-id"));
+        // 查询项目
+        let item = getItemById(itemId);
+        if (item && item.data) {
+          runItem(item);
+        }
+      } else if (mode.value === "commandLine") {
+        // 目标
+        commandLineRun(itemElement.getAttribute("target"));
       }
-    } else if (mode.value === "commandLine") {
-      // 目标
-      commandLineRun(itemElement.getAttribute("target"));
     }
   }
 }
@@ -671,12 +698,10 @@ onMounted(() => {
       // 聚焦文本框
       searchInput.value.focus();
       // 刷新DOM完毕执行
-      nextTick(() => {
-        setTimeout(() => {
-          // 显示窗口
-          window.quickSearch.showWindow();
-        }, 10);
-      });
+      setTimeout(() => {
+        // 显示窗口
+        window.quickSearch.showWindow();
+      }, 10);
     })
   );
   // 清空数据
@@ -703,6 +728,17 @@ onMounted(() => {
       if (data.type === "quickSearch") {
         store.quickSearchItemRightMenuItemId = data.id;
       }
+    })
+  );
+  // 删除历史记录
+  listens.push(
+    window.item.onUpdateOpenInfo((data) => {
+      let item = getItemById(data.id);
+      if (item) {
+        item.data.quickSearchOpenNumber = data.quickSearchOpenNumber;
+        item.data.quickSearchLastOpen = data.quickSearchLastOpen;
+      }
+      getHistory();
     })
   );
 });

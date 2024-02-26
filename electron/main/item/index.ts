@@ -664,6 +664,35 @@ function clearOpenInfo(item: Item) {
   item.data.quickSearchLastOpen = 0;
 }
 
+/**
+ * 删除历史记录
+ * @param itemId
+ */
+function deleteQuickSearchHistory(itemId: number) {
+  // 查询
+  let item = selectById(itemId);
+  if (item) {
+    // 重置历史记录
+    item.data.quickSearchLastOpen = 0;
+    item.data.quickSearchOpenNumber = 0;
+    // 更新
+    updateData(itemId, item.data);
+    // 通知主页面
+    sendToWebContent("mainWindow", "onUpdateOpenInfo", {
+      id: itemId,
+      quickSearchOpenNumber: item.data.quickSearchOpenNumber,
+      quickSearchLastOpen: item.data.quickSearchLastOpen,
+      type: "quickSearch",
+    });
+    // 通知快速搜索页面
+    sendToWebContent("quickSearchWindow", "onUpdateOpenInfo", {
+      id: itemId,
+      quickSearchOpenNumber: item.data.quickSearchOpenNumber,
+      quickSearchLastOpen: item.data.quickSearchLastOpen,
+    });
+  }
+}
+
 export {
   createAddEditWindow,
   createNetworkIconWindow,
@@ -681,4 +710,5 @@ export {
   getClipboardImageFile,
   pasteIcon,
   checkInvalid,
+  deleteQuickSearchHistory,
 };

@@ -682,6 +682,10 @@ contextBridge.exposeInMainWorld("item", {
   updateOpenInfo: (type: string, id: number) => {
     ipcRenderer.send("updateItemOpenInfo", { type, id });
   },
+  // 删除历史记录
+  deleteQuickSearchHistory: (id: number) => {
+    ipcRenderer.send("deleteQuickSearchHistory", id);
+  },
 });
 
 contextBridge.exposeInMainWorld("setting", {

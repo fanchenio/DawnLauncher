@@ -144,6 +144,7 @@ declare global {
       onUpdateOpenInfo: (callback: Callback) => Function;
       onCheckInvalid: (callback: Callback) => Function;
       updateOpenInfo: (type: string, id: number) => void;
+      deleteQuickSearchHistory: (id: number) => void;
     };
     setting: {
       createWindow: () => void;
