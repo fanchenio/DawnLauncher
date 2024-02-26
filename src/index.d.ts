@@ -39,7 +39,7 @@ declare global {
       ) => void;
     };
     main: {
-      showWindow: (blurHide: boolean) => void;
+      showWindow: (blurHide: boolean, autoHide: boolean) => void;
       hideWindow: () => void;
       initData: () => void;
       onShowWindowBefore: (callback: Callback) => Function;

@@ -118,8 +118,8 @@ contextBridge.exposeInMainWorld("api", {
 
 contextBridge.exposeInMainWorld("main", {
   // 显示窗口
-  showWindow: (blurHide: boolean) => {
-    ipcRenderer.send("showMainWindow", { blurHide });
+  showWindow: (blurHide: boolean, autoHide: boolean) => {
+    ipcRenderer.send("showMainWindow", { blurHide, autoHide });
   },
   // 隐藏窗口
   hideWindow: () => {

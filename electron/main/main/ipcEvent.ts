@@ -7,7 +7,7 @@ import { getWindow } from "../commons";
 export default function () {
   // 显示窗口
   ipcMain.on("showMainWindow", (event, args) => {
-    showMainWindow(args.blurHide);
+    showMainWindow(args.blurHide, args.autoHide);
   });
   // 隐藏窗口
   ipcMain.on("hideMainWindow", () => {

@@ -371,7 +371,7 @@ function resize() {
 // 加载完dom后再显示页面
 nextTick(() => {
   if (!store.setting.general.startupTray) {
-    window.main.showWindow(false);
+    window.main.showWindow(false, false);
   }
   window.main.initData();
 });
@@ -553,7 +553,7 @@ onMounted(() => {
       nextTick(() => {
         setTimeout(() => {
           // 显示窗口
-          window.main.showWindow(data.blurHide);
+          window.main.showWindow(data.blurHide, data.autoHide);
         }, 10);
       });
     })

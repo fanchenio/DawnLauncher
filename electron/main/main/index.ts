@@ -115,13 +115,7 @@ function createMainWindow() {
   // 失去焦点
   mainWindow.on("blur", () => {
     if (global.setting.general.edgeAutoHide && global.blurHide) {
-      let scaleFactor = screen.getPrimaryDisplay().scaleFactor;
-      autoHide(
-        screen.getCursorScreenPoint().x * scaleFactor,
-        screen.getCursorScreenPoint().y * scaleFactor,
-        0,
-        false
-      );
+      autoHide(0, false);
     }
     if (
       mainWindow.isVisible() &&
@@ -176,7 +170,7 @@ function createMainWindow() {
       // 鼠标移动
       if (!global.blurHide) {
         // 停靠在桌面边缘时自动隐藏
-        autoHide(x, y, 40, true);
+        autoHide(20, true);
       }
     } else if (event === "mousedown") {
       // 鼠标按下
@@ -190,7 +184,6 @@ function createMainWindow() {
         doubleClickTaskbar(mousedownClassName, className);
       } else if (button === 3) {
         // 中间单击
-        // 显示隐藏窗口
         showHideMouseWheelClick();
       }
     }
@@ -210,15 +203,18 @@ function createMainWindow() {
 /**
  * 显示窗口之前
  * @param blurHide
+ * @param autoHide
  * @param selectedClassificationId
  */
 function showMainWindowBefore(
   blurHide: boolean,
+  autoHide = false,
   selectedClassificationId: number | null = null
 ) {
   // 向主窗口发送通知
   sendToWebContent("mainWindow", "onShowMainWindowBefore", {
     blurHide,
+    autoHide,
     selectedClassificationId,
   });
 }
@@ -226,8 +222,9 @@ function showMainWindowBefore(
 /**
  * 显示窗口
  * @param blurHide
+ * @param autoHide
  */
-function showMainWindow(blurHide: boolean) {
+function showMainWindow(blurHide: boolean, autoHide = false) {
   // flag
   let flag = true;
   // 是否开启勿扰模式
@@ -236,8 +233,10 @@ function showMainWindow(blurHide: boolean) {
       flag = false;
     }
   }
-  // 显示时跟随鼠标位置
-  showFollowMousePosition();
+  if (!autoHide) {
+    // 显示时跟随鼠标位置
+    showFollowMousePosition();
+  }
   if (flag) {
     global.mainWindow.show();
     global.mainWindow.focus();
@@ -311,9 +310,10 @@ function createTray(show: boolean) {
 /**
  * 边缘吸附
  * @param display
+ * @param workArea
  * @returns
  */
-function edgeAdsorb(display: Display | null) {
+function edgeAdsorb(display: Display | null, workArea = false) {
   // 如果勾选停靠在桌面边缘时自动隐藏，放行
   if (
     global.mainWindow.isDestroyed() ||
@@ -329,33 +329,76 @@ function edgeAdsorb(display: Display | null) {
     if (displays.length > 1 || displays.length === 0) {
       return;
     }
-    // 获取屏幕工作区域
-    let workArea = displays[0].workArea;
+    // 屏幕区域
+    let displayBounds = workArea ? displays[0].workArea : displays[0].bounds;
     // 窗口位置信息
     let bounds = global.mainWindow.getBounds();
-    if (bounds.x + bounds.width >= workArea.x + workArea.width) {
+    if (bounds.x <= displayBounds.x && bounds.y <= displayBounds.y) {
+      // 左上角
+      global.mainWindow.setBounds({ x: displayBounds.x, y: displayBounds.y });
+      global.mainWindowDirection = "leftTop";
+      global.blurHide = false;
+    } else if (
+      bounds.x + bounds.width >= displayBounds.x + displayBounds.width &&
+      bounds.y <= displayBounds.y
+    ) {
+      // 右上角
+      global.mainWindow.setBounds({
+        x: displayBounds.x + displayBounds.width - bounds.width,
+        y: displayBounds.y,
+      });
+      global.mainWindowDirection = "rightTop";
+      global.blurHide = false;
+    } else if (
+      bounds.x <= displayBounds.x &&
+      bounds.y + bounds.height >= displayBounds.y + displayBounds.height
+    ) {
+      // 左下角
+      global.mainWindow.setBounds({
+        x: displayBounds.x,
+        y: displayBounds.y + displayBounds.height - bounds.height,
+      });
+      global.mainWindowDirection = "leftBottom";
+      global.blurHide = false;
+    } else if (
+      bounds.x + bounds.width >= displayBounds.x + displayBounds.width &&
+      bounds.y + bounds.height >= displayBounds.y + displayBounds.height
+    ) {
+      // 右下角
+      global.mainWindow.setBounds({
+        x: displayBounds.x + displayBounds.width - bounds.width,
+        y: displayBounds.y + displayBounds.height - bounds.height,
+      });
+      global.mainWindowDirection = "rightBottom";
+      global.blurHide = false;
+    } else if (bounds.x <= displayBounds.x) {
+      // 左侧
+      global.mainWindow.setBounds({ x: displayBounds.x });
+      global.mainWindowDirection = "left";
+      global.blurHide = false;
+    } else if (
+      bounds.x + bounds.width >=
+      displayBounds.x + displayBounds.width
+    ) {
       // 右侧
       global.mainWindow.setBounds({
-        x: workArea.x + workArea.width - bounds.width,
+        x: displayBounds.x + displayBounds.width - bounds.width,
       });
       global.mainWindowDirection = "right";
       global.blurHide = false;
-    } else if (bounds.x <= workArea.x) {
-      // 左侧
-      global.mainWindow.setBounds({ x: workArea.x });
-      global.mainWindowDirection = "left";
-      global.blurHide = false;
-    }
-    if (bounds.y + bounds.height >= workArea.y + workArea.height) {
+    } else if (
+      bounds.y + bounds.height >=
+      displayBounds.y + displayBounds.height
+    ) {
       // 底部
       global.mainWindow.setBounds({
-        y: workArea.y + workArea.height - bounds.height,
+        y: displayBounds.y + displayBounds.height - bounds.height,
       });
       global.mainWindowDirection = "bottom";
       global.blurHide = false;
-    } else if (bounds.y <= workArea.y) {
+    } else if (bounds.y <= displayBounds.y) {
       // 顶部
-      global.mainWindow.setBounds({ y: workArea.y });
+      global.mainWindow.setBounds({ y: displayBounds.y });
       global.mainWindowDirection = "top";
       global.blurHide = false;
     }
@@ -393,7 +436,7 @@ function showFollowMousePosition() {
     // 获取当前鼠标所在屏幕
     let display = screen.getDisplayNearestPoint(point);
     // 边缘吸附
-    edgeAdsorb(display);
+    edgeAdsorb(display, true);
   }
 }
 
@@ -421,13 +464,11 @@ function alwaysCenter() {
 
 /**
  * 边缘自动隐藏
- * @param x
- * @param y
  * @param size
  * @param timer 是否启用延迟显示/隐藏
  * @returns
  */
-function autoHide(x: number, y: number, size: number, timer: boolean) {
+function autoHide(size: number, timer: boolean) {
   if (global.mainWindow.isDestroyed() || !global.setting.general.edgeAutoHide) {
     return;
   }
@@ -435,44 +476,73 @@ function autoHide(x: number, y: number, size: number, timer: boolean) {
   if (mainWindow.getChildWindows().length > 0) {
     return;
   }
+  let x = screen.getCursorScreenPoint().x;
+  let y = screen.getCursorScreenPoint().y;
   try {
     // 屏幕
     let displays = getWindowInScreen(mainWindow);
     if (displays.length > 1 || displays.length === 0) {
       return;
     }
-    // 工作区域
-    let workArea = displays[0].workArea;
-    // 缩放比例
-    let scaleFactor = displays[0].scaleFactor;
+    // 屏幕区域
+    let displayBounds = displays[0].bounds;
     // 窗口位置信息
     let bounds = mainWindow.getBounds();
     if (mainWindow.isVisible()) {
       let flag = false;
-      if (bounds.x + bounds.width >= workArea.x + workArea.width) {
+      if (bounds.x === displayBounds.x && bounds.y === displayBounds.y) {
+        // 左上角
+        flag =
+          x >= bounds.x + bounds.width + size ||
+          y >= bounds.y + bounds.height + size;
+      } else if (
+        bounds.x + bounds.width === displayBounds.x + displayBounds.width &&
+        bounds.y === displayBounds.y
+      ) {
+        // 右上角
+        flag = x <= bounds.x - size || y >= bounds.y + bounds.height + size;
+      } else if (
+        bounds.x === displayBounds.x &&
+        bounds.y + bounds.height === displayBounds.y + displayBounds.height
+      ) {
+        // 左下角
+        flag = x >= bounds.x + bounds.width + size || y <= bounds.y - size;
+      } else if (
+        bounds.x + bounds.width === displayBounds.x + displayBounds.width &&
+        bounds.y + bounds.height === displayBounds.y + displayBounds.height
+      ) {
+        // 右下角
+        flag = x <= bounds.x - size || y <= bounds.y - size;
+      } else if (
+        bounds.x + bounds.width >=
+        displayBounds.x + displayBounds.width
+      ) {
         // 右侧
         flag =
-          x <= bounds.x * scaleFactor - size ||
-          y <= bounds.y * scaleFactor - size ||
-          y >= (bounds.y + bounds.height) * scaleFactor + size;
-      } else if (bounds.x === workArea.x) {
+          x <= bounds.x - size ||
+          y <= bounds.y - size ||
+          y >= bounds.y + bounds.height + size;
+      } else if (bounds.x === displayBounds.x) {
         // 左侧
         flag =
-          x > (bounds.x + bounds.width) * scaleFactor + size ||
-          y <= bounds.y * scaleFactor - size ||
-          y >= (bounds.y + bounds.height) * scaleFactor + size;
-      } else if (bounds.y + bounds.height >= workArea.y + workArea.height) {
+          x > bounds.x + bounds.width + size ||
+          y <= bounds.y - size ||
+          y >= bounds.y + bounds.height + size;
+      } else if (
+        bounds.y + bounds.height >=
+        displayBounds.y + displayBounds.height
+      ) {
         // 底部
         flag =
-          y < bounds.y * scaleFactor - size ||
-          x <= bounds.x * scaleFactor - size ||
-          x >= (bounds.x + bounds.width) * scaleFactor + size;
-      } else if (bounds.y === workArea.y) {
+          y < bounds.y - size ||
+          x <= bounds.x - size ||
+          x >= bounds.x + bounds.width + size;
+      } else if (bounds.y === displayBounds.y) {
         // 顶部
         flag =
-          y > (bounds.y + bounds.height) * scaleFactor + size ||
-          x <= bounds.x * scaleFactor - size ||
-          x >= (bounds.x + bounds.width) * scaleFactor + size;
+          y > bounds.y + bounds.height + size ||
+          x <= bounds.x - size ||
+          x >= bounds.x + bounds.width + size;
       }
       if (flag && !global.classificationRightMenu && !global.itemRightMenu) {
         if (
@@ -496,39 +566,63 @@ function autoHide(x: number, y: number, size: number, timer: boolean) {
     } else {
       if (global.mainWindowDirection) {
         let flag = false;
-        let scaleFactorX = bounds.x * scaleFactor;
-        let scaleFactorY = bounds.y * scaleFactor;
-        let windowWidthPosition = (bounds.x + bounds.width) * scaleFactor;
-        let windowHeightPosition = (bounds.y + bounds.height) * scaleFactor;
         if (
-          global.mainWindowDirection === "right" &&
-          x >= windowWidthPosition - 1 &&
-          y >= scaleFactorY &&
-          y <= windowHeightPosition
+          global.mainWindowDirection === "leftTop" &&
+          x === displayBounds.x &&
+          y === displayBounds.y
         ) {
-          // 右侧
+          // 左上角
+          flag = true;
+        } else if (
+          global.mainWindowDirection === "rightTop" &&
+          x === displayBounds.x + displayBounds.width - 1 &&
+          y === displayBounds.y
+        ) {
+          // 右上角
+          flag = true;
+        } else if (
+          global.mainWindowDirection === "leftBottom" &&
+          x === displayBounds.x &&
+          y === displayBounds.y + displayBounds.height - 1
+        ) {
+          // 左下角
+          flag = true;
+        } else if (
+          global.mainWindowDirection === "rightBottom" &&
+          x === displayBounds.x + displayBounds.width - 1 &&
+          y === displayBounds.y + displayBounds.height - 1
+        ) {
+          // 右下角
           flag = true;
         } else if (
           global.mainWindowDirection === "left" &&
-          x <= workArea.x &&
-          y >= scaleFactorY &&
-          y <= windowHeightPosition
+          x <= displayBounds.x &&
+          y >= bounds.y &&
+          y <= bounds.y + bounds.height
         ) {
           // 左侧
           flag = true;
         } else if (
+          global.mainWindowDirection === "right" &&
+          x >= bounds.x + bounds.width - 1 &&
+          y >= bounds.y &&
+          y <= bounds.y + bounds.height
+        ) {
+          // 右侧
+          flag = true;
+        } else if (
           global.mainWindowDirection === "bottom" &&
-          y >= windowHeightPosition - 1 &&
-          x >= scaleFactorX &&
-          x <= windowWidthPosition
+          y >= bounds.y + bounds.height - 1 &&
+          x >= bounds.x &&
+          x <= bounds.x + bounds.width
         ) {
           // 底部
           flag = true;
         } else if (
           global.mainWindowDirection === "top" &&
-          y <= workArea.y &&
-          x >= scaleFactorX &&
-          x <= windowWidthPosition
+          y <= displayBounds.y &&
+          x >= bounds.x &&
+          x <= bounds.x + bounds.width
         ) {
           // 顶部
           flag = true;
@@ -541,11 +635,11 @@ function autoHide(x: number, y: number, size: number, timer: boolean) {
           ) {
             // 延迟显示
             global.autoHideTimer = setTimeout(function () {
-              showMainWindowBefore(false);
+              showMainWindowBefore(false, true);
             }, global.setting.general.delayDisplayMs);
           } else if (!timer || global.setting.general.delayDisplayMs === 0) {
             // 显示
-            showMainWindowBefore(false);
+            showMainWindowBefore(false, true);
           }
         } else {
           // 清空timer
