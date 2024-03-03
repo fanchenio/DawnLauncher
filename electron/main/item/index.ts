@@ -1,6 +1,6 @@
 import { BrowserWindow, shell, dialog, app } from "electron";
 import { join } from "node:path";
-import { getAbsolutePath, getURLParams } from "../../commons/utils";
+import { parsePath, getURLParams } from "../../commons/utils";
 import { Item } from "../../../types/item";
 import {
   batchAdd,
@@ -326,7 +326,7 @@ function run(
       // 获取绝对路径
       if (item.type === 0 || item.type === 1) {
         // 获取路径
-        item.data.target = getAbsolutePath(item.data.target);
+        item.data.target = parsePath(item.data.target);
       }
       try {
         // 判断文件或文件夹是否存在
@@ -496,7 +496,7 @@ async function createShortcut(item: Item) {
   let target = item.data.target;
   if (item.type === 0 || item.type === 1) {
     // 获取绝对路径
-    target = getAbsolutePath(target);
+    target = parsePath(target);
   }
   // 保存路径
   let savePath =

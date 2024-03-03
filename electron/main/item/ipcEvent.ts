@@ -5,9 +5,8 @@ import {
   ipcMain,
   clipboard,
   MenuItemConstructorOptions,
-  screen,
 } from "electron";
-import { getAbsolutePath } from "../../commons/utils";
+import { parsePath } from "../../commons/utils";
 import {
   convertTarget,
   createAddEditWindow,
@@ -267,7 +266,7 @@ export default function () {
                     .getNativeWindowHandle()
                     .readInt32LE(0),
                   item.type === 0 || item.type === 1
-                    ? getAbsolutePath(item.data.target)
+                    ? parsePath(item.data.target)
                     : item.data.target,
                   point[0],
                   point[1]
@@ -296,7 +295,7 @@ export default function () {
               click: () => {
                 clipboard.writeText(
                   item.type === 0 || item.type === 1
-                    ? getAbsolutePath(item.data.target)
+                    ? parsePath(item.data.target)
                     : item.data.target
                 );
               },
@@ -679,7 +678,7 @@ export default function () {
       }
       let icon = join(process.env.VITE_PUBLIC, "drag-and-drop.png");
       event.sender.startDrag({
-        file: getAbsolutePath(item.data.target),
+        file: parsePath(item.data.target),
         icon: icon,
       });
     } finally {

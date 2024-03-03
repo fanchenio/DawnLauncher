@@ -98,24 +98,20 @@ function parseEnvPath(path: string) {
 }
 
 /**
- * 获取绝对路径
- * @param path
+ * 解析路径
+ * @returns
  */
-function getAbsolutePath(path: string) {
+function parsePath(path: string) {
+  // 尝试解析环境变量
+  path = parseEnvPath(path);
+  // 是否是相对路径
   if (!isAbsolutePath(path)) {
-    // 尝试解析环境变量
-    let newPath = parseEnvPath(path);
-    // 判断解析之后的路径是否是绝对路径
-    if (isAbsolutePath(newPath)) {
-      return newPath;
-    } else {
-      return resolve(
-        process.env.NODE_ENV === "development"
-          ? resolve(".")
-          : dirname(process.execPath),
-        path
-      );
-    }
+    return resolve(
+      process.env.NODE_ENV === "development"
+        ? resolve(".")
+        : dirname(process.execPath),
+      path
+    );
   }
   return path;
 }
@@ -146,10 +142,4 @@ function getFileIcon(filePath: string | null) {
   return icon;
 }
 
-export {
-  getURLParams,
-  getAbsolutePath,
-  getFileIcon,
-  iconExts,
-  getRandomUserAgent,
-};
+export { getURLParams, parsePath, getFileIcon, iconExts, getRandomUserAgent };

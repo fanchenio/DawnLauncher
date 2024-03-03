@@ -7,11 +7,10 @@ import {
 import { CommonItem, Item } from "../../types/item";
 import { parse, join, extname } from "node:path";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { execSync } from "node:child_process";
 import xml2js from "xml2js";
 import { newCommonItem, newCommonItemData } from "../../commons/utils/common";
 import { ShortcutInfo } from "../../types/common";
-import { getAbsolutePath, getFileIcon } from "../commons/utils";
+import { parsePath, getFileIcon } from "../commons/utils";
 
 // AppxInfo
 export interface AppxInfo {
@@ -753,7 +752,7 @@ function checkInvalidItem(itemList: Array<Item>) {
     // 只校验文件和文件夹
     if (item.type === 0 || item.type === 1) {
       // 获取绝对路径
-      let path = getAbsolutePath(item.data.target);
+      let path = parsePath(item.data.target);
       try {
         statSync(path);
       } catch (e) {
