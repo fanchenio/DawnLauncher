@@ -11,6 +11,7 @@ import {
 } from ".";
 import { statSync } from "node:fs";
 import { getWindow } from "../commons/index";
+import { execute } from "../item";
 
 export default function () {
   // emit
@@ -165,7 +166,7 @@ export default function () {
   });
   // 运行
   ipcMain.on("run", (event, args) => {
-    global.addon.shellExecute(
+    execute(
       args.operation,
       args.target,
       args.params ?? "",

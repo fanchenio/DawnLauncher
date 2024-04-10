@@ -6,18 +6,15 @@ use napi::{
     JsFunction,
 };
 use serde::{Deserialize, Serialize};
-use std::thread;
 use std::{
     collections::HashMap,
     io::Cursor,
-    path::Path,
     process::Command,
     sync::atomic::{AtomicBool, Ordering},
 };
 use windows::Management::Deployment::PackageManager;
 use windows::{
     core::{ComInterface, HSTRING, PCSTR, PCWSTR},
-    w,
     Win32::{
         Foundation::{HWND, LPARAM, LRESULT, MAX_PATH, POINT, RECT, SIZE, WPARAM},
         Graphics::{
@@ -34,7 +31,6 @@ use windows::{
                 CLSCTX_INPROC_SERVER, COINIT_APARTMENTTHREADED, STGM_READ,
             },
             Environment::GetEnvironmentVariableW,
-            SystemInformation::GetSystemDirectoryW,
         },
         UI::{
             Input::Ime::{
@@ -44,19 +40,18 @@ use windows::{
             Shell::{
                 BHID_SFUIObject, IContextMenu, IShellItem, IShellItemImageFactory, IShellLinkW,
                 SHCreateItemFromParsingName, SHEmptyRecycleBinW, SHQueryUserNotificationState,
-                ShellExecuteW, ShellLink, CMF_NORMAL, CMINVOKECOMMANDINFO,
-                QUNS_ACCEPTS_NOTIFICATIONS, QUNS_APP, QUNS_BUSY, QUNS_NOT_PRESENT,
-                QUNS_PRESENTATION_MODE, QUNS_QUIET_TIME, QUNS_RUNNING_D3D_FULL_SCREEN,
-                SHERB_NOSOUND, SIIGBF_ICONONLY, SLGP_UNCPRIORITY,
+                ShellLink, CMF_NORMAL, CMINVOKECOMMANDINFO, QUNS_ACCEPTS_NOTIFICATIONS, QUNS_APP,
+                QUNS_BUSY, QUNS_NOT_PRESENT, QUNS_PRESENTATION_MODE, QUNS_QUIET_TIME,
+                QUNS_RUNNING_D3D_FULL_SCREEN, SHERB_NOSOUND, SIIGBF_ICONONLY, SLGP_UNCPRIORITY,
             },
             WindowsAndMessaging::{
                 CallNextHookEx, CreatePopupMenu, DestroyMenu, FindWindowW, GetClassNameW,
                 GetCursorPos, GetForegroundWindow, GetSystemMetrics, GetWindowRect, SendMessageW,
                 SetForegroundWindow, SetWindowsHookExW, TrackPopupMenu, WindowFromPoint, HHOOK,
-                MSLLHOOKSTRUCT, SC_MONITORPOWER, SM_CXSCREEN, SM_CYSCREEN, SW_NORMAL,
-                SW_SHOWDEFAULT, TPM_NONOTIFY, TPM_RETURNCMD, WH_MOUSE_LL, WM_LBUTTONDOWN,
-                WM_LBUTTONUP, WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MOUSEHWHEEL, WM_MOUSEMOVE,
-                WM_MOUSEWHEEL, WM_RBUTTONDOWN, WM_RBUTTONUP, WM_SYSCOMMAND,
+                MSLLHOOKSTRUCT, SC_MONITORPOWER, SM_CXSCREEN, SM_CYSCREEN, SW_NORMAL, TPM_NONOTIFY,
+                TPM_RETURNCMD, WH_MOUSE_LL, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MBUTTONDOWN,
+                WM_MBUTTONUP, WM_MOUSEHWHEEL, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_RBUTTONDOWN,
+                WM_RBUTTONUP, WM_SYSCOMMAND,
             },
         },
     },
@@ -178,45 +173,6 @@ fn image_buffer_to_base64(image_buffer: ImageBuffer<Rgba<u8>, Vec<u8>>) -> Strin
 }
 
 /**
- * 运行
- */
-pub fn shell_execute(
-    operation: String,
-    file: String,
-    params: String,
-    start_location: Option<String>,
-) {
-    thread::spawn(move || {
-        // dir
-        let dir = start_location.unwrap_or_else(|| {
-            // 判断是否是文件夹
-            let path = Path::new(&file);
-            if path.is_dir() {
-                // 文件夹
-                file.clone()
-            } else {
-                // 文件 获取上一级目录
-                path.parent().unwrap().display().to_string()
-            }
-        });
-        // HSTRING
-        let operation = HSTRING::from(operation.as_str());
-        let file = HSTRING::from(file.as_str());
-        let params = HSTRING::from(params.as_str());
-        let dir = HSTRING::from(dir.as_str());
-        // PCWSTR
-        let operation = PCWSTR(operation.as_ptr());
-        let file = PCWSTR(file.as_ptr());
-        let params = PCWSTR(params.as_ptr());
-        let dir = PCWSTR(dir.as_ptr());
-        unsafe {
-            // execute
-            ShellExecuteW(None, operation, file, params, dir, SW_SHOWDEFAULT);
-        }
-    });
-}
-
-/**
  * 获取快捷方式信息
  */
 pub fn get_shortcut_file_info(path: &str) -> Option<HashMap<String, String>> {
@@ -263,45 +219,6 @@ pub fn get_shortcut_file_info(path: &str) -> Option<HashMap<String, String>> {
         CoUninitialize();
     }
     None
-}
-
-/**
- * 运行命令
- */
-pub fn system_item_execute(target: &str, params: Option<&str>) {
-    if target == "static:TurnOffMonitor" {
-        // 关闭显示器
-        turn_off_monitor()
-    } else {
-        let mut file = target.to_string();
-        if !target.starts_with("shell:") {
-            // 如果不是shell开头，就查询路径
-            file = search_path(target).unwrap_or(target.to_string());
-        }
-        let file = HSTRING::from(file);
-        let params = match params {
-            Some(p) => HSTRING::from(p),
-            _ => HSTRING::new(),
-        };
-        // 获取系统盘路径当作工作目录
-        let mut buffer = [0u16; MAX_PATH as usize];
-        unsafe {
-            GetSystemDirectoryW(Some(&mut buffer));
-        }
-        let dir = u16_to_string(&buffer);
-        let dir = HSTRING::from(dir);
-        // execute
-        unsafe {
-            ShellExecuteW(
-                None,
-                w!("open"),
-                PCWSTR(file.as_ptr()),
-                PCWSTR(params.as_ptr()),
-                PCWSTR(dir.as_ptr()),
-                SW_SHOWDEFAULT,
-            );
-        }
-    }
 }
 
 /**

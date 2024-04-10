@@ -1,5 +1,5 @@
 import { BrowserWindow, shell, dialog, app } from "electron";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { parsePath, getURLParams } from "../../commons/utils";
 import { Item } from "../../../types/item";
 import {
@@ -11,7 +11,7 @@ import {
   updateData,
   updateOrder,
 } from "./data";
-import { accessSync, writeFile, statSync, readFileSync } from "node:fs";
+import { writeFile, statSync, readFileSync } from "node:fs";
 import mime from "mime";
 import {
   deleteExtname,
@@ -27,6 +27,7 @@ import {
   sendToWebContent,
 } from "../commons/index";
 import { fork } from "../../commons/utilityProcessUtils";
+import { exec } from "node:child_process";
 
 // 窗口
 let itemAddEditWindow: BrowserWindow | null = null;
@@ -302,6 +303,58 @@ function updateOpenInfo(type: string, id: number) {
 }
 
 /**
+ * 运行
+ * @param operation
+ * @param file
+ * @param params
+ * @param startLocation
+ */
+function execute(
+  operation: "open" | "runas",
+  file: string,
+  params: string | null,
+  startLocation: string | null = null
+) {
+  // 工作目录
+  let currentDir = startLocation;
+  if (!currentDir || currentDir.trim() === "") {
+    let statRes = statSync(file);
+    if (statRes.isDirectory()) {
+      currentDir = file;
+    } else {
+      currentDir = dirname(file);
+    }
+  }
+  // 组装命令
+  let cmd: string;
+  if (operation === "open") {
+    cmd = 'start "" "' + file + '"';
+    if (params && params.trim() !== "") {
+      let paramsList = analysisParams(params);
+      for (const param of paramsList) {
+        cmd += ' "' + param + '"';
+      }
+    }
+  } else if (operation === "runas") {
+    cmd = "powershell Start-Process";
+    cmd += " '\"" + file + "\"' ";
+    cmd += "-Verb RunAs";
+    if (params && params.trim() !== "") {
+      cmd += " -ArgumentList ";
+      let paramsList = analysisParams(params);
+      for (let i = 0; i < paramsList.length; i++) {
+        if (i > 0) {
+          cmd += ", ";
+        }
+        cmd += "'\\\"" + paramsList[i] + "\\\"'";
+      }
+    }
+  }
+  // 运行
+  exec(cmd, { cwd: currentDir });
+}
+
+/**
  * 运行项目
  * @param type
  * @param operation
@@ -320,48 +373,86 @@ function run(
       // 网址
       shell.openExternal(item.data.target);
     } else if (item.type === 3 || item.type === 4) {
-      // 系统 或 appx
-      global.addon.systemItemExecute(item.data.target, item.data.params);
+      if (item.data.target.indexOf("shell:") >= 0) {
+        // 带有shell:
+        exec("explorer " + item.data.target);
+      } else if (item.data.target === "static:TurnOffMonitor") {
+        // 关闭显示器
+        global.addon.turnOffMonitor();
+      } else {
+        if (item.type === 3) {
+          // 带路径的系统软件
+          let path = global.addon.searchPath(item.data.target);
+          if (!path || path.trim() === "") {
+            path = item.data.target;
+          }
+          let cmd = 'start "" "' + path + '"';
+          if (item.data.params && item.data.params.trim() !== "") {
+            let paramsList = analysisParams(item.data.params);
+            for (const param of paramsList) {
+              cmd += ' "' + param + '"';
+            }
+          }
+          exec(cmd, {
+            cwd: app.getPath("home"),
+          });
+        } else {
+          // appx
+          execute(
+            "open",
+            item.data.target,
+            item.data.params,
+            app.getPath("home")
+          );
+        }
+      }
     } else {
       // 获取绝对路径
       if (item.type === 0 || item.type === 1) {
         // 获取路径
         item.data.target = parsePath(item.data.target);
       }
-      try {
-        // 判断文件或文件夹是否存在
-        accessSync(item.data.target);
-        // 存在
-        if (operation === "openFileLocation") {
-          // 打开文件所在位置
-          global.addon.openFileLocation(item.data.target);
-        } else {
-          // 运行
-          global.addon.shellExecute(
-            operation,
-            item.data.target,
-            item.data.params ?? "",
-            item.data.startLocation
-          );
-        }
-      } catch (e) {
-        let message: string | null = null;
-        if (item.type === 0 && operation !== "openFileLocation") {
-          message = global.language.notFoundFile;
-        } else {
-          message = global.language.notFoundFolder;
-        }
-        message += '"' + item.data.target + '"';
-        dialog.showMessageBox(global.mainWindow, {
-          title: "Dawn Launcher",
-          message: message,
-          buttons: [global.language.ok],
-          type: "error",
-          noLink: true,
-        });
+      if (operation === "openFileLocation") {
+        // 打开文件所在位置
+        global.addon.openFileLocation(item.data.target);
+      } else {
+        // 运行
+        execute(
+          operation,
+          item.data.target,
+          item.data.params ?? "",
+          item.data.startLocation
+        );
       }
     }
   }
+}
+
+/**
+ * 解析参数
+ * @param params
+ */
+function analysisParams(params: string) {
+  // res
+  let resParams = [];
+  // 尝试获取带有双引号的参数
+  const values = params.trim().match(/"([^"]*)"/g);
+  // 添加到结果列表并替换掉原有字符串
+  if (values) {
+    values.forEach((v) => {
+      resParams.push(v.replace(/"/g, ""));
+      params = params.replace(v, "");
+    });
+  }
+  // 按空格切分参数
+  let split = params.trim().split(" ");
+  split.forEach((v) => {
+    if (v.trim() !== "") {
+      resParams.push(v);
+    }
+  });
+  // 返回
+  return resParams;
 }
 
 /**
@@ -711,4 +802,5 @@ export {
   pasteIcon,
   checkInvalid,
   deleteQuickSearchHistory,
+  execute,
 };

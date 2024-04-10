@@ -32,24 +32,6 @@ fn get_shortcut_file_info(path: String) -> Option<HashMap<String, String>> {
 }
 
 /**
- * 运行
- */
-#[allow(dead_code)]
-#[napi]
-fn shell_execute(operation: String, file: String, params: String, start_location: Option<String>) {
-    windows::shell_execute(operation, file, params, start_location)
-}
-
-/**
- * 运行系统项目
- */
-#[allow(dead_code)]
-#[napi]
-fn system_item_execute(target: String, params: Option<String>) {
-    windows::system_item_execute(&target, params.as_deref())
-}
-
-/**
  * 打开文件所在位置
  */
 #[allow(dead_code)]
@@ -191,4 +173,13 @@ fn get_appx_list() -> Vec<HashMap<String, String>> {
 #[napi]
 fn get_cursor_point() -> [i32; 2] {
     windows::get_cursor_point()
+}
+
+/**
+ * 关闭显示器
+ */
+#[allow(dead_code)]
+#[napi]
+pub fn turn_off_monitor() {
+    windows::turn_off_monitor()
 }

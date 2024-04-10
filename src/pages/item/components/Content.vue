@@ -536,7 +536,7 @@ function drop(e: any, classificationId: number | null) {
     ) {
       // 如果不是同一个项目就可以使用某个程序打开此文件
       if (item.id !== store.itemDragOutData.id) {
-        let params = store.itemDragOutData.data.target;
+        let params = '"' + store.itemDragOutData.data.target + '"';
         if (item.data.params) {
           params += " " + item.data.params;
         }
