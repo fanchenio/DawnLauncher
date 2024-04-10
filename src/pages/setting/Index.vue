@@ -1032,6 +1032,7 @@
                 <NCheckbox
                   v-model:checked="setting.quickSearch.enable"
                   :focusable="false"
+                  @update:checked="setEnable"
                   >{{ store.language.useQuickSearch }}</NCheckbox
                 >
               </NFormItem>
@@ -2109,6 +2110,11 @@ function setCheckInvalidItem(value: boolean) {
 // 项目打开次数
 function setOpenNumber(value: boolean) {
   window.setting.setOpenNumber(value);
+}
+// 启用
+function setEnable() {
+  // 设置快捷键
+  window.setting.setShortcutKey(convert(setting.value));
 }
 // 快速搜索打开快捷键
 let quickSearchShortcutKeyOpenOptions = ref([

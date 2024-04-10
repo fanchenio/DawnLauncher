@@ -132,6 +132,7 @@ function setShortcutKey(setting: Setting = global.setting) {
   }
   // 快速搜索
   if (
+    setting.quickSearch.enable &&
     setting.quickSearch.showHideShortcutKey &&
     setting.quickSearch.showHideShortcutKey.trim() !== ""
   ) {
