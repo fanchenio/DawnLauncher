@@ -210,7 +210,7 @@ function copy(idList: Array<number>, toClassificationId: number) {
   let itemList = selectByIdList(false, idList);
   if (itemList.length > 0) {
     // 清空打开信息
-    resultList.forEach((item) => clearOpenInfo(item));
+    itemList.forEach((item) => clearOpenInfo(item));
     // 批量添加
     resultList = batchAdd(toClassificationId, itemList);
   }
