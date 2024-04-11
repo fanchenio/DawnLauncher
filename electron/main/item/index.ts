@@ -318,11 +318,15 @@ function execute(
   // 工作目录
   let currentDir = startLocation;
   if (!currentDir || currentDir.trim() === "") {
-    let statRes = statSync(file);
-    if (statRes.isDirectory()) {
-      currentDir = file;
-    } else {
-      currentDir = dirname(file);
+    try {
+      let statRes = statSync(file);
+      if (statRes.isDirectory()) {
+        currentDir = file;
+      } else {
+        currentDir = dirname(file);
+      }
+    } catch (e) {
+      currentDir = app.getPath("home");
     }
   }
   // 组装命令
