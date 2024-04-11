@@ -1,7 +1,7 @@
 {
   "name": "dawn-launcher",
   "productName": "Dawn Launcher",
-  "version": "1.3.9",
+  "version": "1.4.0",
   "main": "dist-electron/main/index.js",
   "description": "Windows 快捷启动工具，帮助您整理杂乱无章的桌面，分门别类管理您的桌面快捷方式，让您的桌面保持干净整洁。",
   "author": "FanChenIO",
