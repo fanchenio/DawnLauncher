@@ -238,14 +238,15 @@ function showMainWindow(blurHide: boolean, autoHide = false) {
     showFollowMousePosition();
   }
   if (flag) {
+    if (!global.setting.general.alwaysTop) {
+      mainWindow.setAlwaysOnTop(true, "screen-saver");
+    }
     global.mainWindow.show();
     global.mainWindow.focus();
-    global.blurHide = blurHide;
-    if (blurHide) {
-      global.blurHide = true;
-    } else {
-      global.blurHide = false;
+    if (!global.setting.general.alwaysTop) {
+      mainWindow.setAlwaysOnTop(false);
     }
+    global.blurHide = blurHide;
   }
 }
 
