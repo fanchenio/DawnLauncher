@@ -183,3 +183,21 @@ fn get_cursor_point() -> [i32; 2] {
 pub fn turn_off_monitor() {
     windows::turn_off_monitor()
 }
+
+/**
+ * 运行
+ */
+#[allow(dead_code)]
+#[napi]
+fn shell_execute(operation: String, file: String, params: String, start_location: Option<String>) {
+    windows::shell_execute(operation, file, params, start_location)
+}
+
+/**
+ * 运行系统项目
+ */
+#[allow(dead_code)]
+#[napi]
+fn system_item_execute(target: String, params: Option<String>) {
+    windows::system_item_execute(&target, params.as_deref())
+}
