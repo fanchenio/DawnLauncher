@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog } from "electron";
 import { release } from "node:os";
-import { join, dirname } from "node:path";
+import { join, dirname, basename } from "node:path";
 import indexIpcEvent from "./main/ipcEvent";
 import classificationIpcEvent from "./classification/ipcEvent";
 import { init as classificationDataInit } from "./classification/data";
@@ -105,6 +105,16 @@ app.whenReady().then(() => {
     }
     // 设置快捷键
     setShortcutKey();
+    // 每次开启软件时都设置一次开机启动选项
+    if (process.env.NODE_ENV !== "development") {
+      const exeName = basename(process.execPath);
+      app.setLoginItemSettings({
+        openAtLogin: global.setting.general.startup,
+        openAsHidden: false,
+        path: process.execPath,
+        args: ["--processStart", `"${exeName}"`],
+      });
+    }
   } catch (e) {
     if (process.env.NODE_ENV === "development") {
       console.log(e);
