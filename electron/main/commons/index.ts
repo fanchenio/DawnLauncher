@@ -81,6 +81,8 @@ function downloadImage(windowName: string, url: string) {
         headers: {
           "User-Agent": getRandomUserAgent(),
         },
+        maxRedirects: 5,
+        jar: true,
       },
       function (error, response, body) {
         if (operation.retry(error)) {
@@ -147,6 +149,8 @@ function getURLInfo(windowName: string, url: string, redirect: boolean) {
           headers: {
             "User-Agent": getRandomUserAgent(),
           },
+          maxRedirects: 5,
+          jar: true,
         },
         function (error, response, body) {
           if (operation.retry(error)) {
@@ -245,6 +249,8 @@ function analysisHTML(windowName: string, url: string, data: string) {
             headers: {
               "User-Agent": getRandomUserAgent(),
             },
+            maxRedirects: 5,
+            jar: true,
           },
           function (error, response, body) {
             if (operation.retry(error)) {
