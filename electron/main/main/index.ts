@@ -81,9 +81,7 @@ function createMainWindow() {
       mainWindow.setAlwaysOnTop(true, "screen-saver");
     }
     // 锁定尺寸
-    if (!global.setting.general.lockSize) {
-      mainWindow.setResizable(!global.setting.general.lockSize);
-    }
+    mainWindow.setResizable(!global.setting.general.lockSize);
     // 托盘
     createTray(!global.setting.general.hideTray);
     // 永远居中
