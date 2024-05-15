@@ -129,8 +129,8 @@ function showQuickSearchWindow() {
     // 在鼠标所在的屏幕显示
     let workArea = currentDisplay.workArea;
     let bounds = quickSearchWindow.getBounds();
-    let x = workArea.x + workArea.width / 2 - bounds.width / 2;
-    let y = workArea.y + workArea.height / 2 - 44 / 2;
+    let x = Math.round(workArea.x + workArea.width / 2 - bounds.width / 2);
+    let y = Math.round(workArea.y + workArea.height / 2 - 44 / 2);
     quickSearchWindow.setPosition(x, y);
     for (let i = 0; i < 10; i++) {
       quickSearchWindow.setSize(global.setting.quickSearch.width, 44);
