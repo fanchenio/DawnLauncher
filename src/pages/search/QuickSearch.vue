@@ -74,14 +74,19 @@
       >
         <CustomItemIcon :item="(item as Item)" :icon-size="28"></CustomItemIcon>
         <span
-          class="text-sm ml-[10px] overflow-hidden text-ellipsis whitespace-nowrap h-[20px] flex-1 pr-[10px]"
-          >{{ getName(item.name)
-          }}<span v-if="mode === 'search'" class="text-xs ml-2">{{
+          class="text-sm ml-[10px] overflow-hidden text-ellipsis whitespace-nowrap h-[20px]"
+          >{{ getName(item.name) }}</span
+        >
+        <span
+          v-if="mode === 'search'"
+          class="text-xs ml-2 max-w-[100px] flex-shrink-0 pr-[10px]"
+          >{{
             getSearchItemClassificationName((item as Item).classificationId)
-          }}</span></span
+          }}</span
         >
         <!-- 快捷键 -->
-        <template
+        <div
+          class="ml-auto max-w-[100px] flex-shrink-0"
           v-if="
             store.setting.quickSearch.openShortcutKey !== 'none' && index <= 9
           "
@@ -121,7 +126,7 @@
               :text="(index + 1 === 10 ? 0 : index + 1).toString()"
             ></keyText>
           </template>
-        </template>
+        </div>
         <!-- 删除历史记录 -->
         <Icon
           v-if="showHistory"

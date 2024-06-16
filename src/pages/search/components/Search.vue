@@ -84,10 +84,14 @@
         <CustomItemIcon :item="(item as Item)" :icon-size="32"></CustomItemIcon>
         <span
           class="text-sm ml-2 overflow-hidden text-ellipsis whitespace-nowrap h-[20px]"
-          >{{ getName(item.name)
-          }}<span v-if="mode === 'search'" class="text-xs ml-2">{{
+          >{{ getName(item.name) }}</span
+        >
+        <span
+          v-if="mode === 'search'"
+          class="text-xs ml-2 max-w-[100px] flex-shrink-0"
+          >{{
             getSearchItemClassificationName((item as Item).classificationId)
-          }}</span></span
+          }}</span
         >
       </li>
     </ul>
