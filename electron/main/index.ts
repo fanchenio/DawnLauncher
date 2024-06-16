@@ -38,8 +38,8 @@ process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
 // 解决透明窗口闪烁
 app.commandLine.appendSwitch("wm-window-animations-disabled");
 
-// Disable GPU Acceleration for Windows 7
-if (release().startsWith("6.1")) app.disableHardwareAcceleration();
+// 解决创建窗口屏幕闪烁问题
+app.disableHardwareAcceleration();
 
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
