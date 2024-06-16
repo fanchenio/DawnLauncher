@@ -130,20 +130,20 @@
             <KeyboardArrowDownRound></KeyboardArrowDownRound>
           </Icon>
         </div>
-        <ul
+        <div
           v-show="
             classification.childList &&
             classification.childList.length > 0 &&
             classificationChildShowHiddenMap.has(classification.id)
           "
-          class="classification-child-list"
           :class="[
             `${
               store.setting.classification.layout === 'top'
-                ? 'fixed z-[10000] rounded drop-shadow-[0_0_6px_rgba(0,0,0,0.2)] origin-top-left pt-1 mt-1'
+                ? '!fixed !z-[10000] !rounded-lg !drop-shadow-[0_0_6px_rgba(0,0,0,0.2)] !origin-top-left !pt-1 !mt-1'
                 : ''
             }`,
           ]"
+          :data-simplebar="store.setting.classification.layout === 'top'"
           :style="{
             backgroundColor:
               store.setting.classification.layout === 'top'
@@ -156,87 +156,95 @@
               store.setting.classification.layout === 'top'
                 ? classificationWidth + 'px'
                 : '',
+            maxHeight:
+              store.setting.classification.layout === 'top' ? '300px' : 'auto',
           }"
-          :classification-parent-id="classification.id"
         >
-          <li
-            v-for="(
-              childClassification, childIndex
-            ) of classification.childList"
-            :id="'classification-child-' + classification.id"
-            :key="
-              'classification-' +
-              classification.id +
-              '-' +
-              childClassification.id +
-              '-' +
-              childIndex
-            "
-            class="classification-child mb-1 px-2 flex items-center h-[30px]"
-            :class="[
-              `${
-                store.setting.classification.nameAlign === 'center' ||
-                store.setting.classification.mode === 'icon'
-                  ? 'justify-center'
-                  : ''
-              }`,
-              `${
-                store.setting.classification.layout !== 'top' ? 'rounded' : ''
-              }`,
-              `${store.setting.classification.mode === 'normal' ? 'px-2' : ''}`,
-            ]"
-            :style="{
-              color:
-                isSelectedChild(childClassification.id, classification.id) ||
-                (store.itemSorting &&
-                  store.mouseoverClassificationId === childClassification.id)
-                  ? store.setting.appearance.theme.secondFontColor
-                  : undefined,
-              backgroundColor:
-                isSelectedChild(childClassification.id, classification.id) ||
-                (store.itemSorting &&
-                  store.mouseoverClassificationId === childClassification.id)
-                  ? hexToRGBA(
-                      store.setting.appearance.theme.secondBackgroundColor,
-                      store.setting.appearance.transparency
-                    )
-                  : undefined,
-            }"
+          <ul
+            class="classification-child-list h-full"
             :classification-parent-id="classification.id"
-            :classification-id="childClassification.id"
-            @click="
-              switchChildClassification(
-                classification.id,
-                childClassification.id
-              )
-            "
-            @dragleave="clearMouseOverChangeClassificationSetTimeout"
           >
-            <span
-              class="overflow-hidden text-ellipsis whitespace-nowrap"
+            <li
+              v-for="(
+                childClassification, childIndex
+              ) of classification.childList"
+              :id="'classification-child-' + classification.id"
+              :key="
+                'classification-' +
+                classification.id +
+                '-' +
+                childClassification.id +
+                '-' +
+                childIndex
+              "
+              class="classification-child mb-1 px-2 flex items-center h-[30px]"
+              :class="[
+                `${
+                  store.setting.classification.nameAlign === 'center' ||
+                  store.setting.classification.mode === 'icon'
+                    ? 'justify-center'
+                    : ''
+                }`,
+                `${
+                  store.setting.classification.layout !== 'top' ? 'rounded' : ''
+                }`,
+                `${
+                  store.setting.classification.mode === 'normal' ? 'px-2' : ''
+                }`,
+              ]"
               :style="{
-                filter: store.setting.appearance.fontShadow
-                  ? 'drop-shadow(1px 1px 1px ' +
-                    store.setting.appearance.fontShadowColor +
-                    ')'
-                  : undefined,
+                color:
+                  isSelectedChild(childClassification.id, classification.id) ||
+                  (store.itemSorting &&
+                    store.mouseoverClassificationId === childClassification.id)
+                    ? store.setting.appearance.theme.secondFontColor
+                    : undefined,
+                backgroundColor:
+                  isSelectedChild(childClassification.id, classification.id) ||
+                  (store.itemSorting &&
+                    store.mouseoverClassificationId === childClassification.id)
+                    ? hexToRGBA(
+                        store.setting.appearance.theme.secondBackgroundColor,
+                        store.setting.appearance.transparency
+                      )
+                    : undefined,
               }"
+              :classification-parent-id="classification.id"
+              :classification-id="childClassification.id"
+              @click="
+                switchChildClassification(
+                  classification.id,
+                  childClassification.id
+                )
+              "
+              @dragleave="clearMouseOverChangeClassificationSetTimeout"
             >
-              {{ getClassificationName(childClassification) }}
-            </span>
-          </li>
-          <li
-            v-show="store.setting.classification.layout !== 'top'"
-            class="h-[1px] my-1 border-t-[1px]"
-            style="border-top-style: solid"
-            :style="{
-              borderColor: hexToRGBA(
-                store.setting.appearance.theme.borderColor,
-                store.setting.appearance.transparency
-              ),
-            }"
-          ></li>
-        </ul>
+              <span
+                class="overflow-hidden text-ellipsis whitespace-nowrap"
+                :style="{
+                  filter: store.setting.appearance.fontShadow
+                    ? 'drop-shadow(1px 1px 1px ' +
+                      store.setting.appearance.fontShadowColor +
+                      ')'
+                    : undefined,
+                }"
+              >
+                {{ getClassificationName(childClassification) }}
+              </span>
+            </li>
+            <li
+              v-show="store.setting.classification.layout !== 'top'"
+              class="h-[1px] my-1 border-t-[1px]"
+              style="border-top-style: solid"
+              :style="{
+                borderColor: hexToRGBA(
+                  store.setting.appearance.theme.borderColor,
+                  store.setting.appearance.transparency
+                ),
+              }"
+            ></li>
+          </ul>
+        </div>
       </li>
     </ul>
   </div>
@@ -299,10 +307,17 @@ watch(
   () => {
     // +1
     count.value = count.value + 1;
+    classificationChildShowHiddenMap.value = new Map();
     // 刷新DOM完毕执行
     nextTick(() => {
+      // 滚动条
+      createSimpleBar();
       // 设置分类宽度
       setClassificationWidth();
+      // 创建父级分类拖拽对象;
+      createClassificationParentSortable();
+      // 创建子级分类拖拽对象
+      createClassificationChildSortable();
     });
   }
 );
@@ -787,6 +802,8 @@ function createClassificationParentSortable() {
             setClassificationWidth();
             // 页面高度 - 34（标题栏固定高度）
             height.value = document.documentElement.clientHeight - 34;
+            // 创建子级分类拖拽对象
+            createClassificationChildSortable();
           });
         }
       },
@@ -815,7 +832,7 @@ function createClassificationChildSortable() {
     classificationChildSortable.push(
       Sortable.create(<HTMLElement>element, {
         animation: 0,
-        forceFallback: true,
+        forceFallback: false,
         fallbackTolerance: 4,
         disabled: lockClassification,
         onStart() {

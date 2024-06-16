@@ -154,6 +154,12 @@ watch(
     nextTick(() => {
       // 监听页面大小
       resize();
+      // 设置项目宽度
+      setItemWidth();
+      // 创建项目拖拽对象
+      createItemSortable();
+      // 清除批量操作
+      clearBatchOperation();
       // 滚动到顶部
       scrollToTop(itemContentSimpleBar);
     });
