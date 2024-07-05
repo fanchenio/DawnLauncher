@@ -14,7 +14,7 @@ function convert<F, T>(from: F): T {
  * @returns
  */
 function isAbsolutePath(path: string) {
-  const regex = /^[a-zA-Z]:\\/;
+  const regex = /^[a-zA-Z]:\\|^\\\\/;
   return regex.test(path);
 }
 

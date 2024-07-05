@@ -1,4 +1,4 @@
-import { resolve, dirname, parse } from "node:path";
+import { resolve, dirname, parse, join } from "node:path";
 import { isAbsolutePath } from "../../commons/utils/common";
 import mime from "mime";
 import { readFileSync } from "node:fs";
@@ -59,12 +59,21 @@ function getURLParams(paramsMap: Map<string, any>) {
 function parseEnvPath(path: string) {
   // 尝试解析路径中的环境变量
   let parsedPath = parse(path);
-  let isBase = false;
+  // 路径数组
   let pathArr: Array<string> = [];
+  // 判断是否是网络路径，以\\开头
+  let isNetwork = false;
+  if (path.indexOf("\\\\") === 0) {
+    isNetwork = true;
+  }
+  // 是否是一级路径
+  let isBase = false;
   if (!parsedPath.dir || parsedPath.dir.trim() === "") {
+    // 如果为空代表路径只有一级，也就是当前文件本身，比如C:/1.txt
     pathArr = parsedPath.base.split("\\");
     isBase = true;
   } else {
+    // 不为空代表有父级目录
     pathArr = parsedPath.dir.split("\\");
   }
   // 新路径
@@ -93,8 +102,13 @@ function parseEnvPath(path: string) {
   if (!isBase) {
     newPathArr.push(parsedPath.base);
   }
-  // 拼接并返回
-  return newPathArr.join("\\");
+  // 拼接
+  let newPath = join(...newPathArr);
+  // 如果是网络路径，在最前面加\\
+  if (isNetwork) {
+    newPath = "\\\\" + newPath;
+  }
+  return newPath;
 }
 
 /**
