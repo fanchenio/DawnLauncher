@@ -401,47 +401,65 @@
               <span class="block font-semibold">{{
                 store.language.color
               }}</span>
-              <NFormItem class="mt-1" :label="store.language.mainColor">
-                <NColorPicker
-                  :modes="['hex']"
-                  v-model:value="mainBackgroundColor"
-                  @complete="changeMainBackgroundColor"
-                  :to="false"
-                ></NColorPicker>
-              </NFormItem>
-              <NFormItem class="mt-1" :label="store.language.secondaryColor">
-                <NColorPicker
-                  :modes="['hex']"
-                  v-model:value="secondBackgroundColor"
-                  @complete="changeSecondBackgroundColor"
-                  :to="false"
-                ></NColorPicker>
-              </NFormItem>
-              <NFormItem class="mt-1" :label="store.language.fontMainColor">
-                <NColorPicker
-                  :modes="['hex']"
-                  v-model:value="mainFontColor"
-                  @complete="changeMainFontColor"
-                  :to="false"
-                ></NColorPicker>
-              </NFormItem>
-              <NFormItem
-                class="mt-1"
-                :label="store.language.fontSecondaryColor"
-              >
-                <NColorPicker
-                  :modes="['hex']"
-                  v-model:value="secondFontColor"
-                  @complete="changeSecondFontColor"
-                  :to="false"
-                ></NColorPicker>
-              </NFormItem>
+              <div class="flex items-center">
+                <NFormItem
+                  class="mt-1 flex-1"
+                  :label="store.language.mainColor"
+                >
+                  <NColorPicker
+                    :modes="['hex']"
+                    v-model:value="mainBackgroundColor"
+                    @complete="changeMainBackgroundColor"
+                    :to="false"
+                    :show-alpha="false"
+                  ></NColorPicker>
+                </NFormItem>
+                <NFormItem
+                  class="mt-1 flex-1 ml-[10px]"
+                  :label="store.language.fontMainColor"
+                >
+                  <NColorPicker
+                    :modes="['hex']"
+                    v-model:value="mainFontColor"
+                    @complete="changeMainFontColor"
+                    :to="false"
+                    :show-alpha="false"
+                  ></NColorPicker>
+                </NFormItem>
+              </div>
+              <div class="flex items-center">
+                <NFormItem
+                  class="mt-1 flex-1"
+                  :label="store.language.secondaryColor"
+                >
+                  <NColorPicker
+                    :modes="['hex']"
+                    v-model:value="secondBackgroundColor"
+                    @complete="changeSecondBackgroundColor"
+                    :to="false"
+                    :show-alpha="false"
+                  ></NColorPicker>
+                </NFormItem>
+                <NFormItem
+                  class="mt-1 flex-1 ml-[10px]"
+                  :label="store.language.fontSecondaryColor"
+                >
+                  <NColorPicker
+                    :modes="['hex']"
+                    v-model:value="secondFontColor"
+                    @complete="changeSecondFontColor"
+                    :to="false"
+                    :show-alpha="false"
+                  ></NColorPicker>
+                </NFormItem>
+              </div>
               <NFormItem class="mt-1" :label="store.language.borderColor">
                 <NColorPicker
                   :modes="['hex']"
                   v-model:value="borderColor"
                   @complete="changeBorderColor"
                   :to="false"
+                  :show-alpha="false"
                 ></NColorPicker>
               </NFormItem>
             </NForm>
