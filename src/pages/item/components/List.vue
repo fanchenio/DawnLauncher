@@ -37,7 +37,7 @@
       <p
         class="text-center mx-2"
         :class="[
-          `${getLayout(classificationId) === 'tile' ? 'mt-2' : ''}`,
+          `${getLayout(classificationId) === 'tile' ? 'mt-2 text-center' : ''}`,
           `${
             getLayout(classificationId) === 'list'
               ? store.setting.item.hideEllipsis

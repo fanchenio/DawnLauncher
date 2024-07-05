@@ -75,7 +75,7 @@ input::-webkit-inner-spin-button {
 }
 
 .item-name-tile-2 {
-  word-break: break-all;
+  word-break: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -86,7 +86,7 @@ input::-webkit-inner-spin-button {
 
 .item-name-tile-2-no-ellipsis {
   max-height: 40px;
-  word-break: break-all;
+  word-break: break-word;
   overflow: hidden;
 }
 
