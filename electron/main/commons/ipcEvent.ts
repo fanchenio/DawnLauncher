@@ -103,14 +103,14 @@ export default function () {
     }
   });
   // 获取图标
-  ipcMain.on("getFileIcon", (event, args) => {
+  ipcMain.on("getFileIcon", async (event, args) => {
     // 窗口名称
     let windowName: string = args.windowName;
     // 路径
     let filePath: string | null = args.path;
     if (filePath) {
       // 图标
-      let icon: string | null = getFileIcon(filePath);
+      let icon: string | null = await getFileIcon(filePath);
       // 发送到页面
       sendToWebContent(windowName, "onGetFileIcon", icon);
     }

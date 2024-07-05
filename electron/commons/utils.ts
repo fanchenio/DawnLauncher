@@ -2,6 +2,7 @@ import { resolve, dirname, parse, join } from "node:path";
 import { isAbsolutePath } from "../../commons/utils/common";
 import mime from "mime";
 import { readFileSync } from "node:fs";
+import icojs from "icojs";
 
 // 图标格式
 const iconExts = ["jpg", "jpeg", "png", "gif", "ico", "svg", "webp"];
@@ -134,7 +135,7 @@ function parsePath(path: string) {
  * 获取文件图标
  * @param filePath
  */
-function getFileIcon(filePath: string | null) {
+async function getFileIcon(filePath: string | null) {
   // 图标
   let icon: string | null = null;
   if (filePath) {
@@ -143,6 +144,16 @@ function getFileIcon(filePath: string | null) {
     if (iconExts.includes(ext)) {
       // 读取文件
       let buffer = readFileSync(filePath);
+      if (ext === "ico") {
+        let images = await icojs.parseICO(buffer);
+        const largestImage = images.reduce((max, current) => {
+          if (current.width * current.height > max.width * max.height) {
+            return current;
+          }
+          return max;
+        });
+        buffer = Buffer.from(largestImage.buffer);
+      }
       icon =
         "data:" +
         mime.getType(filePath) +

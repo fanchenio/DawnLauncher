@@ -165,7 +165,7 @@ async function getStartMenuItemList(cacheList: Array<CommonItem>) {
             name,
             data: newCommonItemData({
               target: filePath,
-              icon: getFileIcon(filePath),
+              icon: await getFileIcon(filePath),
               params,
             }),
           });
@@ -596,7 +596,7 @@ async function getDropItemInfo(
         }
       }
       // 获取图标
-      item.data.icon = getFileIcon(item.data.target);
+      item.data.icon = await getFileIcon(item.data.target);
       // 获取后缀，判断是否是url
       let ext = extname(item.data.target);
       if (ext && ext.toLowerCase() === ".url") {
@@ -655,7 +655,7 @@ async function refreshItemIcon(itemList: Array<Item>) {
   // 刷新图标
   for (const item of itemList) {
     if (item.type === 0 || item.type === 1) {
-      let icon: string | null = getFileIcon(item.data.target);
+      let icon: string | null = await getFileIcon(item.data.target);
       if (icon) {
         resultList.push({
           id: item.id,
@@ -730,7 +730,7 @@ async function getDirectoryItemList(
             item.name =
               type === 0 ? deleteExtname(getFileName(path)) : getFileName(path);
             item.data.target = path;
-            item.data.icon = getFileIcon(path);
+            item.data.icon = await getFileIcon(path);
           }
           // push
           resultList.push(item);
