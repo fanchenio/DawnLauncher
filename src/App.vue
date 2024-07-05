@@ -91,10 +91,35 @@ function setTheme() {
       padding: "6px",
     },
     Checkbox: {
-      color: store.setting.appearance.theme.mainBackgroundColor,
-      textColor: store.setting.appearance.theme.mainFontColor,
-      borderChecked: "1px solid " + store.setting.appearance.theme.borderColor,
-      colorChecked: store.setting.appearance.theme.secondBackgroundColor,
+      color: hexToRGBA(store.setting.appearance.theme.mainBackgroundColor, 1),
+      textColor: hexToRGBA(store.setting.appearance.theme.mainFontColor, 1),
+      border:
+        "1px solid " + hexToRGBA(store.setting.appearance.theme.borderColor, 1),
+      borderChecked:
+        "1px solid " +
+        hexToRGBA(store.setting.appearance.theme.mainFontColor, 1),
+      colorChecked: "none",
+      checkMarkColor: hexToRGBA(
+        store.setting.appearance.theme.mainFontColor,
+        1
+      ),
+    },
+    Radio: {
+      boxShadowActive:
+        "inset 0 0 0 1px " +
+        hexToRGBA(store.setting.appearance.theme.mainFontColor, 1),
+      boxShadowFocus:
+        "inset 0 0 0 1px " +
+        hexToRGBA(store.setting.appearance.theme.mainFontColor, 1),
+      boxShadowHover:
+        "inset 0 0 0 1px " +
+        hexToRGBA(store.setting.appearance.theme.mainFontColor, 1),
+      dotColorActive: hexToRGBA(
+        store.setting.appearance.theme.mainFontColor,
+        1
+      ),
+      color: hexToRGBA(store.setting.appearance.theme.mainBackgroundColor, 1),
+      textColor: hexToRGBA(store.setting.appearance.theme.mainFontColor, 1),
     },
     Form: {
       labelTextColor: store.setting.appearance.theme.mainFontColor,

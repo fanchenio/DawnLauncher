@@ -301,15 +301,6 @@ let topRightMenuOptions = ref<Array<any>>([
     },
   },
   {
-    label: store.language.rewardSponsor,
-    key: "RewardSponsor",
-    props: {
-      onclick: () => {
-        window.api.openURL("https://dawnlauncher.com/sponsor");
-      },
-    },
-  },
-  {
     label: store.language.feedback,
     key: "Feedback",
     props: {

@@ -469,28 +469,39 @@
               size="small"
               class="mt-3"
             >
-              <span class="block font-semibold"
-                >{{ store.language.backgroundTransparent }}({{
-                  transparency
-                }})</span
-              >
-              <NFormItem>
-                <input
-                  type="range"
-                  v-model="transparency"
-                  min="0.1"
-                  max="1.0"
-                  step="0.01"
-                  class="mt-2 w-full range"
-                  @change="setTransparency"
-                />
+              <span class="block font-semibold">{{
+                store.language.backgroundTransparent
+              }}</span>
+              <NFormItem class="mt-1">
+                <NRadio
+                  :checked="setting.appearance.transparency === 1"
+                  :value="false"
+                  @change="changeTransparency"
+                  >{{ store.language.notTransparent }}</NRadio
+                >
+                <NRadio
+                  :checked="setting.appearance.transparency < 1"
+                  :value="true"
+                  @change="changeTransparency"
+                  >{{ store.language.transparent }}</NRadio
+                >
               </NFormItem>
+              <NSlider
+                v-if="setting.appearance.transparency < 1"
+                class="mt-1"
+                v-model:value="transparency"
+                :step="0.01"
+                :min="0.1"
+                :max="0.99"
+                :on-dragend="setTransparency"
+                :keyboard="false"
+              ></NSlider>
             </NForm>
             <NForm
               label-placement="left"
               :show-feedback="false"
               size="small"
-              class="mt-1"
+              class="mt-3"
             >
               <span class="block font-semibold">{{
                 store.language.backgroundImage
@@ -525,21 +536,18 @@
               class="mt-3"
               v-if="setting.appearance.backgroundImage && store.backgroundImage"
             >
-              <span class="block font-semibold"
-                >{{ store.language.backgroundImageTransparent }}({{
-                  setting.appearance.backgroundImageTransparency
-                }})</span
-              >
+              <span class="block font-semibold">{{
+                store.language.backgroundImageTransparent
+              }}</span>
               <NFormItem>
-                <input
-                  type="range"
-                  v-model="backgroundImageTransparency"
-                  min="0.1"
-                  max="1.0"
-                  step="0.01"
-                  class="mt-2 w-full range"
-                  @change="setBackgroundImageTransparency"
-                />
+                <NSlider
+                  v-model:value="backgroundImageTransparency"
+                  :step="0.01"
+                  :min="0.1"
+                  :max="1.0"
+                  :on-dragend="setBackgroundImageTransparency"
+                  :keyboard="false"
+                ></NSlider>
               </NFormItem>
             </NForm>
             <NForm
@@ -890,21 +898,18 @@
               size="small"
               class="mt-3"
             >
-              <span class="block font-semibold"
-                >{{ store.language.columnNumber }}({{
-                  setting.item.columnNumber
-                }})</span
-              >
+              <span class="block font-semibold">{{
+                store.language.columnNumber
+              }}</span>
               <NFormItem>
-                <input
-                  type="range"
-                  v-model="columnNumber"
-                  min="1"
-                  max="20"
-                  step="1"
-                  class="mt-2 w-full range"
-                  @change="setColumnNumber"
-                />
+                <NSlider
+                  v-model:value="columnNumber"
+                  :step="1"
+                  :min="1"
+                  :max="20"
+                  :on-dragend="setColumnNumber"
+                  :keyboard="false"
+                ></NSlider>
               </NFormItem>
               <Desc
                 class="mt-1"
@@ -1537,6 +1542,8 @@ import {
   NColorPicker,
   NInputNumber,
   NSelect,
+  NRadio,
+  NSlider,
 } from "naive-ui";
 import SimpleBar from "simplebar";
 import "simplebar/dist/simplebar.css";
@@ -2082,6 +2089,14 @@ function changeFontShadowColor(value: string) {
 }
 // 修改背景色透明
 let transparency = ref(setting.value.appearance.transparency);
+function changeTransparency(e: Event) {
+  let val = (e.target as HTMLInputElement).value;
+  if (val === "true") {
+    setting.value.appearance.transparency = 0.9;
+  } else {
+    setting.value.appearance.transparency = 1;
+  }
+}
 function setTransparency() {
   setting.value.appearance.transparency = Number(transparency.value);
 }
