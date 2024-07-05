@@ -139,7 +139,7 @@
           :class="[
             `${
               store.setting.classification.layout === 'top'
-                ? '!fixed !z-[10000] !rounded-lg !drop-shadow-[0_0_6px_rgba(0,0,0,0.2)] !origin-top-left !pt-1 !mt-1'
+                ? '!fixed !z-[10000] !rounded-lg !origin-top-left !pt-1 !mt-1'
                 : ''
             }`,
           ]"
@@ -158,6 +158,10 @@
                 : '',
             maxHeight:
               store.setting.classification.layout === 'top' ? '300px' : 'auto',
+            'box-shadow':
+              store.setting.classification.layout === 'top'
+                ? '0 3px 6px -4px rgba(0, 0, 0, .12), 0 6px 16px 0 rgba(0, 0, 0, .08), 0 9px 28px 8px rgba(0, 0, 0, .05'
+                : '',
           }"
         >
           <ul
@@ -832,7 +836,7 @@ function createClassificationChildSortable() {
     classificationChildSortable.push(
       Sortable.create(<HTMLElement>element, {
         animation: 0,
-        forceFallback: false,
+        forceFallback: true,
         fallbackTolerance: 4,
         disabled: lockClassification,
         onStart() {
@@ -879,6 +883,8 @@ function createClassificationChildSortable() {
           nextTick(() => {
             // 分类宽度
             setClassificationWidth();
+            // 创建子级分类拖拽对象
+            createClassificationChildSortable();
           });
         },
       })
