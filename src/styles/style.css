@@ -85,7 +85,6 @@ input::-webkit-inner-spin-button {
 }
 
 .item-name-tile-2-no-ellipsis {
-  max-height: 40px;
   word-break: break-word;
   overflow: hidden;
 }
@@ -101,7 +100,6 @@ input::-webkit-inner-spin-button {
 }
 
 .item-name-tile-1-no-ellipsis {
-  max-height: 20px;
   word-break: break-all;
   overflow: hidden;
 }
@@ -117,7 +115,6 @@ input::-webkit-inner-spin-button {
 }
 
 .item-name-list-no-ellipsis {
-  max-height: 20px;
   word-break: break-all;
   overflow: hidden;
 }

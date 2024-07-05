@@ -66,6 +66,19 @@
                   : 'item-name-tile-1'
               }`,
             ]"
+            :style="{
+              fontSize: store.setting.item.fontSize + 'px',
+              fontWeight: store.setting.item.fontWeight,
+              lineHeight: store.setting.item.fontLineHeight + 'rem',
+              maxHeight:
+                store.setting.item.itemNameRowCount == 2
+                  ? store.setting.item.hideEllipsis
+                    ? store.setting.item.fontLineHeight * 2 + 'rem'
+                    : undefined
+                  : store.setting.item.hideEllipsis
+                  ? store.setting.item.fontLineHeight * 1 + 'rem'
+                  : undefined,
+            }"
           >
             {{ item.name }}
           </p>

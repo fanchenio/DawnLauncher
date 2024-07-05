@@ -60,6 +60,18 @@
             : undefined,
           fontWeight: store.setting.item.fontWeight,
           lineHeight: store.setting.item.fontLineHeight + 'rem',
+          maxHeight:
+            getLayout(classificationId) === 'list'
+              ? store.setting.item.hideEllipsis
+                ? store.setting.item.fontLineHeight * 1 + 'rem'
+                : undefined
+              : store.setting.item.itemNameRowCount === 2
+              ? store.setting.item.hideEllipsis
+                ? store.setting.item.fontLineHeight * 2 + 'rem'
+                : undefined
+              : store.setting.item.hideEllipsis
+              ? store.setting.item.fontLineHeight * 1 + 'rem'
+              : undefined,
         }"
         v-if="!store.setting.item.hideItemName"
       >
