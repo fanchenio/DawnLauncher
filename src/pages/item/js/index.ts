@@ -36,7 +36,7 @@ function setItemWidth() {
     // 获取项目数量
     let itemList = itemListElement.getElementsByClassName("item");
     // 每行数量
-    let num = null;
+    let num = 1;
     // 布局
     let layout = getLayout(
       classificationId ? parseInt(classificationId) : null
@@ -69,19 +69,9 @@ function setItemWidth() {
         }
       }
     }
-    if (
-      num !== null &&
-      ((layout === "tile" && itemList.length >= num) || layout === "list")
-    ) {
-      for (let i = 0; i < itemList.length; i++) {
-        let itemElement = itemList[i] as HTMLElement;
-        itemElement.style.width = (width - num * 4) / num + "px";
-      }
-    } else {
-      for (let i = 0; i < itemList.length; i++) {
-        let itemElement = itemList[i] as HTMLElement;
-        itemElement.style.width = minWidth + "px";
-      }
+    for (let i = 0; i < itemList.length; i++) {
+      let itemElement = itemList[i] as HTMLElement;
+      itemElement.style.width = (width - num * 4) / num + "px";
     }
   }
 }
