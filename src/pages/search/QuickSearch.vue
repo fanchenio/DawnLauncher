@@ -68,7 +68,7 @@
                 )
               : undefined,
         }"
-        :title="getItemTitle(item as Item)"
+        :title="getItemTitle(item as Item, true)"
         :index="index"
         :target="item.data.target"
       >

@@ -740,12 +740,21 @@ function getName(name: string | null) {
  * @param item
  * @returns
  */
-function getItemTitle(item: Item) {
+function getItemTitle(item: Item, quickSearch: boolean = false) {
   let name =
     store.language.name +
     store.language.colon +
     (item.name ? item.name.replace(/\\n/g, " ") : "");
-  if (store.setting.item.openNumber) {
+  if (
+    quickSearch &&
+    store.setting.quickSearch.showHistorySort === "openNumber"
+  ) {
+    name +=
+      "\n" +
+      store.language.openNumber +
+      store.language.colon +
+      (item.data.quickSearchOpenNumber ?? 0);
+  } else if (store.setting.item.openNumber) {
     name +=
       "\n" +
       store.language.openNumber +
