@@ -113,30 +113,43 @@ function showQuickSearchWindowBefore() {
  * 显示快速搜索窗口
  */
 function showQuickSearchWindow() {
-  // 获取鼠标所在的屏幕
-  let currentDisplay = screen.getDisplayNearestPoint(
-    screen.getCursorScreenPoint()
-  );
-  // 获取窗口所在的屏幕
-  let windowDisplay = getWindowInScreen(quickSearchWindow);
-  if (windowDisplay.length === 0) {
-    // 代表窗口的位置不再任一屏幕内，将窗口位置移动到主窗口
-    quickSearchWindow.center();
-  } else if (
-    (windowDisplay.length === 1 && currentDisplay.id !== windowDisplay[0].id) ||
-    windowDisplay.length > 1
-  ) {
-    // 在鼠标所在的屏幕显示
-    let workArea = currentDisplay.workArea;
-    let bounds = quickSearchWindow.getBounds();
-    let x = Math.round(workArea.x + workArea.width / 2 - bounds.width / 2);
-    let y = Math.round(workArea.y + workArea.height / 2 - 44 / 2);
-    quickSearchWindow.setPosition(x, y);
-    for (let i = 0; i < 10; i++) {
-      quickSearchWindow.setSize(global.setting.quickSearch.width, 44);
+  // flag
+  let flag = true;
+  // 是否开启勿扰模式
+  if (global.setting.general.notDisturb) {
+    if (global.addon.isFullscreen()) {
+      flag = false;
     }
   }
-  // 显示
+  if (flag) {
+    // 获取鼠标所在的屏幕
+    let currentDisplay = screen.getDisplayNearestPoint(
+      screen.getCursorScreenPoint()
+    );
+    // 获取窗口所在的屏幕
+    let windowDisplay = getWindowInScreen(quickSearchWindow);
+    if (windowDisplay.length === 0) {
+      // 代表窗口的位置不再任一屏幕内，将窗口位置移动到主窗口
+      quickSearchWindow.center();
+    } else if (
+      (windowDisplay.length === 1 &&
+        currentDisplay.id !== windowDisplay[0].id) ||
+      windowDisplay.length > 1
+    ) {
+      // 在鼠标所在的屏幕显示
+      let workArea = currentDisplay.workArea;
+      let bounds = quickSearchWindow.getBounds();
+      let x = Math.round(workArea.x + workArea.width / 2 - bounds.width / 2);
+      let y = Math.round(workArea.y + workArea.height / 2 - 44 / 2);
+      quickSearchWindow.setPosition(x, y);
+      for (let i = 0; i < 10; i++) {
+        quickSearchWindow.setSize(global.setting.quickSearch.width, 44);
+      }
+    }
+    // 显示
+    quickSearchWindow.setBounds({ width: global.setting.quickSearch.width });
+    quickSearchWindow.show();
+  }
 }
 
 /**

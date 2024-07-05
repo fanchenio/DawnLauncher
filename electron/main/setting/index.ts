@@ -119,8 +119,18 @@ function setShortcutKey(setting: Setting = global.setting) {
         globalShortcut.register(
           item.shortcutKey.replace("Win", "Super"),
           () => {
-            // 项目
-            run("main", "open", item);
+            // flag
+            let flag = true;
+            // 是否开启勿扰模式
+            if (global.setting.general.notDisturb) {
+              if (global.addon.isFullscreen()) {
+                flag = false;
+              }
+            }
+            if (flag) {
+              // 项目
+              run("main", "open", item);
+            }
           }
         );
       } catch (e) {
