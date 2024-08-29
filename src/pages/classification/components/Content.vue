@@ -78,7 +78,7 @@
           @dragleave="clearMouseOverChangeClassificationSetTimeout"
         >
           <span
-            class="overflow-hidden text-ellipsis whitespace-nowrap"
+            class="overflow-hidden whitespace-nowrap"
             :style="{
               filter: store.setting.appearance.fontShadow
                 ? 'drop-shadow(1px 1px 1px ' +
@@ -224,7 +224,7 @@
               @dragleave="clearMouseOverChangeClassificationSetTimeout"
             >
               <span
-                class="overflow-hidden text-ellipsis whitespace-nowrap"
+                class="overflow-hidden whitespace-nowrap"
                 :style="{
                   filter: store.setting.appearance.fontShadow
                     ? 'drop-shadow(1px 1px 1px ' +
