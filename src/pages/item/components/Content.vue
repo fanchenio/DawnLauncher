@@ -623,6 +623,14 @@ async function contextmenu(e: any) {
     // 记录右键选中的ID
     store.itemRightMenuItemId = id;
   }
+  // 获取当前项目在页面的所属分类
+  let pageClassificationId = null;
+  let itemListElement = getClassElement(e, "item-list");
+  if (itemListElement) {
+    pageClassificationId = parseInt(
+      itemListElement.getAttribute("classification-id")
+    );
+  }
   // 弹出菜单
   window.item.showRightMenu({
     classificationId: getSelectedClassificationId(),
@@ -633,6 +641,7 @@ async function contextmenu(e: any) {
     x: e.screenX,
     y: e.screenY,
     type: "main",
+    pageClassificationId,
   });
 }
 // beforeMount

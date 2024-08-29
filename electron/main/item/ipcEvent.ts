@@ -179,6 +179,13 @@ export default function () {
     // 组装菜单
     if (!batchOperation) {
       if (item) {
+        // 查询页面分类信息
+        let pageClassification = selectClassificationById(
+          args.pageClassificationId
+        );
+        if (!pageClassification && type === "main") {
+          return;
+        }
         // 后缀
         let ext: string | null = null;
         // 排除
@@ -306,7 +313,8 @@ export default function () {
         if (
           type === "main" &&
           (item.type === 0 || item.type === 1) &&
-          classification.type === 0
+          classification.type === 0 &&
+          pageClassification.type === 0
         ) {
           menuList.push(
             new MenuItem({
@@ -337,7 +345,11 @@ export default function () {
         if (pathMenu) {
           menuList.push(new MenuItem({ type: "separator" }));
         }
-        if (type === "main") {
+        if (
+          type === "main" &&
+          classification.type === 0 &&
+          pageClassification.type === 0
+        ) {
           // "图标"菜单
           let existPasteIcon = false;
           // 获取剪切板图片文件
@@ -373,7 +385,9 @@ export default function () {
         if (
           type === "main" &&
           (item.type === 0 || item.type === 1) &&
-          !item.data.fixedIcon
+          !item.data.fixedIcon &&
+          classification.type === 0 &&
+          pageClassification.type === 0
         ) {
           menuList.push(
             new MenuItem({
@@ -384,7 +398,11 @@ export default function () {
             })
           );
         }
-        if (type === "main" && classification.type === 0) {
+        if (
+          type === "main" &&
+          classification.type === 0 &&
+          pageClassification.type === 0
+        ) {
           menuList.push(new MenuItem({ type: "separator" }));
           menuList.push(
             new MenuItem({
