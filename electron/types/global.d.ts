@@ -57,6 +57,8 @@ declare global {
   var classificationRightMenu: boolean | null;
   // 项目右键菜单显示
   var itemRightMenu: boolean | null;
+  // 存储主窗口当前是否有弹出对话框
+  var mainWindowShowDialog: boolean;
 }
 
 export interface ChildProcessInfo {

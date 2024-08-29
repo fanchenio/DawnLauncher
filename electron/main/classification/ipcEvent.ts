@@ -1,4 +1,4 @@
-import { Menu, MenuItem, ipcMain, dialog } from "electron";
+import { Menu, MenuItem, ipcMain } from "electron";
 import { Classification } from "../../../types/classification";
 import {
   createAddEditWindow,
@@ -27,7 +27,12 @@ import {
   batchUpdateFixed,
 } from "./data";
 import { setShortcutKey } from "../setting";
-import { closeWindow, getDot, sendToWebContent } from "../commons/index";
+import {
+  closeWindow,
+  getDot,
+  sendToWebContent,
+  showMessageBoxSync,
+} from "../commons/index";
 
 export default function () {
   // 获取分类列表
@@ -248,13 +253,12 @@ export default function () {
         new MenuItem({
           label: global.language.delete,
           click: () => {
-            let res = dialog.showMessageBoxSync(global.mainWindow, {
-              message: global.language.deleteClassificationPrompt,
-              buttons: [global.language.ok, global.language.cancel],
-              type: "question",
-              noLink: true,
-              cancelId: 1,
-            });
+            let res = showMessageBoxSync(
+              "mainWindow",
+              global.language.deleteClassificationPrompt,
+              "question",
+              [global.language.ok, global.language.cancel]
+            );
             if (res === 0) {
               // 删除数据
               if (del(classification.id)) {

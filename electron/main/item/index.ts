@@ -1,4 +1,4 @@
-import { BrowserWindow, shell, dialog, app } from "electron";
+import { BrowserWindow, shell, app } from "electron";
 import { join } from "node:path";
 import { parsePath, getURLParams } from "../../commons/utils";
 import { Item } from "../../../types/item";
@@ -25,6 +25,8 @@ import {
   convertPath,
   getMainBackgorunColor,
   sendToWebContent,
+  showMessageBoxSync,
+  showSaveDialogSync,
 } from "../commons/index";
 import { fork } from "../../commons/utilityProcessUtils";
 
@@ -352,13 +354,9 @@ function run(
           message = global.language.notFoundFolder;
         }
         message += '"' + item.data.target + '"';
-        dialog.showMessageBox(global.mainWindow, {
-          title: "Dawn Launcher",
-          message: message,
-          buttons: [global.language.ok],
-          type: "error",
-          noLink: true,
-        });
+        showMessageBoxSync("mainWindow", message, "error", [
+          global.language.ok,
+        ]);
       }
     }
   }
@@ -429,7 +427,7 @@ function exportIcon(item: Item) {
     }
     // 弹出文件对话框保存
     if (extensionName && content) {
-      let path = dialog.showSaveDialogSync(global.mainWindow, {
+      let path = showSaveDialogSync("mainWindow", {
         defaultPath: "icon",
         filters: [
           {

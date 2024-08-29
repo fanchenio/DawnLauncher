@@ -1,7 +1,6 @@
 import {
   Menu,
   MenuItem,
-  dialog,
   ipcMain,
   clipboard,
   MenuItemConstructorOptions,
@@ -51,6 +50,7 @@ import {
   closeWindow,
   openAfterHideWindow,
   sendToWebContent,
+  showMessageBoxSync,
 } from "../commons/index";
 
 /**
@@ -411,13 +411,12 @@ export default function () {
             new MenuItem({
               label: global.language.delete,
               click: () => {
-                let res = dialog.showMessageBoxSync(global.mainWindow, {
-                  message: global.language.deleteItemPrompt,
-                  buttons: [global.language.ok, global.language.cancel],
-                  type: "question",
-                  noLink: true,
-                  cancelId: 1,
-                });
+                let res = showMessageBoxSync(
+                  "mainWindow",
+                  global.language.deleteItemPrompt,
+                  "question",
+                  [global.language.ok, global.language.cancel]
+                );
                 if (res === 0) {
                   // 删除数据
                   del(item.id);
@@ -553,13 +552,12 @@ export default function () {
           new MenuItem({
             label: global.language.batchDelete,
             click: () => {
-              let res = dialog.showMessageBoxSync(global.mainWindow, {
-                message: global.language.batchDeletePrompt,
-                buttons: [global.language.ok, global.language.cancel],
-                type: "question",
-                noLink: true,
-                cancelId: 1,
-              });
+              let res = showMessageBoxSync(
+                "mainWindow",
+                global.language.batchDeletePrompt,
+                "question",
+                [global.language.ok, global.language.cancel]
+              );
               if (res === 0) {
                 for (const id of batchSelectedIdList) {
                   // 删除数据

@@ -121,7 +121,10 @@ function createMainWindow() {
       !global.setting.general.alwaysTop
     ) {
       // 如果当前还有打开的子窗口就不执行失去焦点隐藏
-      if (mainWindow.getChildWindows().length === 0) {
+      if (
+        mainWindow.getChildWindows().length === 0 &&
+        !global.mainWindowShowDialog
+      ) {
         hideMainWindow();
       }
     }
@@ -472,7 +475,7 @@ function autoHide(size: number, timer: boolean) {
     return;
   }
   // 当有子窗口时不自动隐藏
-  if (mainWindow.getChildWindows().length > 0) {
+  if (mainWindow.getChildWindows().length > 0 || global.mainWindowShowDialog) {
     return;
   }
   let x = screen.getCursorScreenPoint().x;

@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain, OpenDialogSyncOptions, shell } from "electron";
+import { app, ipcMain, OpenDialogSyncOptions, shell } from "electron";
 import { getFileIcon } from "../../commons/utils";
 import mime from "mime";
 import { ShortcutInfo } from "../../../types/common";
@@ -8,9 +8,10 @@ import {
   getURLInfo,
   sendToWebContent,
   showErrorMessageBox,
+  showMessageBoxSync,
+  showOpenDialogSync,
 } from ".";
 import { statSync } from "node:fs";
-import { getWindow } from "../commons/index";
 
 export default function () {
   // emit
@@ -23,23 +24,17 @@ export default function () {
   });
   // 信息提示框
   ipcMain.on("showInfoMessageBox", (event, args) => {
-    dialog.showMessageBoxSync(getWindow(args.windowName), {
-      message: args.message,
-      buttons: [global.language.ok],
-      type: "info",
-      noLink: true,
-    });
+    showMessageBoxSync(args.windowName, args.message, "info", [
+      global.language.ok,
+    ]);
   });
   // 对话框
   ipcMain.on("showConfirmBox", (event, args) => {
     // 弹出对话框
-    let res = dialog.showMessageBoxSync(getWindow(args.windowName), {
-      message: args.message,
-      buttons: [global.language.ok, global.language.cancel],
-      type: "question",
-      noLink: true,
-      cancelId: 1,
-    });
+    let res = showMessageBoxSync(args.windowName, args.message, "question", [
+      global.language.ok,
+      global.language.cancel,
+    ]);
     event.returnValue = res === 0;
   });
   // 选择文件
@@ -57,10 +52,7 @@ export default function () {
     } else {
       options.defaultPath = app.getPath("desktop");
     }
-    let filePathList = dialog.showOpenDialogSync(
-      getWindow(windowName),
-      options
-    );
+    let filePathList = showOpenDialogSync(windowName, options);
     if (filePathList && filePathList.length > 0) {
       let filePath = filePathList[0];
       if (target) {
@@ -94,7 +86,7 @@ export default function () {
     } else {
       options.defaultPath = app.getPath("desktop");
     }
-    let dirPathList = dialog.showOpenDialogSync(getWindow(windowName), options);
+    let dirPathList = showOpenDialogSync(windowName, options);
     if (dirPathList && dirPathList.length > 0) {
       let dirPath = dirPathList[0];
       event.returnValue = dirPath;

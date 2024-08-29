@@ -1,9 +1,10 @@
-import { app, dialog, ipcMain } from "electron";
+import { app, ipcMain } from "electron";
 import {
   closeWindow,
   getUserDataPath,
   relaunch,
   sendToWebContent,
+  showOpenDialogSync,
 } from "../commons/index";
 import { createSettingWindow, setFixedPosition, setShortcutKey } from ".";
 import { add, select, update } from "./data";
@@ -114,7 +115,7 @@ export default function () {
   // 上传背景图
   ipcMain.on("uploadBackgrounImage", (event, args) => {
     // 打开文件对话框
-    let filePathList = dialog.showOpenDialogSync(global.settingWindow, {
+    let filePathList = showOpenDialogSync("settingWindow", {
       filters: [
         {
           name: "Images",

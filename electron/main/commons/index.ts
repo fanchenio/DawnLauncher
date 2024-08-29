@@ -9,6 +9,8 @@ import { isAbsolutePath } from "../../../commons/utils/common";
 import {
   BrowserWindow,
   Display,
+  OpenDialogOptions,
+  SaveDialogOptions,
   app,
   dialog,
   nativeImage,
@@ -429,20 +431,6 @@ function openAfterHideWindow(type: string) {
 }
 
 /**
- * 错误提示框
- * @param windowName
- * @param message
- */
-function showErrorMessageBox(windowName: string, message: string) {
-  dialog.showMessageBoxSync(getWindow(windowName), {
-    message: message,
-    buttons: [global.language.ok],
-    type: "error",
-    noLink: true,
-  });
-}
-
-/**
  * 重启
  */
 function relaunch() {
@@ -500,6 +488,73 @@ function getWindowInScreen(window: BrowserWindow) {
   return inDisplays;
 }
 
+/**
+ * 通用对话框
+ */
+function showMessageBoxSync(
+  windowName: string,
+  message: string,
+  type: "error" | "question" | "info",
+  buttons: Array<string> | null
+) {
+  // 记录状态
+  if (windowName === "mainWindow") {
+    global.mainWindowShowDialog = true;
+  }
+  let res = dialog.showMessageBoxSync(getWindow(windowName), {
+    title: "Dawn Launcher",
+    message: message,
+    buttons: buttons,
+    type: type,
+    noLink: true,
+    cancelId: 1,
+  });
+  // 删除状态
+  if (windowName === "mainWindow") {
+    global.mainWindowShowDialog = false;
+  }
+  return res;
+}
+
+/**
+ * 错误对话框
+ */
+function showErrorMessageBox(windowName: string, message: string) {
+  showMessageBoxSync(windowName, message, "error", [global.language.ok]);
+}
+
+/**
+ * 文件保存对话框
+ */
+function showSaveDialogSync(windowName: string, options: SaveDialogOptions) {
+  // 记录状态
+  if (windowName === "mainWindow") {
+    global.mainWindowShowDialog = true;
+  }
+  let path = dialog.showSaveDialogSync(getWindow(windowName), options);
+  // 删除状态
+  if (windowName === "mainWindow") {
+    global.mainWindowShowDialog = false;
+  }
+  return path;
+}
+
+/**
+ * 选择文件/文件夹对话框
+ */
+function showOpenDialogSync(windowName: string, options: OpenDialogOptions) {
+  // 记录状态
+  if (windowName === "mainWindow") {
+    global.mainWindowShowDialog = true;
+  }
+  let pathList = dialog.showOpenDialogSync(getWindow(windowName), options);
+  // 删除状态
+  if (windowName === "mainWindow") {
+    global.mainWindowShowDialog = false;
+  }
+  return pathList;
+}
+
 export {
   downloadImage,
   getURLInfo,
@@ -511,9 +566,12 @@ export {
   sendToWebContent,
   closeAllChildProcess,
   openAfterHideWindow,
-  showErrorMessageBox,
   relaunch,
   getUserDataPath,
   getMainBackgorunColor,
   getWindowInScreen,
+  showMessageBoxSync,
+  showErrorMessageBox,
+  showSaveDialogSync,
+  showOpenDialogSync,
 };

@@ -1,5 +1,4 @@
 import { app, BrowserWindow, dialog } from "electron";
-import { release } from "node:os";
 import { join, dirname, basename } from "node:path";
 import indexIpcEvent from "./main/ipcEvent";
 import classificationIpcEvent from "./classification/ipcEvent";
@@ -74,7 +73,7 @@ app.whenReady().then(() => {
         arg.indexOf("--inspect") !== -1 ||
         arg.indexOf("--remote-debugging-port") !== -1
       ) {
-        dialog.showMessageBoxSync(null, {
+        dialog.showMessageBoxSync({
           message: "达咩呦达咩达咩~",
           buttons: [global.language.ok],
           type: "error",

@@ -1,6 +1,12 @@
-import { dialog, ipcMain } from "electron";
+import { ipcMain } from "electron";
 import { backupData, createBackupRestoreDataWindow } from ".";
-import { closeWindow, relaunch, showErrorMessageBox } from "../commons";
+import {
+  closeWindow,
+  relaunch,
+  showErrorMessageBox,
+  showOpenDialogSync,
+  showSaveDialogSync,
+} from "../commons";
 import { restore } from "./data";
 import { rmSync } from "node:fs";
 
@@ -22,7 +28,7 @@ export default function () {
   // 备份数据
   ipcMain.on("backupData", () => {
     try {
-      let filePath = dialog.showSaveDialogSync(global.backupRestoreDataWindow, {
+      let filePath = showSaveDialogSync("backupRestoreDataWindow", {
         defaultPath: "Data",
         filters: [{ name: "DB", extensions: ["db"] }],
       });
@@ -48,12 +54,9 @@ export default function () {
   // 恢复数据
   ipcMain.on("restoreData", () => {
     try {
-      let filePathList = dialog.showOpenDialogSync(
-        global.backupRestoreDataWindow,
-        {
-          filters: [{ name: "Data", extensions: ["db", "json"] }],
-        }
-      );
+      let filePathList = showOpenDialogSync("backupRestoreDataWindow", {
+        filters: [{ name: "Data", extensions: ["db", "json"] }],
+      });
       if (filePathList && filePathList.length > 0) {
         let filePath = filePathList[0];
         if (restore(filePath)) {
