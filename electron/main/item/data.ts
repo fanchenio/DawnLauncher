@@ -324,6 +324,34 @@ function del(id: number) {
 }
 
 /**
+ * 批量删除
+ */
+function batchDel(idList: Array<number>) {
+  // 批量查询
+  let itemList = selectByIdList(true, idList);
+  // 参数
+  let params = itemList.map((item) => item.id).join(",");
+  // SQL
+  let sql = `DELETE FROM ${tableName} WHERE id in (?)`;
+  // 运行
+  let res = db.prepare(sql).run(params).changes > 0;
+  if (res) {
+    // 提取分类ID
+    let classificationIdList = new Set<number>();
+    itemList.forEach((item) => {
+      classificationIdList.add(item.classificationId);
+    });
+    // 更新序号
+    classificationIdList.forEach((classificationId) => {
+      reorder(classificationId);
+    });
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/**
  * 删除
  * @param classificationId
  */
@@ -419,6 +447,7 @@ export {
   batchAdd,
   update,
   del,
+  batchDel,
   selectById,
   selectByIdList,
   deleteByClassificationId,

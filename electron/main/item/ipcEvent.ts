@@ -28,7 +28,15 @@ import {
   getStartMenuItemList,
   getSystemItemList,
 } from "./commons";
-import { add, del, list, selectById, update, updateOrder } from "./data";
+import {
+  add,
+  batchDel,
+  del,
+  list,
+  selectById,
+  update,
+  updateOrder,
+} from "./data";
 import { Item } from "../../../types/item";
 import { getFileExtname, isAbsolutePath } from "../../../commons/utils/common";
 import {
@@ -579,12 +587,10 @@ export default function () {
                 [global.language.ok, global.language.cancel]
               );
               if (res === 0) {
-                for (const id of batchSelectedIdList) {
-                  // 删除数据
-                  del(id);
-                  // 快捷键
-                  setShortcutKey();
-                }
+                // 批量删除
+                batchDel(batchSelectedIdList);
+                // 快捷键
+                setShortcutKey();
                 // 通知前端删除数据
                 sendToWebContent(
                   "mainWindow",
