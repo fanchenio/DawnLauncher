@@ -940,6 +940,7 @@ let english = {
   webSearchModePrompt2: "{w} is the search keyword.",
   width: "Width",
   window: "Window",
+  windowTransparency: "Window Transparency",
   zoom: "Zoom",
 };
 
