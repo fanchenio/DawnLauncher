@@ -401,7 +401,15 @@
               <span class="block font-semibold">{{
                 store.language.color
               }}</span>
-              <div class="flex items-center">
+              <div
+                :class="[
+                  `${
+                    store.setting.general.language !== 'English'
+                      ? 'flex items-center'
+                      : ''
+                  }`,
+                ]"
+              >
                 <NFormItem
                   class="mt-1 flex-1"
                   :label="store.language.mainColor"
@@ -415,8 +423,15 @@
                   ></NColorPicker>
                 </NFormItem>
                 <NFormItem
-                  class="mt-1 flex-1 ml-[10px]"
+                  class="mt-1 flex-1"
                   :label="store.language.fontMainColor"
+                  :class="[
+                    `${
+                      store.setting.general.language !== 'English'
+                        ? 'ml-[10px]'
+                        : ''
+                    }`,
+                  ]"
                 >
                   <NColorPicker
                     :modes="['hex']"
@@ -427,7 +442,15 @@
                   ></NColorPicker>
                 </NFormItem>
               </div>
-              <div class="flex items-center">
+              <div
+                :class="[
+                  `${
+                    store.setting.general.language !== 'English'
+                      ? 'flex items-center'
+                      : ''
+                  }`,
+                ]"
+              >
                 <NFormItem
                   class="mt-1 flex-1"
                   :label="store.language.secondaryColor"
@@ -441,8 +464,15 @@
                   ></NColorPicker>
                 </NFormItem>
                 <NFormItem
-                  class="mt-1 flex-1 ml-[10px]"
+                  class="mt-1 flex-1"
                   :label="store.language.fontSecondaryColor"
+                  :class="[
+                    `${
+                      store.setting.general.language !== 'English'
+                        ? 'ml-[10px]'
+                        : ''
+                    }`,
+                  ]"
                 >
                   <NColorPicker
                     :modes="['hex']"
