@@ -1,6 +1,7 @@
 import { Setting } from "../../../types/setting";
 import { getSetting } from "../../../commons/utils/setting";
 import { getDataSqlite3 } from "../../commons/betterSqlite3";
+import { app } from "electron";
 
 // 获取数据库
 let db = getDataSqlite3();
@@ -50,6 +51,14 @@ function select() {
  * 添加
  */
 function add(setting: Setting) {
+  // 首次添加，判断系统语言
+  if (app.getLocale().toLowerCase().indexOf("zh-") === 0) {
+    // 简体中文
+    setting.general.language = "SimplifiedChinese";
+  } else {
+    // 英文
+    setting.general.language = "English";
+  }
   // SQL
   let sql = `INSERT INTO ${settingTableName} 
             (id, setting) 
