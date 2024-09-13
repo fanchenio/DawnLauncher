@@ -833,8 +833,10 @@ onMounted(() => {
       getURLInfoLoading.value = false;
       let res: Result = data;
       if (res.status) {
-        form.data.icon = res.icon;
-        form.data.htmlIcon = null;
+        if (res.icon && res.icon.trim() !== "") {
+          form.data.icon = res.icon;
+          form.data.htmlIcon = null;
+        }
         form.name = res.name ?? "";
       } else {
         window.api.showErrorMessageBox(

@@ -209,6 +209,9 @@ function analysisHTML(windowName: string, url: string, data: string) {
     let $ = cheerio.load(data);
     // 获取标题
     result.name = $("head").find("title").text();
+    if (!result.name || result.name.trim() === "") {
+      result.name = $("title").text();
+    }
     // 获取图标URL
     let iconURL: string | null = null;
     let icon = $("link[rel='icon']");
@@ -272,6 +275,9 @@ function analysisHTML(windowName: string, url: string, data: string) {
               result.status = true;
               sendUrlInfo(windowName, result);
             } else {
+              if (result.name && result.name.trim() !== "") {
+                result.status = true;
+              }
               sendUrlInfo(windowName, result);
             }
           }
