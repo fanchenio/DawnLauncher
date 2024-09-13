@@ -131,7 +131,7 @@ let sortOptions = ref([
     value: "initial",
   },
   {
-    label: store.language.byOpenNumber,
+    label: store.language.byOpenCount,
     value: "openNumber",
   },
   {

@@ -528,7 +528,7 @@ function getItemSortMenu(classification: Classification) {
   if (global.setting.item.openNumber) {
     submenus.push(
       new MenuItem({
-        label: global.language.byOpenNumber,
+        label: global.language.byOpenCount,
         icon:
           classification.data.itemSort === "openNumber" && !hasChild
             ? getDot()

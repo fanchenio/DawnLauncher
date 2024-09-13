@@ -576,7 +576,7 @@
               v-if="setting.appearance.backgroundImage && store.backgroundImage"
             >
               <span class="block font-semibold">{{
-                store.language.backgroundImagePostion
+                store.language.backgroundImagePosition
               }}</span>
               <NFormItem class="mt-2">
                 <NSelect
@@ -1006,7 +1006,7 @@
                   v-model:checked="setting.item.openNumber"
                   :focusable="false"
                   @update:checked="setOpenNumber"
-                  >{{ store.language.recordOpenNumber }}</NCheckbox
+                  >{{ store.language.recordOpenCount }}</NCheckbox
                 >
               </NFormItem>
             </NForm>
@@ -2175,7 +2175,7 @@ let quickSearchHistorySortOptions = ref([
     value: "lastOpen",
   },
   {
-    label: store.language.byOpenNumber,
+    label: store.language.byOpenCount,
     value: "openNumber",
   },
 ]);

@@ -751,13 +751,13 @@ function getItemTitle(item: Item, quickSearch: boolean = false) {
   ) {
     name +=
       "\n" +
-      store.language.openNumber +
+      store.language.openCount +
       store.language.colon +
       (item.data.quickSearchOpenNumber ?? 0);
   } else if (store.setting.item.openNumber) {
     name +=
       "\n" +
-      store.language.openNumber +
+      store.language.openCount +
       store.language.colon +
       (item.data.openNumber ?? 0);
   }
