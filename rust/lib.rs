@@ -201,3 +201,12 @@ fn shell_execute(operation: String, file: String, params: String, start_location
 fn system_item_execute(target: String, params: Option<String>) {
     windows::system_item_execute(&target, params.as_deref())
 }
+
+/**
+ * 判断文件是否有以管理员身份运行权限
+ */
+#[allow(dead_code)]
+#[napi]
+fn has_runas(path: String) -> bool {
+    windows::has_runas(&path)
+}

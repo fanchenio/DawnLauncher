@@ -15,7 +15,7 @@ use std::{
     sync::atomic::{AtomicBool, Ordering},
 };
 use windows::{
-    core::{ComInterface, HSTRING, PCSTR, PCWSTR},
+    core::{ComInterface, HSTRING, PCSTR, PCWSTR, PSTR},
     w,
     Win32::{
         Foundation::{HWND, LPARAM, LRESULT, MAX_PATH, POINT, RECT, SIZE, WPARAM},
@@ -42,14 +42,15 @@ use windows::{
             Shell::{
                 BHID_SFUIObject, IContextMenu, IShellItem, IShellItemImageFactory, IShellLinkW,
                 SHCreateItemFromParsingName, SHEmptyRecycleBinW, SHQueryUserNotificationState,
-                ShellLink, CMF_NORMAL, CMINVOKECOMMANDINFO, QUNS_ACCEPTS_NOTIFICATIONS, QUNS_APP,
-                QUNS_BUSY, QUNS_NOT_PRESENT, QUNS_PRESENTATION_MODE, QUNS_QUIET_TIME,
+                ShellLink, CMF_NORMAL, CMINVOKECOMMANDINFO, GCS_VERBA, QUNS_ACCEPTS_NOTIFICATIONS,
+                QUNS_APP, QUNS_BUSY, QUNS_NOT_PRESENT, QUNS_PRESENTATION_MODE, QUNS_QUIET_TIME,
                 QUNS_RUNNING_D3D_FULL_SCREEN, SHERB_NOSOUND, SIIGBF_ICONONLY, SLGP_UNCPRIORITY,
             },
             WindowsAndMessaging::{
                 CallNextHookEx, CreatePopupMenu, DestroyMenu, FindWindowW, GetClassNameW,
-                GetCursorPos, GetForegroundWindow, GetSystemMetrics, GetWindowRect, SendMessageW,
-                SetForegroundWindow, SetWindowsHookExW, TrackPopupMenu, WindowFromPoint, HHOOK,
+                GetCursorPos, GetForegroundWindow, GetMenuItemCount, GetMenuItemInfoA,
+                GetSystemMetrics, GetWindowRect, SendMessageW, SetForegroundWindow,
+                SetWindowsHookExW, TrackPopupMenu, WindowFromPoint, HHOOK, MENUITEMINFOA, MIIM_ID,
                 MSLLHOOKSTRUCT, SC_MONITORPOWER, SM_CXSCREEN, SM_CYSCREEN, SW_NORMAL, TPM_NONOTIFY,
                 TPM_RETURNCMD, WH_MOUSE_LL, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MBUTTONDOWN,
                 WM_MBUTTONUP, WM_MOUSEHWHEEL, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_RBUTTONDOWN,
@@ -787,4 +788,69 @@ pub fn system_item_execute(target: &str, params: Option<&str>) {
             );
         }
     }
+}
+
+/**
+ * 判断文件是否有以管理员身份运行权限
+ */
+pub fn has_runas(path: &str) -> bool {
+    // IShellItem
+    let path = HSTRING::from(path);
+    if let Ok(shell_item) =
+        unsafe { SHCreateItemFromParsingName::<_, _, IShellItem>(PCWSTR(path.as_ptr()), None) }
+    {
+        // IContextMenu
+        if let Ok(context_menu) =
+            unsafe { shell_item.BindToHandler::<_, IContextMenu>(None, &BHID_SFUIObject) }
+        {
+            // Menu
+            if let Ok(menu) = unsafe { CreatePopupMenu() } {
+                // 写入菜单
+                if let Ok(()) =
+                    unsafe { context_menu.QueryContextMenu(menu, 0, 1, 0x7FFF, CMF_NORMAL) }
+                {
+                    // 获取菜单总数
+                    let count = unsafe { GetMenuItemCount(menu) };
+                    // 循环每一项菜单
+                    for i in 0..count {
+                        // 获取菜单信息
+                        let mut menu_info = MENUITEMINFOA::default();
+                        menu_info.cbSize = std::mem::size_of::<MENUITEMINFOA>() as u32;
+                        menu_info.fMask = MIIM_ID;
+                        if unsafe { GetMenuItemInfoA(menu, i as u32, true, &mut menu_info) }
+                            .as_bool()
+                        {
+                            // idcmd
+                            let idcmd = menu_info.wID as usize - 1;
+                            // 菜单项比如在指定范围内
+                            if idcmd >= 1 && idcmd <= 0x7FFF {
+                                // 获取菜单命令信息
+                                let mut verb = [0u8; 256];
+                                let pstr = PSTR(verb.as_mut_ptr());
+                                if let Ok(()) = unsafe {
+                                    context_menu.GetCommandString(
+                                        menu_info.wID as usize - 1,
+                                        GCS_VERBA,
+                                        None,
+                                        pstr,
+                                        verb.len() as u32,
+                                    )
+                                } {
+                                    if let Ok(command) = unsafe { pstr.to_string() } {
+                                        if command.to_lowercase() == "runas" {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    unsafe {
+                        DestroyMenu(menu);
+                    }
+                }
+            }
+        }
+    }
+    false
 }
