@@ -1,9 +1,5 @@
 # [简体中文](https://github.com/fanchenio/DawnLauncher) | English
 
-# Update
-
-After disappearing for more than three months, I refactored the `Dawn Launcher` code. Because I had no experience in developing `NodeJS` and `Electron` at the beginning, `Vue` was not well written, and the code was a bit sloppy, so I carried out Code refactoring, the new version uses `Electron26 + Vite + Vue3 + TS`, the UI framework uses `Naive`, regarding the native API, I switched from `C++` to `Rust`, and the database switched from `electron-store` With `SQLite3`, the language has also added `English`.
-
 # Dawn Launcher
 
 The `Windows` quick launch tool helps you organize your messy desktop, manage your desktop shortcuts by category, and keep your desktop clean and tidy.
@@ -12,7 +8,7 @@ Supports associated folders (real-time synchronization of folder contents), quic
 
 # Technology Stack
 
-`Electron + Vite + Vue3 + TS`
+`Electron + Vite + Vue3 + TS + Rust`
 
 # Support Platform
 
@@ -30,14 +26,6 @@ Supports associated folders (real-time synchronization of folder contents), quic
 # Official Website
 
 [dawnlauncher.com](https://dawnlauncher.com/)
-
-# Donate(Wechat)
-
-![Wechat](/images/wechat.png)
-
-# Donate(Alipay)
-
-![Alipay](/images/alipay.png)
 
 # UI
 
