@@ -1,4 +1,4 @@
-import { app, ipcMain, OpenDialogSyncOptions, shell } from "electron";
+import { app, ipcMain, Menu, OpenDialogSyncOptions, shell } from "electron";
 import { getFileIcon } from "../../commons/utils";
 import mime from "mime";
 import { ShortcutInfo } from "../../../types/common";
@@ -163,5 +163,25 @@ export default function () {
       args.params ?? "",
       app.getPath("home")
     );
+  });
+  // 文本框菜单
+  ipcMain.on("textRightMenu", (event, args) => {
+    // 菜单
+    let menu = Menu.buildFromTemplate([
+      {
+        role: "cut",
+        label: global.language.cut,
+      },
+      {
+        role: "copy",
+        label: global.language.copy,
+      },
+      {
+        role: "paste",
+        label: global.language.paste,
+      },
+    ]);
+    // 显示
+    menu.popup();
   });
 }

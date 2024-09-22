@@ -305,6 +305,24 @@ function keydown(e: any) {
     }
   }
 }
+// 监听鼠标右键
+function contextmenu(e: MouseEvent) {
+  let target = e.target as HTMLInputElement;
+  if (target) {
+    if (
+      (target.nodeName != null &&
+        target.nodeName.toLowerCase() == "input" &&
+        target.type != null &&
+        target.type.toLowerCase() == "text") ||
+      (target.nodeName != null && target.nodeName.toLowerCase() == "textarea")
+    ) {
+      window.api.textRightMenu();
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+  }
+}
 // 监听
 let onUpdateSettingUnListen: Function | null = null;
 // mounted
@@ -313,6 +331,8 @@ onMounted(() => {
   createStyle();
   // 监听键盘
   window.addEventListener("keydown", keydown, true);
+  // 监听右键
+  window.addEventListener("contextmenu", contextmenu, true);
   // 监听更新项目
   onUpdateSettingUnListen = window.setting.onUpdate((data) => {
     store.setting = data;
@@ -322,6 +342,8 @@ onMounted(() => {
 onUnmounted(() => {
   // 监听键盘
   window.removeEventListener("keydown", keydown, true);
+  // 监听右键
+  window.removeEventListener("contextmenu", contextmenu, true);
   // 删除监听
   if (onUpdateSettingUnListen) {
     onUpdateSettingUnListen();

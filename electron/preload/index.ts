@@ -114,6 +114,10 @@ contextBridge.exposeInMainWorld("api", {
   ) => {
     ipcRenderer.send("run", { operation, target, params, startLocation });
   },
+  // 文本框菜单
+  textRightMenu: () => {
+    ipcRenderer.send("textRightMenu");
+  },
 });
 
 contextBridge.exposeInMainWorld("main", {

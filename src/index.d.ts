@@ -37,6 +37,7 @@ declare global {
         params: string | null,
         startLocation: string | null
       ) => void;
+      textRightMenu: () => void;
     };
     main: {
       showWindow: (blurHide: boolean, autoHide: boolean) => void;
