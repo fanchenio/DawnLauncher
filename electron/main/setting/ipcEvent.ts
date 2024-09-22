@@ -16,6 +16,7 @@ import { statSync, mkdirSync, copyFileSync, readFileSync } from "node:fs";
 import mime from "mime";
 import { checkInvalid } from "../item";
 import { updateItemOpenNumberSortToDefualt } from "../classification";
+import cacheData from "../commons/cacheData";
 
 export default function () {
   // 创建设置窗口
@@ -91,6 +92,13 @@ export default function () {
   // 锁定尺寸
   ipcMain.on("setLockSize", (event, args) => {
     global.mainWindow.setResizable(!args);
+    if (args) {
+      // 存储主窗口尺寸
+      cacheData.cacheStore.set(
+        "mainWindowLockSizeBounds",
+        global.mainWindow.getBounds()
+      );
+    }
   });
   // 固定位置
   ipcMain.on("setFixedPosition", (event, args) => {

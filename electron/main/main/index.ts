@@ -67,11 +67,6 @@ function createMainWindow() {
     global.addon.removeWindowAnimation(
       mainWindow.getNativeWindowHandle().readInt32LE(0)
     );
-    // 恢复上一次的位置
-    let bounds = cacheData.cacheStore.get("mainWindowBounds");
-    if (bounds) {
-      mainWindow.setBounds(bounds);
-    }
     // 永远居中不可移动
     if (global.setting.general.alwaysCenter) {
       mainWindow.setMovable(false);
@@ -82,8 +77,39 @@ function createMainWindow() {
     if (global.setting.general.alwaysTop) {
       mainWindow.setAlwaysOnTop(true, "screen-saver");
     }
+    // 恢复上一次的位置
+    let bounds: any = cacheData.cacheStore.get("mainWindowBounds");
     // 锁定尺寸
     mainWindow.setResizable(!global.setting.general.lockSize);
+    // 如果是锁定尺寸的话，使用锁定尺寸来设置窗口尺寸
+    if (global.setting.general.lockSize) {
+      let lockSizeBounds: any = cacheData.cacheStore.get(
+        "mainWindowLockSizeBounds"
+      );
+      if (lockSizeBounds) {
+        if (bounds) {
+          bounds.width = lockSizeBounds.width;
+          bounds.height = lockSizeBounds.height;
+        } else {
+          bounds = {
+            width: lockSizeBounds.width,
+            height: lockSizeBounds.height,
+          };
+        }
+      } else {
+        if (bounds) {
+          cacheData.cacheStore.set("mainWindowLockSizeBounds", bounds);
+        } else {
+          cacheData.cacheStore.set(
+            "mainWindowLockSizeBounds",
+            mainWindow.getBounds()
+          );
+        }
+      }
+    }
+    if (bounds) {
+      mainWindow.setBounds(bounds);
+    }
     // 托盘
     createTray(!global.setting.general.hideTray);
     // 永远居中
