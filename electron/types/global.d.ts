@@ -5,6 +5,8 @@ import { Setting } from "../../types/setting";
 declare global {
   // addon
   var addon: any;
+  // 是否是首次打开软件
+  var first: boolean;
   // 语言
   var language: any;
   // 主窗口

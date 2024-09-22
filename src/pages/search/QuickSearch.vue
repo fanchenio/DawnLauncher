@@ -4,6 +4,11 @@
     :style="{
       color: store.setting.appearance.theme.mainFontColor,
       backgroundColor: store.setting.appearance.theme.mainBackgroundColor,
+      borderRadius:
+        store.setting.appearance.transparency < 1 &&
+        store.setting.appearance.windowRounded
+          ? '8px'
+          : undefined,
     }"
   >
     <div

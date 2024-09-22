@@ -8,7 +8,10 @@ import { initSystemItem } from "./item/commons/data";
 import commonIpcEvent from "./commons/ipcEvent";
 import itemIpcEvent from "./item/ipcEvent";
 import settingIpcEvent from "./setting/ipcEvent";
-import { init as settingDataInit } from "./setting/data";
+import {
+  init as settingDataInit,
+  update as updateSetting,
+} from "./setting/data";
 import { setShortcutKey } from "./setting";
 import searchIpcEvent from "./search/ipcEvent";
 import { createMainWindow } from "./main";
@@ -37,8 +40,13 @@ process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
 // 解决透明窗口闪烁
 app.commandLine.appendSwitch("wm-window-animations-disabled");
 
-// 解决创建窗口屏幕闪烁问题
-app.disableHardwareAcceleration();
+// 初始化设置数据
+settingDataInit();
+// 如果主窗口是非透明窗口的话，禁止GPU加速，解决白屏问题。
+// 如果主窗口是透明窗口的话，将除主窗口外的窗口都改为透明度0.99，解决解决白屏问题。
+if (global.setting.appearance.transparency === 1) {
+  app.disableHardwareAcceleration();
+}
 
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
@@ -62,8 +70,18 @@ app.whenReady().then(() => {
     }
     // addon
     global.addon = require("../../native/addon.node");
-    // 初始化数据
-    settingDataInit();
+    if (global.first) {
+      // 首次添加，判断系统语言
+      if (app.getLocale().toLowerCase().indexOf("zh-") === 0) {
+        // 简体中文
+        global.setting.general.language = "SimplifiedChinese";
+      } else {
+        // 英文
+        global.setting.general.language = "English";
+      }
+      // 修改
+      updateSetting(global.setting);
+    }
     // 获取语言
     global.language = getLanguage(global.setting.general.language);
     // 禁用debugtron

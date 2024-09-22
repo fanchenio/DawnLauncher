@@ -51,14 +51,6 @@ function select() {
  * 添加
  */
 function add(setting: Setting) {
-  // 首次添加，判断系统语言
-  if (app.getLocale().toLowerCase().indexOf("zh-") === 0) {
-    // 简体中文
-    setting.general.language = "SimplifiedChinese";
-  } else {
-    // 英文
-    setting.general.language = "English";
-  }
   // SQL
   let sql = `INSERT INTO ${settingTableName} 
             (id, setting) 
@@ -67,6 +59,8 @@ function add(setting: Setting) {
   let id = db.prepare(sql).run(1, JSON.stringify(setting)).lastInsertRowid;
   if (id) {
     global.setting = setting;
+    // 添加设置被视为首次打开软件
+    global.first = true;
     return true;
   }
   return false;

@@ -59,7 +59,11 @@ async function createAddEditWindow(
     fullscreenable: false,
     focusable: true,
     show: false,
-    backgroundColor: getMainBackgorunColor(),
+    transparent: global.setting.appearance.transparency < 1,
+    backgroundColor:
+      global.setting.appearance.transparency === 1
+        ? getMainBackgorunColor()
+        : null,
     webPreferences: {
       spellcheck: false,
       preload: join(__dirname, "../preload/index.js"),
@@ -119,7 +123,11 @@ async function createNetworkIconWindow() {
     fullscreenable: false,
     focusable: true,
     show: false,
-    backgroundColor: getMainBackgorunColor(),
+    transparent: global.setting.appearance.transparency < 1,
+    backgroundColor:
+      global.setting.appearance.transparency === 1
+        ? getMainBackgorunColor()
+        : null,
     webPreferences: {
       spellcheck: false,
       preload: join(__dirname, "../preload/index.js"),
@@ -170,7 +178,11 @@ async function createSVGIconWindow() {
     fullscreenable: false,
     focusable: true,
     show: false,
-    backgroundColor: getMainBackgorunColor(),
+    transparent: global.setting.appearance.transparency < 1,
+    backgroundColor:
+      global.setting.appearance.transparency === 1
+        ? getMainBackgorunColor()
+        : null,
     webPreferences: {
       spellcheck: false,
       preload: join(__dirname, "../preload/index.js"),

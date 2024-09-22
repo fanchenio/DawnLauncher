@@ -4,6 +4,11 @@
     :style="{
       backgroundColor: store.setting.appearance.theme.mainBackgroundColor,
       color: store.setting.appearance.theme.mainFontColor,
+      borderRadius:
+        store.setting.appearance.transparency < 1 &&
+        store.setting.appearance.windowRounded
+          ? '8px'
+          : undefined,
     }"
   >
     <div class="flex items-center px-2 app-region-drag">

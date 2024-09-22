@@ -1,6 +1,10 @@
 import { BrowserWindow, shell, screen } from "electron";
 import { join } from "node:path";
-import { getWindowInScreen, sendToWebContent } from "../commons";
+import {
+  getMainBackgorunColor,
+  getWindowInScreen,
+  sendToWebContent,
+} from "../commons";
 import cacheData from "../commons/cacheData";
 
 // 窗口
@@ -24,7 +28,11 @@ function createQuickSearchWindow() {
     fullscreenable: false,
     resizable: false,
     alwaysOnTop: true,
-    backgroundColor: global.setting.appearance.theme.mainBackgroundColor,
+    transparent: global.setting.appearance.transparency < 1,
+    backgroundColor:
+      global.setting.appearance.transparency === 1
+        ? getMainBackgorunColor()
+        : null,
     webPreferences: {
       spellcheck: false,
       backgroundThrottling: false,
