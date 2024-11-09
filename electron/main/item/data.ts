@@ -332,9 +332,9 @@ function batchDel(idList: Array<number>) {
   // 参数
   let params = itemList.map((item) => item.id).join(",");
   // SQL
-  let sql = `DELETE FROM ${tableName} WHERE id in (?)`;
+  let sql = `DELETE FROM ${tableName} WHERE id in (${params})`;
   // 运行
-  let res = db.prepare(sql).run(params).changes > 0;
+  let res = db.prepare(sql).run().changes > 0;
   if (res) {
     // 提取分类ID
     let classificationIdList = new Set<number>();
