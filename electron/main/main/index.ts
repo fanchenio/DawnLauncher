@@ -215,6 +215,8 @@ function createMainWindow() {
         // 中间单击
         showHideMouseWheelClick();
       }
+      // 失去焦点隐藏
+      onBlurHide();
     }
   });
   // 禁用标题栏右键
@@ -227,6 +229,49 @@ function createMainWindow() {
     }, 100);
     return true;
   });
+}
+
+/**
+ * 失去焦点隐藏
+ */
+function onBlurHide() {
+  if (
+    mainWindow.isVisible() &&
+    global.setting.general.hideLoseFocus &&
+    !global.setting.general.alwaysTop &&
+    mainWindow.getChildWindows().length === 0 &&
+    !global.mainWindowShowDialog &&
+    !hasCursorPosWindow(mainWindow)
+  ) {
+    // 隐藏窗口
+    hideMainWindow();
+  }
+}
+
+/**
+ * 判断鼠标是否在置顶的窗口范围内
+ */
+function hasCursorPosWindow(window: BrowserWindow) {
+  if (window && !window.isDestroyed() && window.isVisible()) {
+    // 获取鼠标位置
+    let point = screen.getCursorScreenPoint();
+    // 窗口位置信息
+    let bounds = window.getBounds();
+    // 判断鼠标是否在窗口以外
+    if (
+      point.x < bounds.x ||
+      point.x > bounds.x + bounds.width ||
+      point.y < bounds.y ||
+      point.y > bounds.y + bounds.height
+    ) {
+      // 窗口以外
+      return false;
+    } else {
+      // 窗口以内
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
