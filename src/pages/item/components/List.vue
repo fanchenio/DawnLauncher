@@ -240,9 +240,9 @@ function runItem(e: any, dbclick: boolean) {
       let item = getItemById(itemId);
       if (item && item.data) {
         if (dbclick && store.setting.item.doubleClickOpen) {
-          run("main", item.data.runAsAdmin ? "runas" : "open", item);
+          run("main", "open", item);
         } else if (!dbclick && !store.setting.item.doubleClickOpen) {
-          run("main", item.data.runAsAdmin ? "runas" : "open", item);
+          run("main", "open", item);
         }
       }
     }

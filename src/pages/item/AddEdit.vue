@@ -329,9 +329,7 @@
               v-if="
                 selectedMenuId === 0 &&
                 form.data.target &&
-                form.data.target.trim() !== '' &&
-                (getFileExtname(form.data.target) === 'exe' ||
-                  getFileExtname(form.data.target) === 'bat')
+                form.data.target.trim() !== ''
               "
               v-model:checked="form.data.runAsAdmin"
               :focusable="false"
@@ -459,7 +457,6 @@ import {
   isAbsolutePath,
   deleteExtname,
   getFileName,
-  getFileExtname,
 } from "../../../commons/utils/common";
 import SystemItemList from "./components/SystemItemList.vue";
 import StartMenuItemList from "./components/StartMenuItemList.vue";
@@ -655,12 +652,6 @@ async function confirm() {
   let success = await checkShortcutKey();
   if (!success) {
     return;
-  }
-  // 后缀
-  let ext = getFileExtname(form.data.target);
-  // 如果选中按管理员运行，但是文件类型不是exe和bat就修改为false
-  if (form.data.runAsAdmin && (!ext || (ext !== "exe" && ext !== "bat"))) {
-    form.data.runAsAdmin = false;
   }
   if (!id) {
     // 添加

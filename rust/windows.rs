@@ -722,6 +722,13 @@ pub fn shell_execute(
     start_location: Option<String>,
 ) {
     thread::spawn(move || {
+        let mut operation = operation;
+        // 判断是否是runas，如果是的话，需要判断文件是否有以管理员身份运行的权限，如果没有改为open
+        if operation == "runas" {
+            if !has_runas(file.clone()) {
+                operation = String::from("open");
+            }
+        }
         // dir
         let dir = start_location.unwrap_or_else(|| {
             // 判断是否是文件夹
@@ -793,7 +800,7 @@ pub fn system_item_execute(target: &str, params: Option<&str>) {
 /**
  * 判断文件是否有以管理员身份运行权限
  */
-pub fn has_runas(path: &str) -> bool {
+pub fn has_runas(path: String) -> bool {
     // IShellItem
     let path = HSTRING::from(path);
     if let Ok(shell_item) =

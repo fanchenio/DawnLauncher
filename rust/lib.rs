@@ -208,5 +208,5 @@ fn system_item_execute(target: String, params: Option<String>) {
 #[allow(dead_code)]
 #[napi]
 fn has_runas(path: String) -> bool {
-    windows::has_runas(&path)
+    windows::has_runas(path)
 }

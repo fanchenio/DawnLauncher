@@ -327,6 +327,9 @@ function run(
   item: Item
 ) {
   if (item.data) {
+    if (operation === "open" && item.data.runAsAdmin) {
+      operation = "runas";
+    }
     // 更新打开信息
     updateOpenInfo(type, item.id);
     // 判断类型
