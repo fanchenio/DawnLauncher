@@ -5,7 +5,11 @@ import { hideMainWindow, showMainWindowBefore } from "../main/index";
 import { list as selectClassificationList } from "../classification/data";
 import { list as selectItemList } from "../item/data";
 import { run } from "../item";
-import { closeWindow, getMainBackgorunColor } from "../commons/index";
+import {
+  closeWindow,
+  getMainBackgorunColor,
+  mainWindowExist,
+} from "../commons/index";
 import {
   createQuickSearchWindow,
   hideQuickSearchWindow,
@@ -83,10 +87,12 @@ function setShortcutKey(setting: Setting = global.setting) {
       globalShortcut.register(
         setting.general.showHideShortcutKey.replace("Win", "Super"),
         () => {
-          if (global.mainWindow.isVisible()) {
-            hideMainWindow();
-          } else {
-            showMainWindowBefore(true);
+          if (mainWindowExist()) {
+            if (global.mainWindow.isVisible()) {
+              hideMainWindow();
+            } else {
+              showMainWindowBefore(true);
+            }
           }
         }
       );
@@ -104,8 +110,10 @@ function setShortcutKey(setting: Setting = global.setting) {
         globalShortcut.register(
           classification.shortcutKey.replace("Win", "Super"),
           () => {
-            // 分类
-            showMainWindowBefore(true, false, classification.id);
+            if (mainWindowExist()) {
+              // 分类
+              showMainWindowBefore(true, false, classification.id);
+            }
           }
         );
       } catch (e) {
@@ -123,17 +131,19 @@ function setShortcutKey(setting: Setting = global.setting) {
         globalShortcut.register(
           item.shortcutKey.replace("Win", "Super"),
           () => {
-            // flag
-            let flag = true;
-            // 是否开启勿扰模式
-            if (global.setting.general.notDisturb) {
-              if (global.addon.isFullscreen()) {
-                flag = false;
+            if (mainWindowExist()) {
+              // flag
+              let flag = true;
+              // 是否开启勿扰模式
+              if (global.setting.general.notDisturb) {
+                if (global.addon.isFullscreen()) {
+                  flag = false;
+                }
               }
-            }
-            if (flag) {
-              // 项目
-              run("main", "open", item);
+              if (flag) {
+                // 项目
+                run("main", "open", item);
+              }
             }
           }
         );

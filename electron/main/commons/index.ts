@@ -561,6 +561,13 @@ function showOpenDialogSync(windowName: string, options: OpenDialogOptions) {
   return pathList;
 }
 
+/**
+ * 窗口是否存在
+ */
+function mainWindowExist() {
+  return global.mainWindow && !global.mainWindow.isDestroyed();
+}
+
 export {
   downloadImage,
   getURLInfo,
@@ -580,4 +587,5 @@ export {
   showErrorMessageBox,
   showSaveDialogSync,
   showOpenDialogSync,
+  mainWindowExist,
 };

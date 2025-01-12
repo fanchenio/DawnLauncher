@@ -13,6 +13,7 @@ import cacheData from "../commons/cacheData";
 import {
   getMainBackgorunColor,
   getWindowInScreen,
+  mainWindowExist,
   sendToWebContent,
 } from "../commons";
 import { release } from "node:os";
@@ -236,12 +237,13 @@ function createMainWindow() {
  */
 function onBlurHide() {
   if (
-    mainWindow.isVisible() &&
+    mainWindowExist() &&
+    global.mainWindow.isVisible() &&
     global.setting.general.hideLoseFocus &&
     !global.setting.general.alwaysTop &&
-    mainWindow.getChildWindows().length === 0 &&
+    global.mainWindow.getChildWindows().length === 0 &&
     !global.mainWindowShowDialog &&
-    !hasCursorPosWindow(mainWindow)
+    !hasCursorPosWindow(global.mainWindow)
   ) {
     // 隐藏窗口
     hideMainWindow();
@@ -299,6 +301,9 @@ function showMainWindowBefore(
  * @param autoHide
  */
 function showMainWindow(blurHide: boolean, autoHide = false) {
+  if (!mainWindowExist()) {
+    return;
+  }
   // flag
   let flag = true;
   // 是否开启勿扰模式
@@ -313,12 +318,12 @@ function showMainWindow(blurHide: boolean, autoHide = false) {
   }
   if (flag) {
     if (!global.setting.general.alwaysTop) {
-      mainWindow.setAlwaysOnTop(true, "screen-saver");
+      global.mainWindow.setAlwaysOnTop(true, "screen-saver");
     }
     global.mainWindow.show();
     global.mainWindow.focus();
     if (!global.setting.general.alwaysTop) {
-      mainWindow.setAlwaysOnTop(false);
+      global.mainWindow.setAlwaysOnTop(false);
     }
     global.blurHide = blurHide;
   }
@@ -328,7 +333,7 @@ function showMainWindow(blurHide: boolean, autoHide = false) {
  * 隐藏窗口
  */
 function hideMainWindow() {
-  if (global.mainWindow.isVisible()) {
+  if (mainWindowExist() && global.mainWindow.isVisible()) {
     global.mainWindow.hide();
     global.blurHide = false;
   }
@@ -389,10 +394,13 @@ function createTray(show: boolean) {
  * @returns
  */
 function edgeAdsorb(display: Display | null, workArea = false) {
+  if (!mainWindowExist()) {
+    return;
+  }
   // 如果勾选停靠在桌面边缘时自动隐藏，放行
   if (
-    global.mainWindow.isDestroyed() ||
-    (!global.setting.general.edgeAdsorb && !global.setting.general.edgeAutoHide)
+    !global.setting.general.edgeAdsorb &&
+    !global.setting.general.edgeAutoHide
   ) {
     return;
   }
@@ -400,7 +408,7 @@ function edgeAdsorb(display: Display | null, workArea = false) {
     // 清空方向
     global.mainWindowDirection = null;
     // 屏幕
-    let displays = display ? [display] : getWindowInScreen(mainWindow);
+    let displays = display ? [display] : getWindowInScreen(global.mainWindow);
     if (displays.length > 1 || displays.length === 0) {
       return;
     }
@@ -489,6 +497,9 @@ function edgeAdsorb(display: Display | null, workArea = false) {
  * 显示时跟随鼠标位置
  */
 function showFollowMousePosition() {
+  if (!mainWindowExist()) {
+    return;
+  }
   // 当永远居中、固定位置勾选后不能使用显示时跟随鼠标位置
   if (
     !global.setting.general.alwaysCenter &&
@@ -519,6 +530,9 @@ function showFollowMousePosition() {
  * 中间单击显示/隐藏窗口
  */
 function showHideMouseWheelClick() {
+  if (!mainWindowExist()) {
+    return;
+  }
   if (global.setting.general.showHideMouseWheelClick) {
     if (global.mainWindow.isVisible()) {
       hideMainWindow();
@@ -532,8 +546,11 @@ function showHideMouseWheelClick() {
  * 永远居中
  */
 function alwaysCenter() {
+  if (!mainWindowExist()) {
+    return;
+  }
   if (global.setting.general.alwaysCenter) {
-    mainWindow.center();
+    global.mainWindow.center();
   }
 }
 
@@ -544,26 +561,32 @@ function alwaysCenter() {
  * @returns
  */
 function autoHide(size: number, timer: boolean) {
-  if (global.mainWindow.isDestroyed() || !global.setting.general.edgeAutoHide) {
+  if (!mainWindowExist()) {
+    return;
+  }
+  if (!global.setting.general.edgeAutoHide) {
     return;
   }
   // 当有子窗口时不自动隐藏
-  if (mainWindow.getChildWindows().length > 0 || global.mainWindowShowDialog) {
+  if (
+    global.mainWindow.getChildWindows().length > 0 ||
+    global.mainWindowShowDialog
+  ) {
     return;
   }
   let x = screen.getCursorScreenPoint().x;
   let y = screen.getCursorScreenPoint().y;
   try {
     // 屏幕
-    let displays = getWindowInScreen(mainWindow);
+    let displays = getWindowInScreen(global.mainWindow);
     if (displays.length > 1 || displays.length === 0) {
       return;
     }
     // 屏幕区域
     let displayBounds = displays[0].bounds;
     // 窗口位置信息
-    let bounds = mainWindow.getBounds();
-    if (mainWindow.isVisible()) {
+    let bounds = global.mainWindow.getBounds();
+    if (global.mainWindow.isVisible()) {
       let flag = false;
       if (bounds.x === displayBounds.x && bounds.y === displayBounds.y) {
         // 左上角
@@ -738,12 +761,15 @@ function doubleClickTaskbar(
   mousedownClassName: string | null,
   className: string | null
 ) {
+  if (!mainWindowExist()) {
+    return;
+  }
   // 必须开启设置
   if (!global.setting.general.showHideDoubleClickTaskbar) {
     return;
   }
   // 获取屏幕
-  let displays = getWindowInScreen(mainWindow);
+  let displays = getWindowInScreen(global.mainWindow);
   if (
     displays.length > 1 ||
     displays.length === 0 ||
@@ -779,7 +805,7 @@ function doubleClickTaskbar(
       // 清空计数
       global.doubleClickTaskbarCounter = 0;
       // 显示或隐藏
-      if (mainWindow.isVisible()) {
+      if (global.mainWindow.isVisible()) {
         hideMainWindow();
       } else {
         showMainWindowBefore(false);
