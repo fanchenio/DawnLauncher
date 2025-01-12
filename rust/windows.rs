@@ -729,6 +729,8 @@ pub fn shell_execute(
                 operation = String::from("open");
             }
         }
+        // 是否是打开文件夹
+        let is_dir = operation == "explore";
         // dir
         let dir = start_location.unwrap_or_else(|| {
             // 判断是否是文件夹
@@ -752,8 +754,18 @@ pub fn shell_execute(
         let params = PCWSTR(params.as_ptr());
         let dir = PCWSTR(dir.as_ptr());
         unsafe {
-            // execute
-            ShellExecuteW(None, operation, file, params, dir, SW_SHOWDEFAULT);
+            if is_dir {
+                ShellExecuteW(
+                    None,
+                    w!("open"),
+                    w!("explorer.exe"),
+                    file,
+                    None,
+                    SW_SHOWDEFAULT,
+                );
+            } else {
+                ShellExecuteW(None, operation, file, params, dir, SW_SHOWDEFAULT);
+            }
         }
     });
 }

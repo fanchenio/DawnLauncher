@@ -323,12 +323,14 @@ function updateOpenInfo(type: string, id: number) {
  */
 function run(
   type: string,
-  operation: "open" | "runas" | "openFileLocation",
+  operation: "open" | "runas" | "openFileLocation" | "explore",
   item: Item
 ) {
   if (item.data) {
     if (operation === "open" && item.data.runAsAdmin) {
       operation = "runas";
+    } else if (operation === "open" && item.type === 1) {
+      operation = "explore";
     }
     // 更新打开信息
     updateOpenInfo(type, item.id);
