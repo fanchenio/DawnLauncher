@@ -130,6 +130,7 @@ import {
   setItemWidth,
   run,
   removeInvalidItem,
+  showItemList,
 } from "../js";
 import ItemList from "./List.vue";
 import { Item } from "../../../../types/item";
@@ -315,12 +316,21 @@ function createItemSortable() {
                 let fromClassificationId = parseInt(
                   event.from.getAttribute("classification-id")!
                 );
-                // 当前项目
-                const currentItem =
-                  getItemListByClassificationId(fromClassificationId)[
-                    event.oldIndex
-                  ];
-                fromIdList.push(currentItem.id);
+                let fromClassification =
+                  getClassificationById(fromClassificationId);
+                if (fromClassification) {
+                  let itemList =
+                    getItemListByClassificationId(fromClassificationId);
+                  if (itemList) {
+                    let copyItemList = JSON.parse(JSON.stringify(itemList));
+                    // 可能会存在自定义排序的情况，所以需要按照指定的排序方式获取项目
+                    const currentItem = showItemList(
+                      copyItemList,
+                      fromClassification
+                    )[event.oldIndex];
+                    fromIdList.push(currentItem.id);
+                  }
+                }
               } else {
                 // 批量操作
                 for (const value of store.itemBatchOperationDataArray) {
