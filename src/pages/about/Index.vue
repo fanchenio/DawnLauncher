@@ -34,7 +34,7 @@
       />
       <p class="mt-4">Dawn Launcher {{ version }}</p>
       <p class="mt-2">
-        Copyright © 2022-2024 Dawn Launcher. All Rights Reserved
+        Copyright © 2022-2025 Dawn Launcher. All Rights Reserved
       </p>
       <p class="mt-2">
         {{ store.language.officialWebsite }}{{ store.language.colon
