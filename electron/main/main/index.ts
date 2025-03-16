@@ -25,8 +25,6 @@ let mainWindow: BrowserWindow | null = null;
  * 主窗口
  */
 function createMainWindow() {
-  // 预热
-  global.addon.hasRunas(process.execPath);
   // 如果窗口存在先关闭窗口
   if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
     mainWindow.close();

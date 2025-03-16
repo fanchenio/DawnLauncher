@@ -203,8 +203,7 @@ export default function () {
         // "打开"菜单
         let openMenu = false;
         if (
-          (item.type === 0 &&
-            global.addon.hasRunas(parsePath(item.data.target))) ||
+          item.type === 0 ||
           item.type === 4 ||
           (item.type === 3 && item.data.target === "cmd.exe")
         ) {
