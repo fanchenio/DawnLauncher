@@ -743,6 +743,10 @@ pub fn shell_execute(
                 path.parent().unwrap().display().to_string()
             }
         });
+        // 文件夹
+        let dir_param = format!("\"{}\"", file.to_string());
+        let dir_param = HSTRING::from(dir_param.as_str());
+        let dir_param = PCWSTR(dir_param.as_ptr());
         // HSTRING
         let operation = HSTRING::from(operation.as_str());
         let file = HSTRING::from(file.as_str());
@@ -759,7 +763,7 @@ pub fn shell_execute(
                     None,
                     w!("open"),
                     w!("explorer.exe"),
-                    file,
+                    dir_param,
                     None,
                     SW_SHOWDEFAULT,
                 );
