@@ -5,7 +5,7 @@ import {
   newItem,
 } from "../../commons/utils/common";
 import { CommonItem, Item } from "../../types/item";
-import { parse, join, extname } from "node:path";
+import { parse, join } from "node:path";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import xml2js from "xml2js";
 import { newCommonItem, newCommonItemData } from "../../commons/utils/common";
@@ -43,11 +43,6 @@ process.parentPort.once("message", async (event) => {
       res = await getStartMenuItemList(dataParam);
     } else if (params.name === "getAppxItemList") {
       res = await getAppxItemList();
-    } else if (params.name === "getDropItemInfo") {
-      res = await getDropItemInfo(
-        dataParam.classificationId,
-        dataParam.pathList
-      );
     } else if (params.name === "refreshItemIcon") {
       res = await refreshItemIcon(dataParam);
     } else if (params.name === "getDirectoryItemList") {
@@ -553,90 +548,6 @@ function getPropertiesIcon(installLocation: string, result: any) {
     if (result.Package.Properties[0].Logo) {
       let logo = result.Package.Properties[0].Logo[0];
       return installLocation + "\\" + logo;
-    }
-  }
-  return null;
-}
-
-/**
- * 通过路径获取项目信息
- * @param classificationId
- * @param pathList
- */
-async function getDropItemInfo(
-  classificationId: number,
-  pathList: Array<string>
-) {
-  // 项目列表
-  let itemList: Array<Item> = [];
-  // 解析文件信息并添加项目
-  for (const path of pathList) {
-    try {
-      // item
-      let item = newItem({ classificationId });
-      // 目标
-      item.data.target = path;
-      // 名称
-      item.name = getFileName(item.data.target);
-      // 判断是否是快捷方式，如果是的话，需要获取真实路径
-      if (mime.getType(path) === "application/x-ms-shortcut") {
-        // 快捷方式
-        // 获取真实文件路径和参数
-        let shortcutInfo: ShortcutInfo | null =
-          global.addon.getShortcutFileInfo(path);
-        if (shortcutInfo) {
-          // 路径
-          if (shortcutInfo.target) {
-            item.data.target = shortcutInfo.target;
-          }
-          // 参数
-          if (shortcutInfo.arguments) {
-            item.data.params = shortcutInfo.arguments;
-          }
-        }
-      }
-      // 获取图标
-      item.data.icon = await getFileIcon(item.data.target);
-      // 获取后缀，判断是否是url
-      let ext = extname(item.data.target);
-      if (ext && ext.toLowerCase() === ".url") {
-        // url
-        let url = parseUrlFileContent(readFileSync(item.data.target, "utf-8"));
-        if (url && url.trim() !== "") {
-          item.data.target = url;
-          item.type = 2;
-        } else {
-          continue;
-        }
-      } else {
-        // 文件类型
-        let stats = statSync(item.data.target);
-        item.type = stats.isFile() ? 0 : 1;
-      }
-      // 去掉后缀
-      if (item.type === 0 || item.type === 2) {
-        item.name = deleteExtname(item.name);
-      }
-      // push
-      itemList.push(item);
-    } catch (e) {}
-  }
-  return itemList;
-}
-
-/**
- * 解析.url文件内容以获取URL
- * @param content
- * @returns
- */
-function parseUrlFileContent(content: string) {
-  if (content) {
-    const lines = content.split("\n");
-    for (const line of lines) {
-      if (line.startsWith("URL=")) {
-        const url = line.substring(4).trim();
-        return url;
-      }
     }
   }
   return null;
