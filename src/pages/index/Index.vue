@@ -523,6 +523,8 @@ onMounted(() => {
   // 监听显示窗口之前
   listens.push(
     window.main.onShowWindowBefore((data) => {
+      // 隐藏搜索
+      store.search = false;
       if (classificationContentRef.value) {
         // 如果分类ID不为空的话选择分类ID
         let selectedClassificationId: number | null =
