@@ -183,6 +183,10 @@ function createMainWindow() {
       sendToWebContent("mainWindow", "onCollapseSubClassification", {});
     }
   });
+  // 主窗口关闭事件
+  mainWindow.on("closed", () => {
+    app.quit();
+  });
   // 创建鼠标hook
   let mousedownClassName = null;
   addon.createMouseHook((...args: any[]) => {
