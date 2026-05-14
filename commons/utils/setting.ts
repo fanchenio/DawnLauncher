@@ -149,6 +149,7 @@ function getClassification({
   nameAlign = "left",
   mode = "normal",
   autoSwitchClassification = false,
+  continuousClassificationContent = false,
   hideWindowCollapseSubClassification = false,
   switchClassificationCollapseOtherSubClassification = false,
 }: {
@@ -161,6 +162,7 @@ function getClassification({
   nameAlign?: string | null;
   mode?: string | null;
   autoSwitchClassification?: boolean | null;
+  continuousClassificationContent?: boolean | null;
   hideWindowCollapseSubClassification?: boolean | null;
   switchClassificationCollapseOtherSubClassification?: boolean | null;
 }): Classification {
@@ -174,6 +176,7 @@ function getClassification({
     nameAlign: nameAlign ?? "left",
     mode: mode ?? "normal",
     autoSwitchClassification: autoSwitchClassification ?? false,
+    continuousClassificationContent: continuousClassificationContent ?? false,
     hideWindowCollapseSubClassification:
       hideWindowCollapseSubClassification ?? false,
     switchClassificationCollapseOtherSubClassification:

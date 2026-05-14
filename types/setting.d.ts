@@ -106,6 +106,8 @@ export interface Classification {
   mode: string;
   // 项目列表滚动到底部或顶部时自动切换分类
   autoSwitchClassification: boolean;
+  // 连续显示分类内容
+  continuousClassificationContent: boolean;
   // 隐藏窗口时折叠子分类
   hideWindowCollapseSubClassification: boolean;
   // 切换分类时收起其他子分类
