@@ -827,6 +827,17 @@
               <NFormItem>
                 <NCheckbox
                   v-model:checked="
+                    setting.classification.continuousClassificationContent
+                  "
+                  :focusable="false"
+                  >{{
+                    store.language.continuousClassificationContent
+                  }}</NCheckbox
+                >
+              </NFormItem>
+              <NFormItem>
+                <NCheckbox
+                  v-model:checked="
                     setting.classification.hideWindowCollapseSubClassification
                   "
                   :focusable="false"

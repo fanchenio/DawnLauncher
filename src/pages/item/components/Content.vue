@@ -12,87 +12,44 @@
     @dragleave="dragleave"
     @drop="drop($event, null)"
   >
-    <!-- 只选中了父级分类 -->
-    <template v-if="!store.selectedClassificationChildId">
-      <!-- 有子级分类 -->
-      <template
-        v-if="hasChildClassification(store.selectedClassificationParentId)"
+    <template
+      v-for="(group, groupIndex) of visibleClassificationGroups"
+      :key="'classification-group-' + group.parent.id"
+    >
+      <p
+        v-if="group.showParentTitle"
+        :style="getClassificationTitleStyle(true, groupIndex === 0)"
       >
-        <div
-          v-for="(classification, index) of getClassificationChildList(
-            store.selectedClassificationParentId,
-          )"
-          :key="'classification-child-' + classification.id + '-item-' + index"
-          class="item-container"
-          :classification-id="classification.id"
-          @drop="drop($event, classification.id)"
-        >
-          <p
-            :style="{
-              filter: store.setting.appearance.fontShadow
-                ? 'drop-shadow(1px 1px 1px ' +
-                  store.setting.appearance.fontShadowColor +
-                  ')'
-                : undefined,
-              fontSize:
-                store.setting.subClassification.itemAreaNameFontSize + 'px',
-              fontWeight:
-                store.setting.subClassification.itemAreaNameFontWeight,
-              lineHeight:
-                store.setting.subClassification.itemAreaNameFontLineHeight +
-                'rem',
-              textAlign: store.setting.subClassification.itemAreaNameAlign,
-              marginRight:
-                store.setting.subClassification.itemAreaNameAlign === 'right'
-                  ? '4px'
-                  : undefined,
-            }"
-          >
-            {{ classification.name }}
-          </p>
-          <ItemList
-            class="pt-1"
-            :data="getShowItemListByClassificationId(classification.id)"
-            :classification-id="classification.id"
-          ></ItemList>
-        </div>
-      </template>
-      <!-- 无子级分类 -->
+        {{ group.parent.name }}
+      </p>
       <div
-        v-else
+        v-for="(section, index) of group.sections"
+        :key="'classification-section-' + section.classification.id + '-item-' + index"
         class="item-container"
-        :classification-id="store.selectedClassificationParentId"
-        @drop="drop($event, store.selectedClassificationParentId)"
+        :classification-id="section.classification.id"
+        @drop="drop($event, section.classification.id)"
       >
+        <p
+          v-if="section.title"
+          :style="getClassificationTitleStyle(false, false)"
+        >
+          {{ section.title }}
+        </p>
         <ItemList
-          :data="
-            getShowItemListByClassificationId(
-              store.selectedClassificationParentId,
-            )
-          "
-          :classification-id="store.selectedClassificationParentId"
+          :class="{
+            'pt-1': section.title || group.showParentTitle,
+          }"
+          :data="getShowItemListByClassificationId(section.classification.id)"
+          :classification-id="section.classification.id"
         ></ItemList>
       </div>
     </template>
-    <!-- 选中了子分类 -->
-    <div
-      v-else
-      class="item-container"
-      :classification-id="store.selectedClassificationChildId"
-      @drop="drop($event, store.selectedClassificationChildId)"
-    >
-      <ItemList
-        :data="
-          getShowItemListByClassificationId(store.selectedClassificationChildId)
-        "
-        :classification-id="store.selectedClassificationChildId"
-      ></ItemList>
-    </div>
   </div>
 </template>
 <script setup lang="ts">
 import {
   ref,
+  computed,
   onMounted,
   onUnmounted,
   onBeforeMount,
@@ -134,12 +91,131 @@ import {
 } from "../js";
 import ItemList from "./List.vue";
 import { Item } from "../../../../types/item";
+import { Classification } from "../../../../types/classification";
 import { getClassElement } from "../../../utils/style";
 import { convert } from "../../../../commons/utils/common";
 import { scrollToTop, findElement, unlistens } from "../../../utils/common";
 import { useMainStore } from "../../../store";
 // pinia
 const store = useMainStore();
+type VisibleClassificationSection = {
+  classification: Classification;
+  title: string | null;
+};
+type VisibleClassificationGroup = {
+  parent: Classification;
+  sections: Array<VisibleClassificationSection>;
+  showParentTitle: boolean;
+};
+const visibleClassificationGroups = computed(() =>
+  getVisibleClassificationGroups(),
+);
+function isContinuousClassificationContent() {
+  return (
+    store.setting.classification.continuousClassificationContent &&
+    store.selectedClassificationParentId !== null &&
+    store.selectedClassificationChildId === null
+  );
+}
+function getVisibleClassificationGroups(): Array<VisibleClassificationGroup> {
+  if (store.selectedClassificationChildId) {
+    let classification = getClassificationById(
+      store.selectedClassificationChildId,
+    );
+    if (!classification) {
+      return [];
+    }
+    let parent = classification.parentId
+      ? getClassificationById(classification.parentId)
+      : classification;
+    return [
+      {
+        parent: parent ?? classification,
+        sections: [
+          {
+            classification,
+            title: null,
+          },
+        ],
+        showParentTitle: false,
+      },
+    ];
+  }
+  if (!store.selectedClassificationParentId) {
+    return [];
+  }
+  let parent = getClassificationById(store.selectedClassificationParentId);
+  if (!parent) {
+    return [];
+  }
+  if (!isContinuousClassificationContent()) {
+    return [getVisibleClassificationGroup(parent, false)];
+  }
+  if (parent.type === 2) {
+    return [getVisibleClassificationGroup(parent, true)];
+  }
+  let startIndex = store.classificationList.findIndex(
+    (classification) => classification.id === parent!.id,
+  );
+  if (startIndex < 0) {
+    return [getVisibleClassificationGroup(parent, true)];
+  }
+  let groupList: Array<VisibleClassificationGroup> = [];
+  for (let i = startIndex; i < store.classificationList.length; i++) {
+    let classification = store.classificationList[i];
+    if (i > startIndex && classification.type === 2) {
+      continue;
+    }
+    groupList.push(getVisibleClassificationGroup(classification, true));
+  }
+  return groupList;
+}
+function getVisibleClassificationGroup(
+  parent: Classification,
+  showParentTitle: boolean,
+): VisibleClassificationGroup {
+  let childList = parent.childList ?? [];
+  let sections =
+    childList.length > 0
+      ? childList.map((classification) => ({
+          classification,
+          title: classification.name,
+        }))
+      : [
+          {
+            classification: parent,
+            title: null,
+          },
+        ];
+  return {
+    parent,
+    sections,
+    showParentTitle,
+  };
+}
+function getClassificationTitleStyle(
+  isParentTitle: boolean,
+  isFirstParentTitle: boolean,
+) {
+  let fontWeight = store.setting.subClassification.itemAreaNameFontWeight;
+  return {
+    filter: store.setting.appearance.fontShadow
+      ? "drop-shadow(1px 1px 1px " +
+        store.setting.appearance.fontShadowColor +
+        ")"
+      : undefined,
+    fontSize: store.setting.subClassification.itemAreaNameFontSize + "px",
+    fontWeight: isParentTitle ? Math.max(Number(fontWeight), 700) : fontWeight,
+    lineHeight:
+      store.setting.subClassification.itemAreaNameFontLineHeight + "rem",
+    textAlign: store.setting.subClassification.itemAreaNameAlign,
+    marginTop: isParentTitle && !isFirstParentTitle ? "10px" : undefined,
+    marginRight:
+      store.setting.subClassification.itemAreaNameAlign === "right"
+        ? "4px"
+        : undefined,
+  };
+}
 // 开发时会重复挂载插件导致页面错误
 try {
   // 拖拽控件支持多选
@@ -200,6 +276,23 @@ watch(
     });
   },
 );
+// 监听连续显示分类内容
+watch(
+  () => store.setting.classification.continuousClassificationContent,
+  () => {
+    // 刷新DOM完毕执行
+    nextTick(() => {
+      // 设置项目宽度
+      setItemWidth();
+      // 创建项目拖拽对象
+      createItemSortable();
+      // 清除批量操作
+      clearBatchOperation();
+      // 滚动到顶部
+      scrollToTop(itemContentSimpleBar);
+    });
+  },
+);
 /**
  * 获取项目列表
  */
@@ -224,7 +317,8 @@ function createSimpleBar() {
           (e) => {
             if (
               scroll &&
-              store.setting.classification.autoSwitchClassification
+              store.setting.classification.autoSwitchClassification &&
+              !isContinuousClassificationContent()
             ) {
               const delta = Math.sign(e.deltaY);
               if (delta === -1 && scroll.scrollTop === 0) {
@@ -502,6 +596,74 @@ function dragleave(e: any) {
   e.preventDefault();
   e.stopPropagation();
 }
+function getElementClassificationId(element: any) {
+  let classificationId = element
+    ? element.getAttribute("classification-id")
+    : null;
+  return classificationId ? parseInt(classificationId) : null;
+}
+function getPageClassificationId(e: any) {
+  let itemListElement = getClassElement(e, "item-list");
+  let classificationId = getElementClassificationId(itemListElement);
+  if (classificationId) {
+    return classificationId;
+  }
+  let itemContainerElement = getClassElement(e, "item-container");
+  return getElementClassificationId(itemContainerElement);
+}
+function getContextMenuClassificationId(pageClassificationId: number | null) {
+  if (isContinuousClassificationContent() && pageClassificationId) {
+    return pageClassificationId;
+  }
+  return getSelectedClassificationId();
+}
+function getDropClassificationId(e: any, classificationId: number | null) {
+  if (classificationId) {
+    return classificationId;
+  }
+  let pageClassificationId = getPageClassificationId(e);
+  if (pageClassificationId) {
+    return pageClassificationId;
+  }
+  let selectedClassificationId = getSelectedClassificationId();
+  if (
+    selectedClassificationId &&
+    hasChildClassification(selectedClassificationId)
+  ) {
+    let childList = getClassificationChildList(selectedClassificationId);
+    return childList.length > 0 ? childList[childList.length - 1].id : null;
+  }
+  return selectedClassificationId;
+}
+function getBatchSelectClassificationList() {
+  if (isContinuousClassificationContent()) {
+    let classificationList: Array<Classification> = [];
+    for (const group of visibleClassificationGroups.value) {
+      for (const section of group.sections) {
+        if (section.classification.type === 0) {
+          classificationList.push(section.classification);
+        }
+      }
+    }
+    return classificationList;
+  }
+  if (
+    !store.selectedClassificationChildId &&
+    hasChildClassification(store.selectedClassificationParentId)
+  ) {
+    return getClassificationChildList(store.selectedClassificationParentId).filter(
+      (classification) => classification.type === 0,
+    );
+  }
+  let classificationId = getSelectedClassificationId();
+  if (classificationId) {
+    let classification = getClassificationById(classificationId);
+    if (classification && classification.type === 0) {
+      return [classification];
+    }
+  }
+  return [];
+}
 // drop
 function drop(e: any, classificationId: number | null) {
   // 如果项目在拖拽排序中直接返回
@@ -564,22 +726,7 @@ function drop(e: any, classificationId: number | null) {
     }
   } else {
     if (pathList.length > 0) {
-      // 如果分类ID为空，尝试获取当前选中的分类ID
-      if (!classificationId) {
-        // 获取当前选中的分类ID
-        let selectedClassificationId = getSelectedClassificationId();
-        // 判断是否是父级分类
-        if (
-          selectedClassificationId &&
-          hasChildClassification(selectedClassificationId)
-        ) {
-          // 获取最后一个子分类ID
-          let childList = getClassificationChildList(selectedClassificationId);
-          classificationId = childList[childList.length - 1].id;
-        } else {
-          classificationId = selectedClassificationId;
-        }
-      }
+      classificationId = getDropClassificationId(e, classificationId);
       // 如果分类ID不为空
       if (classificationId) {
         // 查询分类
@@ -634,16 +781,11 @@ async function contextmenu(e: any) {
     store.itemRightMenuItemId = id;
   }
   // 获取当前项目在页面的所属分类
-  let pageClassificationId = null;
-  let itemListElement = getClassElement(e, "item-list");
-  if (itemListElement) {
-    pageClassificationId = parseInt(
-      itemListElement.getAttribute("classification-id"),
-    );
-  }
+  let pageClassificationId = getPageClassificationId(e);
+  let classificationId = getContextMenuClassificationId(pageClassificationId);
   // 弹出菜单
   window.item.showRightMenu({
-    classificationId: getSelectedClassificationId(),
+    classificationId,
     item,
     lockItem,
     batchOperation: store.itemBatchOperation,
@@ -834,36 +976,12 @@ onMounted(() => {
   listens.push(
     window.item.onBatchOperationSelectAll((data) => {
       // 全选
-      if (
-        !store.selectedClassificationChildId &&
-        hasChildClassification(store.selectedClassificationParentId)
-      ) {
-        let classificationList = getClassificationChildList(
-          store.selectedClassificationParentId,
-        );
-        for (const classification of classificationList) {
-          if (classification.type === 0) {
-            let itemList = getItemListByClassificationId(classification.id);
-            for (const item of itemList) {
-              if (!store.itemBatchOperationDataArray.includes(item.id)) {
-                store.itemBatchOperationDataArray.push(item.id);
-              }
-            }
-          }
-        }
-      } else {
-        let classificationId = getSelectedClassificationId();
-        if (classificationId) {
-          let classification = getClassificationById(classificationId);
-          if (classification && classification.type === 0) {
-            let itemList = getItemListByClassificationId(
-              getSelectedClassificationId(),
-            );
-            for (const item of itemList) {
-              if (!store.itemBatchOperationDataArray.includes(item.id)) {
-                store.itemBatchOperationDataArray.push(item.id);
-              }
-            }
+      let classificationList = getBatchSelectClassificationList();
+      for (const classification of classificationList) {
+        let itemList = getItemListByClassificationId(classification.id);
+        for (const item of itemList) {
+          if (!store.itemBatchOperationDataArray.includes(item.id)) {
+            store.itemBatchOperationDataArray.push(item.id);
           }
         }
       }
