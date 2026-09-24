@@ -17,6 +17,7 @@ import {
   sendToWebContent,
 } from "../commons";
 import { release } from "node:os";
+import { showPendingMainWindow } from "../bootstrap";
 
 // 窗口
 let mainWindow: BrowserWindow | null = null;
@@ -122,6 +123,7 @@ function createMainWindow() {
     // 边缘吸附
     edgeAdsorb(null);
   });
+  mainWindow.webContents.on("did-stop-loading", showPendingMainWindow);
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https:")) shell.openExternal(url);
     return { action: "deny" };

@@ -214,7 +214,7 @@
     </div>
   </div>
   <!-- 搜索 -->
-  <Search v-if="store.search"></Search>
+  <Search v-if="store.search" :initial-value="searchInitialValue"></Search>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
@@ -244,6 +244,15 @@ import { useMainStore } from "../../store";
 const store = useMainStore();
 // ref
 const classificationContentRef = ref<any>(null);
+const searchInitialValue = ref<string | null>(null);
+watch(
+  () => store.search,
+  (visible) => {
+    if (!visible) {
+      searchInitialValue.value = null;
+    }
+  }
+);
 // 监听
 watch(
   () => store.setting.appearance.backgroundImageTransparency,
@@ -419,7 +428,11 @@ function createBackgroundImageStyle() {
   }
 }
 // 监听键盘
-function keydown(e: any) {
+function keydown(e: KeyboardEvent) {
+  // 输入法选词期间不处理快捷键，避免 Esc 或回车打断组合输入。
+  if (e.isComposing || e.keyCode === 229) {
+    return;
+  }
   // ESC
   if (e.keyCode == 27) {
     if (store.search) {
@@ -494,6 +507,25 @@ function keydown(e: any) {
       e.stopPropagation();
       return;
     }
+  }
+  const target = e.target;
+  if (
+    !store.search &&
+    !e.defaultPrevented &&
+    !e.ctrlKey &&
+    !e.altKey &&
+    !e.metaKey &&
+    /^[a-z]$/i.test(e.key) &&
+    !(
+      target instanceof HTMLElement &&
+      (target.isContentEditable || target.closest("input, textarea, select"))
+    )
+  ) {
+    // 先保留已有快捷键的优先级，再显式传入首字母，避免搜索框挂载前丢失输入。
+    searchInitialValue.value = e.key;
+    store.search = true;
+    e.preventDefault();
+    e.stopPropagation();
   }
 }
 // 监听

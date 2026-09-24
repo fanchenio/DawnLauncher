@@ -3,10 +3,10 @@
  */
 {
   $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  appId: "com.dawnlauncher.application",
+  appId: "com.dawnlauncher.custom",
   asar: true,
   compression: "maximum",
-  productName: "Dawn Launcher",
+  productName: "Dawn Launcher Custom",
   directories: {
     output: "release/${version}",
   },
@@ -14,7 +14,7 @@
   npmRebuild: false,
   files: ["dist", "dist-electron", "native", "!node_modules/**/*"],
   win: {
-    appId: "com.dawnlauncher.application",
+    appId: "com.dawnlauncher.custom",
     target: [
       {
         target: "nsis",

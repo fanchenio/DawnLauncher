@@ -1,6 +1,5 @@
 import { Result } from "../../../types/common";
 import { resolve, dirname, relative, join } from "node:path";
-import { mkdirSync, existsSync } from "node:fs";
 import mime from "mime";
 import retry from "retry";
 import request from "request";
@@ -446,17 +445,7 @@ function relaunch() {
 
 // 数据存储目录
 function getUserDataPath() {
-  let userDataPath = app.getPath("userData");
-  if (
-    process.env.NODE_ENV !== "development" &&
-    import.meta.env.VITE_INSTALL === "false"
-  ) {
-    userDataPath = join(dirname(process.execPath), "data");
-    if (!existsSync(userDataPath)) {
-      mkdirSync(userDataPath, { recursive: true });
-    }
-  }
-  return userDataPath;
+  return app.getPath("userData");
 }
 
 /**

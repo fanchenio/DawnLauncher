@@ -1,5 +1,6 @@
+import "./bootstrap";
 import { app, BrowserWindow, dialog } from "electron";
-import { join, dirname, basename } from "node:path";
+import { join, basename } from "node:path";
 import indexIpcEvent from "./main/ipcEvent";
 import classificationIpcEvent from "./classification/ipcEvent";
 import { init as classificationDataInit } from "./classification/data";
@@ -21,16 +22,6 @@ import { getLanguage } from "../../commons/data/languages";
 import aboutIpcEvent from "./about/ipcEvent";
 import dataIpcEvent from "./data/ipcEvent";
 
-// 数据存储目录
-if (
-  process.env.NODE_ENV !== "development" &&
-  import.meta.env.VITE_INSTALL === "false"
-) {
-  app.setPath("appData", join(dirname(process.execPath), "data"));
-  app.setPath("userData", join(dirname(process.execPath), "data"));
-  app.setPath("sessionData", join(dirname(process.execPath), "data"));
-}
-
 process.env.DIST_ELECTRON = join(__dirname, "..");
 process.env.DIST = join(process.env.DIST_ELECTRON, "../dist");
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
@@ -51,23 +42,12 @@ if (global.setting.appearance.transparency === 1) {
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
 
-if (!app.requestSingleInstanceLock()) {
-  app.quit();
-  process.exit(0);
-}
-
 // Remove electron security warnings
 // This warning only shows in development mode
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 app.whenReady().then(() => {
   try {
-    // 禁止多开
-    const instanceLock = app.requestSingleInstanceLock();
-    if (!instanceLock) {
-      app.quit();
-      return;
-    }
     // addon
     global.addon = require("../../native/addon.node");
     if (global.first) {
@@ -122,8 +102,11 @@ app.whenReady().then(() => {
     }
     // 设置快捷键
     setShortcutKey();
-    // 每次开启软件时都设置一次开机启动选项
-    if (process.env.NODE_ENV !== "development") {
+    // 单文件版不覆盖安装版的同名启动项，也不能把临时解压路径注册为启动项。
+    if (
+      process.env.NODE_ENV !== "development" &&
+      !process.env.PORTABLE_EXECUTABLE_DIR
+    ) {
       const exeName = basename(process.execPath);
       app.setLoginItemSettings({
         openAtLogin: global.setting.general.startup,
@@ -166,18 +149,6 @@ app.on("before-quit", () => {
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
-});
-
-app.on("second-instance", () => {
-  if (global.mainWindow) {
-    if (!global.mainWindow.isVisible()) {
-      global.mainWindow.show();
-      global.mainWindow.focus();
-      global.blurHide = true;
-    } else {
-      global.mainWindow.focus();
-    }
-  }
 });
 
 app.on("activate", () => {

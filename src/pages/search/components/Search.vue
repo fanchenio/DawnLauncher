@@ -133,16 +133,19 @@ import {
 } from "../js/index";
 import { SearchOutline, TerminalOutline } from "@vicons/ionicons5";
 import { useMainStore } from "../../../store";
+const props = defineProps<{
+  initialValue?: string | null;
+}>();
 // pinia
 const store = useMainStore();
 // 搜索框
-let searchInput = ref<any>(null);
+let searchInput = ref<HTMLInputElement | null>(null);
 // 搜索模式
 let mode = ref<"search" | "webSearch" | "commandLine">("search");
 // 搜索模式对应的实体
 let webSearchSource = ref<WebSearchSource | null>(null);
 // 搜索内容
-let value = ref<string | null>(null);
+let value = ref<string | null>(props.initialValue ?? null);
 // 选中的项
 let selected = ref<number>(0);
 // 结果列表
@@ -159,7 +162,9 @@ watch(
   () => value.value,
   () => {
     search();
-  }
+  },
+  // 首字母由首页传入，挂载时就需要计算结果，而不是等待下一次输入。
+  { immediate: true }
 );
 // 搜索
 function search() {
@@ -264,7 +269,11 @@ function contextmenu(e: any) {
     }
   }
 }
-function keydown(e: any) {
+function keydown(e: KeyboardEvent) {
+  // 输入法确认候选词时的回车不能同时启动搜索结果。
+  if (e.isComposing || e.keyCode === 229) {
+    return;
+  }
   // 提取快捷键
   let shortcutKey = getShortcutKey(e, null, false);
   // 隐藏搜索框
@@ -430,7 +439,12 @@ onMounted(() => {
   window.addEventListener("keydown", keydown, true);
   // 刷新DOM完毕执行
   nextTick(() => {
-    searchInput.value.focus();
+    const input = searchInput.value;
+    if (input) {
+      input.focus();
+      // 光标放在首字母后，保证后续输入按顺序追加。
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
     resize();
   });
 });
